@@ -1,0 +1,782 @@
+﻿;----------------------------------
+@INVASION_RYOUZYOKU, ARG:0, ARG:1
+;----------------------------------
+#DIM ID
+#DIM NUM
+#DIM RYOUZYOKU
+
+;侵攻ポイントを調整
+;基本的に0～10の範囲に抑える
+ARG:1 /= 5000
+
+;戦爭で陵辱
+REPEAT 3
+	X = (RAND:9 + 1) * 10 + 100 + RAND:5
+	CALL MONSTER_DATA, X, COUNT, 0, -1
+
+	RYOUZYOKU = COUNT * 100 + 7
+	NUM = COUNT * 100 + 99
+	IF E:NUM <= 0
+		E:RYOUZYOKU = 0
+	ENDIF
+	IF E:RYOUZYOKU > 0
+		ID = E:(COUNT*100)
+		PRINTFORMW %ITEMNAME:ID%的凌辱開始了。
+	ENDIF
+	IF E:RYOUZYOKU == 1
+		;カタコト
+		CALL ORC_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 2
+		;史萊姆
+		CALL SLIME_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 3
+		;昆蟲
+		CALL INSECT_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 4
+		;蔦觸手
+		CALL IVY_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 5
+		;觸手
+		CALL SYOKUSYU_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 6
+		;妖精
+		CALL FAILY_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 7
+		;巨人
+		CALL GIANT_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 8
+		;男
+		CALL MAN_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 9
+		;女
+		CALL GIRL_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 10
+		;獣
+		CALL BEAST_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 11
+		;脳姦
+		CALL BRAIN_INV, ARG:0, ARG:1
+	ELSEIF E:RYOUZYOKU == 12
+		;馬
+		CALL HORSE_INV, ARG:0, ARG:1
+	ENDIF
+	PRINTL  
+REND
+
+RETURN 0
+
+
+
+;--------------------------------------------
+@ORC_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 看板娘
+	LOCALS:1 = 女騎士
+	LOCALS:2 = 少女
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈少女
+	LOCALS:1 = 精靈獵手
+	LOCALS:2 = 精靈少女
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 看板娘
+	LOCALS:1 = 龍族女戰士
+	LOCALS:2 = 龍族少女
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 破邪天使
+	LOCALS:2 = 妙齡天使
+;天神宮侵略
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 十字軍隊長
+	LOCALS:2 = 十字軍軍官
+ELSE
+	LOCALS:0 = 看板娘
+	LOCALS:1 = 女騎士
+	LOCALS:2 = 少女
+ENDIF
+
+IF RAND:5 == 0 && ARG:1 > 1
+	PRINTFORMW 被亜人群所包囲的%LOCALS:1%的部隊、被迫做出了決斷
+	PRINTFORMW 『已經無法再期待救援了……既然這樣乾脆就保持著純潔而玉碎吧……』
+	PRINTFORMW 就在此時、陣地內響起了本應聽不到的亜人的聲音
+	PRINTFORMW 大本営掲起了白旗、同伴們一個接一個被解除了武裝
+	PRINTFORMW %LOCALS:1%看到的是、曾經信任的団長取悅著亜人的陰莖的媚態……
+ELSEIF RAND:4 == 0
+	PRINTFORMW %LOCALS:1%的抵抗是如此地無力，一個又一個的據點被攻佔下來了，抵抗的部隊也都盡數被捕虜了。
+	IF ARG:1 > 6
+		PRINTFORML 亜人軍隊的攻勢不知什麼時候才會停止、就好像席捲而來的波濤一般排山倒海
+	ELSEIF ARG:1 > 2
+		PRINTFORML %LOCALS:1%的部隊寡不敵眾、沒辦法做出很好的抵抗
+	ENDIF
+	PRINTFORMW 「回國的時候，要做新娘咯～♪哇哈哈哈哈哈！」
+	PRINTFORMW 已經無力反抗的%LOCALS:1%們，眼裡再也見不到希望的光芒，
+	PRINTFORMW 身體因為妊娠促進劑而受胎，肚子誇張地膨脹著。
+	PRINTFORMW 『啊啊……孩子在動著……獸人的孩子…………』
+	IF ARG:1 > 7
+		PRINTFORML %LOCALS:1%的妊娠數已經超過了三位數、已經被改造得無法與同族生育了
+	ELSEIF ARG:1 > 3
+		PRINTFORML %LOCALS:1%的妊娠數已經超過了兩位數
+	ENDIF
+ELSEIF RAND:3 == 0
+	PRINTW 「這，這裡是麵包店……要買麵包么？」
+	PRINTFORMW 獸人們衝入麵包店，把裡面的%LOCALS:0%抓住，按倒在地，
+	PRINTFORMW 『不，不要啊～～！快，快停……快停下，啊啊啊啊啊啊啊！』
+	PRINTFORMW %LOCALS:0%的私處內被灌滿了獸人的濃厚精液。
+	IF ARG:1 > 6
+		PRINTFORML %LOCALS:0%的住街變成了亜人們的公衆便所
+		PRINTFORML 街中迴響著肉便器們的嬌喘聲……
+	ELSEIF ARG:1 > 2
+		PRINTFORML %LOCALS:0%的住街被完全破壊了、街上的女人全部成爲了亜人的肉便器
+	ENDIF
+	PRINTFORMW 「哈哈哈！真是個不錯的麵包店啊！以後我們每天都會來光顧的啦！」
+	IF ARG:1 > 7
+		PRINTFORML 成為肉便器的%LOCALS:0%在烤麵包
+		PRINTFORML 變成接客房間的麵包屋裡、充滿了蓋過麵包香味程度的性臭味……
+	ELSEIF ARG:1 > 3
+		PRINTFORML %LOCALS:0%在烤麵包、並且不得不履行身為肉便器的職責……
+	ENDIF
+ELSEIF RAND:2 == 0
+	PRINTW 『被這種下等獸人……如果當時有增援的話，也不會這樣……』
+	PRINTFORMW %LOCALS:1%在廣場上被公開處刑。
+	PRINTFORMW 脖子和手腕被固定的枷鎖死死扣住，光溜溜的屁股被輪流侵犯。
+	PRINTFORMW 「不會殺你的！你是大家的便器！一直在這裡侍奉大家吧！」
+	PRINTFORMW %LOCALS:1%已經連續在廣場被使用了幾天，好像勝利紀念品一樣。
+	PRINTFORMW 『停下吧……我再也不會反抗你們了……求求你們，停下啊啊啊啊啊啊啊～啊啊啊！！』
+	PRINTFORMW 嚎啕大哭的%LOCALS:1%眼前，獸人的陰莖晃動著。
+	PRINTFORMW 「舔吧！母豬！」
+ELSE
+	PRINTW 「新人，就在裡面！」
+	PRINTFORMW 作為新的奴隸的%LOCALS:2%，被帶入奴隸的帳篷中，看到了這樣一幅光景：
+	PRINTFORMW 大量被鎖著，兩眼無神的全裸女人正在不停地侍奉著獸人，起碼有一半明顯是懷孕了。
+	PRINTFORMW 過度的使用讓大部分人的性器都成了黑木耳，頭髮和陰毛雜亂地生長著，精液不斷從私處、肛門裡流出來…
+	PRINTFORMW 『這就是……我的……未來……』
+	PRINTFORMW %LOCALS:2%全身無力，崩潰了。
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@SLIME_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 女孩
+	LOCALS:2 = 年輕修女
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈女性
+	LOCALS:1 = 精靈女孩
+	LOCALS:2 = 精靈巫女
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女性
+	LOCALS:1 = 龍族女孩
+	LOCALS:2 = 龍族女神官
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 妙齡天使
+	LOCALS:2 = 天使神官
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 十字軍護衛
+	LOCALS:2 = 十字軍神官
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 女孩
+	LOCALS:2 = 年輕修女
+ENDIF
+
+IF RAND:4 == 0 && ARG:1 > 1
+	PRINTFORMW 成為俘虜的%LOCALS:2%被往肛門里儘可能地注入了泥漿
+	PRINTFORMW 在其它%LOCALS:2%的注視中、全裸的跨在神諭的書物之上
+	PRINTFORMW 「被幹趴的話、同伴、全部奴隷的幹活」
+	PRINTFORMW 魔物使命令獸人、操起了%LOCALS:2%的大屁股
+	PRINTFORMW 在持續數小時的肛交之後、%LOCALS:2%再也忍受不住了……
+ELSEIF RAND:3 == 0
+	PRINTFORMW %LOCALS:2%們，在戰火中祈禱著。
+	PRINTFORMW 逃入聖堂里的%LOCALS:2%們，已經做好了死的覺悟。
+	PRINTFORMW 『……怎麼回事……身體……動不了……了……』
+	PRINTFORMW 麻痹史萊姆悄悄地從排水渠鉆進了聖堂。散發出麻痹的毒氣讓%LOCALS:2%們無法動彈了。
+	PRINTFORMW 門外，伴隨著可憎的的口音和下流的呼喊，大量的腳步聲傳進來了。想死，也沒這麼容易噢～
+ELSEIF RAND:2 == 0
+	PRINTFORMW %LOCALS:0%千辛萬苦地躲入不起眼的屋子裡，在外面，戰鬥正在打響。
+	IF ARG:1 > 6
+		PRINTFORML %LOCALS:0%們的住街已經被獸人的魔物使佔領了一半以上了
+		PRINTFORML 要是被抓到的話就會被當作繁殖奴隷一直被侵犯直到用完丟掉為止吧……
+	ELSEIF ARG:1 > 2
+		PRINTFORML %LOCALS:0%的住街遭受了獸人魔物使的襲撃、防衛部隊已經處於半崩潰狀態
+	ENDIF
+	PRINTFORMW 突然，孤身一人的%LOCALS:0%聞到了異樣的臭味。
+	PRINTFORMW 『史，史萊姆！』
+	PRINTFORMW 史萊姆從通氣孔中鉆入了！
+	PRINTFORMW 當獸人戰士破門而入的時候，%LOCALS:0%還在被史萊姆狠狠侵犯之中。
+	IF ARG:1 > 7
+		PRINTFORML %LOCALS:0%們之後、在被破壊的街上成爲了史萊姆培養奴隷
+		PRINTFORML 在高潮的同時從肛門裡噴出史萊姆的樣子、不會被任何人憐憫……
+	ELSEIF ARG:1 > 3
+		PRINTFORML %LOCALS:0%們之後、持續不斷地被在肛門中培養史萊姆的樣子……
+	ENDIF
+ELSE
+	PRINTFORMW 『快停下！放過我吧！不要啊！』
+	PRINTFORMW 作為營地的餘興節目，%LOCALS:1%被丟入有史萊姆的浴池裡。
+	PRINTFORMW 史萊姆佔據了半個浴池，馬上開始侵犯著下半身，
+	PRINTFORMW 私處和肛門都被大量的粘液灌入了，%LOCALS:1%尖叫了起來。
+	PRINTFORMW 「不錯的玩法，不如將所有史萊姆都拿過來吧。」
+	PRINTFORMW 一隻獸人這麼提議到，全軍都沸騰地表示贊成。
+	PRINTFORMW %LOCALS:1%臉色鐵青，徹底絕望了。
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@INSECT_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 女學生
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 女精靈
+	LOCALS:1 = 精靈學生
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女人
+	LOCALS:1 = 龍族學生
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 見習天使
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 見習十字軍
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 女學生
+ENDIF
+
+IF RAND:3 == 0 && ARG:1 > 1
+	PRINTFORMW 被捕獲的%LOCALS:1%們、被逼往嘴裡吞下了紫芋蟲。很快出現了各種癥狀
+	PRINTFORMW 芋蟲在腸中分泌媚薬、理性被破壊的%LOCALS:1%們互相抱在一起
+	PRINTFORMW %LOCALS:1%們變成了腦子只有做愛的性奴隷
+	PRINTFORMW 男學生和女學生被一一配對、成爲了生育奴隷的裝置
+	PRINTFORMW 頭被鎖鏈鎖在一起的二人的表情、看上去好像無比的幸福
+ELSEIF RAND:2 == 0
+	PRINTFORMW %LOCALS:1%們，從戰場上避的難途中，被魔蟲群襲擊了。
+	PRINTFORMW 用臭布裹體的獸人蟲使，用魔蟲笛操縱著蟲群。
+	IF ARG:1 > 6
+		PRINTFORML 成為奴隷的%LOCALS:0%被獸人蟲使用陰莖磨蹭起了臉頰
+		PRINTFORML 屈服於獸人的她、泄露出了學生們的避難地點
+	ELSEIF ARG:1 > 2
+		PRINTFORML 獸人蟲使、把成為陰莖容器的%LOCALS:0%綁了起來
+	ENDIF
+	PRINTFORMW 當場將%LOCALS:1%們剝光，用魔蟲的粘絲捆綁起來。
+	PRINTFORMW 哀叫著的%LOCALS:1%們，就這樣被帶回了魔蟲的巢穴。
+	PRINTFORMW 又有新的蟲卵，新的蟲子了。獸人蟲使這麼想著，開心地笑了。
+ELSE
+	PRINTFORMW 在戰場上被抓獲的%LOCALS:0%們，成爲了魔界昆蟲的孵化箱。
+	PRINTFORMW 脖子被鎖著，%LOCALS:0%們的私處和肛門，被蟲子下了很多卵。
+	PRINTFORMW 『啊啊…啊啊啊啊啊…啊啊啊…』
+	PRINTFORMW %LOCALS:0%們徹底絕望，精神崩潰了。
+	PRINTFORMW 不一會兒，從%LOCALS:0%們的粘膜中吸取了足夠的養分，蟲子的幼蟲從私處和肛門中爬出來了，然後又繼續地被產卵。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@IVY_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 女兵士
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈女性
+	LOCALS:1 = 精靈守衛
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女人
+	LOCALS:1 = 龍族女戰士
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 破邪天使
+ELSEIF ARG == 4
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 十字軍軍官
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 女兵士
+ENDIF
+
+IF RAND:3 == 0 && ARG:1 > 1
+	PRINTFORMW 植物型魔物在一夜之間吞沒了城寨、%LOCALS:1%們全被巨大的藤蔓纏住了
+	PRINTFORMW 然後、%LOCALS:1%們被集中到盛開著紫色花朵的花園里
+	PRINTFORMW 在花粉的作用下產生了幻覚、%LOCALS:1%們與城裡的男人們專心致志地做愛起來
+	PRINTFORMW 『喜歡……還要……來吧……給我孩子……讓我懷孕』
+	PRINTFORMW 生下來的孩子將被當做奴隷賣掉。她們在花的誘惑下持續著交尾……。
+ELSEIF RAND:2 == 0
+	PRINTFORMW %LOCALS:1%們被覆蓋了戦場的植物群給吞沒了
+	PRINTFORMW 手足被藤蔓纏住、毫無防備的肛門被根莖插了進去
+	PRINTFORMW 從根分泌出的物質很快令%LOCALS:1%們露出了啊嘿顔、
+	PRINTFORMW 就這樣與植物形成了共生狀態
+	IF ARG:1 > 5
+		PRINTFORML 根鬚從耳一直伸到大脳、很快精神被改造得除了快感其他什麼也感覺不到了的樣子
+		PRINTFORML 在植物的養分作用下%LOCALS:1%的筋肉繃緊起來變成了動彈不得的肉塊
+	ELSEIF ARG:1 > 3
+		PRINTFORML %LOCALS:1%的筋肉繃緊起來變成了動彈不得的肉塊
+	ENDIF
+	PRINTFORMW 『哈啊啊、好爽啊啊啊～！　屁股、要變成傻瓜了！　要變成屁股了～～～～！』
+ELSE
+	PRINTFORMW 在被鎮壓了的據點上，種滿了魔界的植物，%LOCALS:0%們被抓了過來，提供養分。
+	PRINTFORMW 被紮根在體內的女性，現在和植物已經是共生狀態，不斷地產出著優質的肥料。
+	PRINTFORMW 「這是你的飼料，吃啊！吃進去，拉出來，這就是你們的使命！」
+	PRINTFORMW 有時，男人和獸人們會侵犯身不能動的%LOCALS:0%
+	PRINTFORMW 『侵犯我！再來！！啊！好！好棒！好棒啊！』
+	PRINTFORMW 除了脫糞以外，性交已經是唯一的娛樂。%LOCALS:0%們都墮落為淫亂的女人了。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@SYOKUSYU_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 侍女
+	LOCALS:2 = 貴族女人
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 女精靈
+	LOCALS:1 = 精靈侍女
+	LOCALS:2 = 精靈貴族
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女人
+	LOCALS:1 = 龍族侍女
+	LOCALS:2 = 龍族貴族
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 天使僕從
+	LOCALS:2 = 上位天使
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 十字軍僕從
+	LOCALS:2 = 高階十字軍
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 侍女
+	LOCALS:2 = 貴族女人
+ENDIF
+
+IF RAND:3 == 0 && ARG:1 > 1
+	PRINTFORMW %LOCALS:2%被捕獲後、被觸手細緻地催眠了
+	PRINTFORMW 數日後、婚紗裝的%LOCALS:2%走到了史萊姆的街道上
+	PRINTFORMW 頭被觸手包的緊緊的、她們的眼裡充滿了不合時宜的慈愛
+	PRINTFORMW 流浪者被集中起來。今天是%LOCALS:2%的結婚儀式。將高貴的血統分配給下賤的東西
+	PRINTFORMW 『好開心～……大家都成為新娘子了～……要生好多的孩子哦……』
+ELSEIF RAND:2 == 0
+	PRINTFORMW 侍奉著貴族的%LOCALS:1%，讓主人的千金躲到暗格里，自己一個抵抗著。
+	PRINTFORMW %LOCALS:1%毫無懸念地被抓住了，接受著觸手的快感拷問。
+	PRINTFORMW 陰蒂被觸手改造成陰莖的樣子，兩性倒錯的快感輕易地就讓她墮落了。
+	PRINTFORMW 『把大小姐出賣了的話，就把她的貞操獎勵給你哦！～』觸手師這麼笑著說。
+	PRINTFORMW 在這種誘惑下，供出了千金的所在，兩人一同成為奴隸了。
+	PRINTFORMW 『大小姐……一直、一直都戀慕著你！　啊哈！　侵犯……大小姐什麼的！　最最舒服啦！！』
+ELSE
+	PRINTFORMW 被鎮壓的據點里，臨時設定了觸手生產工廠。
+	PRINTFORMW 被鑲嵌到噁心的肉壁中，%LOCALS:0%們個個都挺著懷孕的大肚子。
+	PRINTFORMW 『討厭……不要生出來……討厭……』
+	PRINTFORMW 危險日和安全日都完全不管，觸手不停地在%LOCALS:0%們的私處內灌入精液。
+	PRINTFORMW 『去了！要去了！！明明不想去的～～～～～～！！』
+	PRINTFORMW 觸手的精液中含有大量的春藥成分，%LOCALS:0%們被多次地強制絕頂了。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@FAILY_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 少女
+	LOCALS:2 = 人類
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈女性
+	LOCALS:1 = 精靈少女
+	LOCALS:2 = 精靈
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女性
+	LOCALS:1 = 龍族少女
+	LOCALS:2 = 龍族
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 天使少女
+	LOCALS:2 = 天使
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 天使少女
+	LOCALS:2 = 天使
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 少女
+	LOCALS:2 = 人類
+ENDIF
+IF RAND:3 == 0 && ARG:1 > 1
+	PRINTFORMW 都會學校被妖精們佔據了、學生全被囚禁起來
+	PRINTFORMW 「你們、將作為妖精的奴隷盡情地生産哦～」
+	PRINTFORMW %LOCALS:2%的學生們被餵下了妖精的媚薬、全員變成了發情的性獣
+	PRINTFORMW 在成為繁殖場的校舎里、男學生不分場地的侵犯著女學生
+	PRINTFORMW 一個%LOCALS:2%的優等生、以生下5個孩子的奴隷身份得到了優秀的表揚
+ELSEIF RAND:2 == 0
+	PRINTFORMW %LOCALS:0%被拘束著，承受妖精們的欺凌。
+	PRINTFORMW 被魔法強制勃起的陰蒂，對於體型嬌小的妖精來說，正好可以當陰莖使。
+	PRINTFORMW 快感也被魔法增幅了。%LOCALS:0%情不自禁地隨著妖精的起伏擺動著自己的腰。
+	PRINTFORMW 『不要……會回不去的……腰都變得奇怪了啊！！』
+	PRINTFORMW 「哎呀呀～在說什麼啦？　哦？大姐姐你說要一生都做陰蒂奴隸啊？好咧！！～♪」
+	SIF ARG:1 > 3
+		PRINTFORMW 之後、%LOCALS:0%的乳頭也被改造成能與妖精性交了
+	SIF ARG:1 > 6
+		PRINTFORMW 陰蒂勃起的%LOCALS:0%直到死都無休止地被妖精們洩慾著
+ELSE
+	PRINTFORMW 妖精們宛如孩子般天真無邪的玩弄著破壞著%LOCALS:0%們。
+	PRINTFORMW 「哈哈～不如把尿道也侵犯了吧！」
+	PRINTFORMW 『啊～啊啊～！求求你們，不要再繼續了！！』
+	PRINTFORMW 並排被拘束著的%LOCALS:0%們，被妖精隨心所欲地破壞著。
+	PRINTFORMW 「尿道性交！！嘻嘻，會讓姐姐你很舒服的啦！」
+	PRINTFORMW 看到這個情形，作為下批犧牲者的%LOCALS:1%們，浮現出絕望的表情。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@GIANT_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女奴隸
+	LOCALS:1 = 魔導士
+	LOCALS:2 = 人類
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈女奴隸
+	LOCALS:1 = 精靈使
+	LOCALS:2 = 精靈
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女奴隸
+	LOCALS:1 = 龍族術士
+	LOCALS:2 = 龍族
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天界奴隸
+	LOCALS:1 = 破邪天使
+	LOCALS:2 = 天使
+ELSEIF ARG == 5
+	LOCALS:0 = 天神奴隸
+	LOCALS:1 = 破落天使
+	LOCALS:2 = 天使
+ELSE
+	LOCALS:0 = 女奴隸
+	LOCALS:1 = 魔導士
+	LOCALS:2 = 人類
+ENDIF
+
+IF RAND:4 == 0 && ARG:1 > 1
+	PRINTFORMW 因為巨人們的余興而被捕獲的%LOCALS:0%們成爲了稀罕的收藏品
+	PRINTFORMW 被全裸的放在一起的奴隷們、男女配對進行著各種各樣的競技
+	PRINTFORMW 因為輸了說不定就會被殺掉、奴隷們拚命地展現著醜態
+	PRINTFORMW 看到這些的巨人們大笑了起來
+	PRINTFORMW 在輸掉就會被殺的恐懼前、二人展現著猥瑣下流的性交猥雑、茍延殘喘著
+ELSEIF RAND:3 == 0
+	PRINTFORMW 本來就身份低微的%LOCALS:0%們被抓獲了，
+	PRINTFORMW 順勢給她們施加了淫媚的魔法，成爲了隨軍用的飛機杯。
+	PRINTFORMW 在巨人那巨根的關照下，身體逐漸飛機杯化了。
+	PRINTFORMW 最初還在抵抗的%LOCALS:0%們，在快感魔法下已經連續高潮了不知多少次。
+	PRINTFORMW 一次次的侵犯，讓%LOCALS:2%的眼淚和口水，隨著愛液四處飛散，理智漸漸崩壞了。
+	PRINTFORMW 『我是飛機杯！　我不要做%LOCALS:2%了！　再狠狠地操我吧！！讓我作為飛機杯，狠狠地泄出來吧！！！』
+ELSEIF RAND:2 == 0
+	PRINTFORMW 在戰場上被抓獲的%LOCALS:0%們，在接受最初的洗禮。
+	PRINTFORMW 在巨人的大量精液中洗澡。
+	PRINTFORMW 『這是什麼…討厭…呀啊啊啊啊啊啊！』
+	PRINTFORMW 嫌棄的%LOCALS:0%們，會被強制丟入浴池。
+	PRINTFORMW 反抗的，則會連頭都被按下去。
+	PRINTFORMW %LOCALS:0%們戰戰兢兢地在精液中沐浴著，不知道自己過後將被如何處置。
+ELSE
+	PRINTFORMW %LOCALS:1%被巨人壓倒了，連續的戰鬥讓她的魔力已經見底。
+	PRINTFORMW 『被這種下等的傢伙……隊長！？』
+	PRINTFORMW 隊長用殘存的魔力，把自己的內心摧毀了。
+	PRINTFORMW 『好痛…這裡是……哪裡…』
+	PRINTFORMW 『不要啊！不要不要啊！…嗚哇哇哇哇哇哇！』
+	PRINTFORMW 不是勇者的她們的身體，承受巨人的凌辱的話，可能三天左右就不行了吧。
+	SIF ARG:1 > 3
+		PRINTFORMW 到那時會對她們使用魔法、讓壊掉的身體再生吧
+	SIF ARG:1 > 6
+		PRINTFORMW 只要一戳內心壊掉的%LOCALS:1%的陰莖套、就會像說胡話似的詠唱起再生魔法
+ENDIF
+RETURN 0
+
+
+;--------------------------------------------
+@MAN_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女神官
+	LOCALS:1 = 女戰士
+	LOCALS:2 = 人類的法律
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈女神官
+	LOCALS:1 = 女精靈戰士
+	LOCALS:2 = 投降
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女神官
+	LOCALS:1 = 龍族女戰士
+	LOCALS:2 = 投降
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 破邪天使
+	LOCALS:2 = 投降
+ELSEIF ARG == 5
+	LOCALS:0 = 天使
+	LOCALS:1 = 破邪天使
+	LOCALS:2 = 投降
+ELSE
+	LOCALS:0 = 女神官
+	LOCALS:1 = 女戰士
+	LOCALS:2 = 人類的法律
+ENDIF
+
+IF RAND:4 == 0 && ARG:1 > 1
+	PRINTFORMW %LOCALS:1%用銳利的視線睨視著魔王軍的兵士。但是、她的眼裡含著淚水。
+	PRINTFORMW 從%LOCALS:1%的股間、很是可愛的小指尺寸的陰莖勃起著、被前列腺液打濕。
+	PRINTFORMW 「真是個可愛的扶他戦士。看到同伴被強姦就很有精神的勃起了嗎」
+	PRINTFORMW 眼前的是被侵犯著的同伴們。大半用軽蔑的目光望著%LOCALS:1%。
+	PRINTFORMW 「用你的粗雞雞侵犯同伴的話、就饒你一命哦」
+	PRINTFORMW %LOCALS:1%被強拽到両側被抱住的同伴的兩腿之間。
+	PRINTFORMW 她的腰、因為對性交的期待微微晃動著。
+ELSEIF RAND:3 == 0
+	PRINTFORMW 被捕獲了的%LOCALS:0%，為求饒命而向魔王軍團發誓忠誠于魔王。
+	PRINTFORMW 結果被要求向自己信仰的神像撒尿。
+	PRINTFORMW 『做……做不到啦！　這種事……做不到啊……』
+	PRINTFORMW 「是么？你的同伴可是已經成為我們的人啦哦！」
+	PRINTFORMW 一回頭，看到曾經一個神殿的%LOCALS:0%，正坐在另外的神像上拚命地扭腰和怪物交合著。
+	PRINTFORMW 看著同伴那徹底失去理智的神色，%LOCALS:0%絕望了，一個激靈，終於忍不住地尿了出來。
+ELSEIF RAND:2 == 0
+	PRINTFORMW 「今後也一直為肉棒祈禱吧，神官大人。」
+	PRINTFORMW 哪怕在街上的寺院裡，凌辱也在繼續著。
+	PRINTFORMW 『神啊，為什麼要降下這樣的試煉……』
+	PRINTFORMW 「廢話真多！讓你的菊花也感受神的召喚吧！」
+	PRINTFORMW 魔族男人這麼說著，直接貫穿了%LOCALS:0%的肛門。
+ELSE
+	PRINTFORMW 『呀！討厭……啊啊啊！』
+	PRINTFORMW 年輕的%LOCALS:1%投降了，當然魔王軍可不接受%LOCALS:2%。
+	PRINTFORMW 馬上就被年輕的魔族輪姦了。
+	PRINTFORMW 「再打點藥！藥呢？」
+	PRINTFORMW 已經成為肉便器的%LOCALS:1%，什麼都無法思考了。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@GIRL_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女司令官
+	LOCALS:1 = 秘書
+	LOCALS:2 = 女人
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈士官
+	LOCALS:1 = 侍從
+	LOCALS:2 = 精靈女性
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女戰士
+	LOCALS:1 = 侍從
+	LOCALS:2 = 龍族女性
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 破邪天使
+	LOCALS:1 = 侍從
+	LOCALS:2 = 天使
+ELSEIF ARG == 5
+	LOCALS:0 = 破邪天使
+	LOCALS:1 = 侍從
+	LOCALS:2 = 天使
+ELSE
+	LOCALS:0 = 女司令官
+	LOCALS:1 = 秘書
+	LOCALS:2 = 女人
+ENDIF
+
+IF RAND:3 == 0
+	PRINTFORMW 據點被攻陷，%LOCALS:0%成功地突圍逃命，不過
+	PRINTFORMW %LOCALS:0%的%LOCALS:1%卻被女魔族俘虜了。
+	PRINTFORMW 「%LOCALS:0%逃哪去了？告訴我吧！」
+	PRINTFORMW 『休想！我絕對不會開口的！！……』
+	PRINTFORMW 「呵呵～成爲了我們的同類的話，還是這樣說么？」
+	PRINTFORMW %LOCALS:1%最終在女魔族的快感拷問之下陷落了，按其自身的意願，被改造成了魔族。
+	PRINTFORMW 身為女魔族的%LOCALS:1%的瞳孔深處，仍能察覺對%LOCALS:0%的戀慕之情。
+	PRINTFORMW 不過她現在即將帶隊，親手去抓拿%LOCALS:0%回來拷問！
+ELSEIF RAND:2 == 0
+	PRINTFORMW 前線的%LOCALS:0%和%LOCALS:1%一起被抓住了。
+	PRINTFORMW 「%LOCALS:1%，如果你去侵犯那邊的%LOCALS:0%大人的話，就饒你一命。」
+	PRINTFORMW 女魔族，淫笑著，拿出一支超大的假陽具。
+	PRINTFORMW 『怎…怎麼這樣…』
+	PRINTFORMW 『因為我是好人啊！呵呵～～你也想得救的吧……』
+	PRINTFORMW %LOCALS:1%猶豫著裝上了假陽具，把%LOCALS:0%的私處貫穿了。
+	PRINTFORMW 『呀哇哇哇哇！太大！太突然了！………啊啊啊啊啊啊啊！』
+	PRINTFORMW 『對不起…真的對不起…！』
+	PRINTFORMW 女魔族微笑著，欣賞百合奴隸玩弄對方身體的身姿。
+ELSE
+	PRINTFORMW 『舔…呃呃…舔…』
+	PRINTFORMW 「哦，舔得不錯啊！作為百合便器也是有板有眼的呢～」
+	PRINTFORMW 爲了犒賞魔王軍中的女魔族，設定了百合便器。
+	PRINTFORMW 「肛門也仔細地舔舔。能做到吧？」
+	PRINTFORMW 『是…是的大人…』
+	PRINTFORMW 自尊心已經完全崩潰，作為百合便器的%LOCALS:2%伸出舌頭仔細地舔舐著肛門。
+ENDIF
+RETURN 0
+;--------------------------------------------
+@BEAST_INV, ARG:0, ARG:1
+;--------------------------------------------
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 貴族千金
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 精靈獵手
+	LOCALS:1 = 精靈千金
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍族女戰士
+	LOCALS:1 = 龍族貴婦
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 破邪天使
+	LOCALS:1 = 天使聖女
+ELSEIF ARG == 5
+	LOCALS:0 = 破邪天使
+	LOCALS:1 = 天使聖女
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 貴族千金
+ENDIF
+
+IF RAND:2 == 0
+	PRINTFORMW 在被俘的%LOCALS:1%身上，施加了強力的催眠魔法，持續的心理暗示，讓她成為一隻發情期的母獸了。
+	PRINTFORMW 嫌礙事自己把漂亮端莊的高貴衣服撕得稀爛，%LOCALS:1%四腳爬爬地跪趴在地，扭動著屁股。
+	PRINTFORMW 作為魔王軍魔獸的性處理用家畜便器，被隨軍帶著。
+	PRINTFORMW %LOCALS:1%完全是一副發情的母獸表情，流著口水喘著粗氣。
+	PRINTFORMW 『哈哈……哈哈……唔哦……～』
+	PRINTFORMW 和魔獸不停地激烈交配著，%LOCALS:1%發出了像野獸一樣的高亢叫聲。
+ELSE
+	PRINTFORMW 在魔王軍的駐地裡，偶爾被抓獲的%LOCALS:0%作為俘虜被戲耍著。
+	PRINTFORMW 一隻魔獸，被帶到她的面前。
+	PRINTFORMW 『要，要幹嘛…？……難道……』
+	PRINTFORMW 「久等了各位！獸姦秀馬上開始！」
+	PRINTFORMW 圍觀的男魔族，馬上報以熱烈的喝彩聲，其中還混有少數的女魔族。
+	PRINTFORMW 『這…不是……真的…吧………』
+	PRINTFORMW %LOCALS:0%終於明白了自己作為俘虜，地位還在魔獸以下，以牝犬的樣子承受著魔獸的侵犯。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@BRAIN_INV, ARG:0, ARG:1
+;--------------------------------------------
+;思いつかなかった
+;やってみた
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 女精靈
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍女
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+ELSEIF ARG == 5
+	LOCALS:0 = 天使
+ELSE
+	LOCALS:0 = 女
+ENDIF
+IF RAND:2 == 0
+	PRINTFORMW %LOCALS:0%司令官的拷問開始了。爲了下一步的進軍，有必要讓她說出全部。
+	PRINTFORMW 被綁在椅子上，可怕的食腦魔把細小的觸手從耳朵伸進腦子裡了。
+	PRINTFORMW 發出了噗呲，噗呲的水聲，%LOCALS:0%司令官兩眼反白，偶爾哼出短促的喘息。
+	PRINTFORMW 『啊……是……部隊的規模是……唔……補給線在……是……啊……噢……』
+	PRINTFORMW 套取情報的同時，直接往她的腦子裡注入了春藥。
+	PRINTFORMW 愛液和小便弄髒了椅子，順著椅腳流下，和地上的血與汗一起，混合成一個小水坑。
+ELSE
+	PRINTFORMW %LOCALS:0%間諜的拷問在持續著。
+	PRINTFORMW 『無論怎麼折磨我，都是徒勞的！…』
+	PRINTFORMW 被打腫的臉上滿是剛強的神色，不過這種逞強，在食腦魔出現以後就化為無邊的恐懼了。
+	PRINTFORMW 爲了自殺在牙齒里藏了毒藥，但牙齒已經被拔掉了。
+	PRINTFORMW 食腦魔，一口咬住了間諜的頭部。
+	PRINTFORMW 『嗚…呀哇哇哇哇，啊啊啊啊啊喔啊啊啊啊噢啊啊啊噢啊！』
+	PRINTFORMW 幾分鐘之後，大腦和情報都被咀嚼完畢的她，大小便失禁地倒下了。
+	PRINTFORMW 因為這個身體是極品，在大腦里灌滿了淫媚的意識，作為慰安用便器被再利用。
+ENDIF
+RETURN 0
+
+;--------------------------------------------
+@HORSE_INV, ARG:0, ARG:1
+;--------------------------------------------
+
+;人間界侵略
+IF ARG == 1
+	LOCALS:0 = 女人
+	LOCALS:1 = 本地女領主
+;エルフの領域侵略
+ELSEIF ARG == 2
+	LOCALS:0 = 女精靈
+	LOCALS:1 = 精靈女族長
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	LOCALS:0 = 龍女
+	LOCALS:1 = 龍族女長老
+;天界侵略
+ELSEIF ARG == 4
+	LOCALS:0 = 天使
+	LOCALS:1 = 天使長
+ELSEIF ARG == 5
+	LOCALS:0 = 十字軍
+	LOCALS:1 = 十字軍軍官
+ELSE
+	LOCALS:0 = 女人
+	LOCALS:1 = 本地女領主
+ENDIF
+
+IF RAND:2 == 0
+	PRINTFORMW 魔王軍將軍騎的馬的肚子下，吊著奇妙的肉塊。
+	PRINTFORMW 居然是原來的%LOCALS:1%，現在成爲了馬的陰莖套。
+	PRINTFORMW 被魔法變成了肉袋，很輕易的將馬的巨根納入腔中。
+	PRINTFORMW 她的脖子上還掛著作為%LOCALS:1%時的美麗肖像，
+	PRINTFORMW 不過肖像上賢淑的影子，已經在這個肉袋上找不到了。
+	PRINTFORMW 帶著一副貪慾的阿嘿顏，和下流無比的神色在遊街。
+ELSE
+	PRINTFORMW 『馬奸刑…？那是什麼…』%LOCALS:0%被全裸鎖在木馬上，掙扎著。
+	PRINTFORMW 當一匹馬勃起著走過來的時候，她馬上什麼都明白了。
+	PRINTFORMW 『不會吧…不會吧……不要！不要啊！哇哦哦哦哦哦哦哦哦哦哦哦哦哦哦！』
+	PRINTFORMW 馬跨到%LOCALS:0%身上，將自己的巨根插入了。
+	PRINTFORMW %LOCALS:0%口吐白沫失神了，但馬依然非常興奮，激烈地侵犯著她，大量的精液一吐為快地射在私處里。
+ENDIF
+RETURN 0

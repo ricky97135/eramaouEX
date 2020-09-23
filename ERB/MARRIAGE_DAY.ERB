@@ -1,0 +1,2355 @@
+﻿;結婚生活の日常
+
+;-----------------------------------
+@MARRIAGE_DAY,ARG
+#DIM MARRY_TYPE
+#DIM MARRY_CHARA
+#DIM NG_FLAG
+;-----------------------------------
+;ARGがキャラ
+
+NG_FLAG = 0
+
+;調教可以外はなし
+SIF CFLAG:(ARG):1 != 0
+	NG_FLAG = 1
+
+MARRY_TYPE = CFLAG:(ARG):601
+
+SIF MARRY_TYPE == 0
+	NG_FLAG = 1
+
+IF NG_FLAG > 0
+	;戀人はここで
+	SIF CFLAG:(ARG):606 == 0
+		CALL DUNGEON_TOWN_LOVER_CHARA_ENTER,ARG:0
+	SIF CFLAG:(ARG):606 == 200
+		CALL DUNGEON_TOWN_LOVER,ARG
+	RETURN 0
+ENDIF
+
+CFLAG:(ARG):602 += 1
+
+;旦那がいない場合スキップ
+IF MARRY_TYPE < 900 && CFLAG:(ARG):609 == 0
+	X = MARRY_TYPE
+	;暫時性靈魂轉移修復
+	;SIF ARG == 0 && MARRY_TYPE != 900 && MARRY_TYPE != 901 && MARRY_TYPE != 902 && CFLAG:(ARG):609 == 0
+	;	RETURN 0
+	SIF ITEM:X <= 0
+		RETURN 0
+ENDIF
+
+PRINTL
+DRAWLINE
+PRINTFORM *%SAVESTR:ARG%和
+
+IF MARRY_TYPE == 902
+	;戀人
+	LOCAL:2 = CFLAG:(ARG):606
+	CALL NAME_LOVER,LOCAL:2,1
+ELSEIF CFLAG:(ARG):609 > 0
+	CALL SEARCH_FAMILY,ARG,"MARRIAGE"
+	MARRY_CHARA = RESULT
+	IF RESULT < 0
+		PRINT 奴隸
+	ELSE
+		PRINTFORM %SAVESTR:MARRY_CHARA%
+	ENDIF
+ELSEIF MARRY_TYPE < 900
+	CALL MONSTER_DATA, MARRY_TYPE, 5
+	LOCAL:1 = E:507
+	PRINTFORM %ITEMNAME:X%
+ELSEIF MARRY_TYPE == 900
+	PRINT 野狗
+ELSEIF MARRY_TYPE == 901
+	PRINT 你
+ELSE
+	LOCAL:1 = 0
+	CALL SEARCH_FAMILY,ARG,"MARRIAGE"
+	MARRY_CHARA = RESULT
+	IF RESULT < 0
+		PRINT 奴隸
+	ELSE
+		PRINTFORM %SAVESTR:MARRY_CHARA%
+	ENDIF
+ENDIF
+
+PRINTFORMW 的結婚生活*
+
+;妊娠・育児の場合
+IF TALENT:(ARG):153
+	PRINTW 夫婦倆人期待著孩子的出生。
+	RETURN 0
+ELSEIF TALENT:(ARG):154
+	PRINTW 夫婦倆人期待著孩子的長大。
+	RETURN 0
+ENDIF
+
+Y = RAND:5 + 1
+CFLAG:(ARG):601 = MARRY_TYPE
+CFLAG:(ARG):107 = 0
+CFLAG:(ARG):112 = 0
+
+IF MARRY_TYPE == 900
+	CALL MARRIAGE_DAY_DOG,ARG
+ELSEIF MARRY_TYPE == 901
+	CALL MARRIAGE_DAY_YOU,ARG
+ELSEIF MARRY_TYPE == 902
+	CALL MARRIAGE_DAY_LOVERS,LOCAL:2,ARG
+ELSEIF CFLAG:(ARG):609 > 0 && MARRY_CHARA > 0
+	CALL MARRIAGE_DAY_SLAVE,ARG,MARRY_CHARA
+ELSEIF LOCAL:1 == 1
+	CALL ORC_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 2
+	CALL SLIME_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 3
+	CALL INSECT_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 4
+	CALL IVY_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 5
+	CALL SYOKUSYU_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 6
+	CALL FAILY_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 7
+	CALL GIANT_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 8
+	CALL MAN_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 9
+	CALL GIRL_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 10
+	CALL BEAST_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 11
+	CALL BRAIN_MARRIAGE_DAY,ARG
+ELSEIF LOCAL:1 == 12
+	CALL HORSE_MARRIAGE_DAY,ARG
+ELSE
+	CALL MARRIAGE_DAY_SLAVE,ARG,MARRY_CHARA
+ENDIF
+
+IF TALENT:A:0 == 1 && EXP:A:0 > 0 && TALENT:A:273 == 0 && CFLAG:A:42 != 79 && LOCAL:1 != 2 && LOCAL:1 != 3 && LOCAL:1 != 4
+	PRINTW 【處女喪失】
+	TALENT:(ARG):0 = 0
+ENDIF
+
+;異種妊娠フラグ
+IF CFLAG:(ARG):107 != 0 && MARRY_TYPE != 900 && MARRY_TYPE != 901 && MARRY_TYPE != 902
+	CFLAG:(ARG):112 = X
+ENDIF
+
+IF TALENT:A:130 == 1
+PRINTFORMW %SAVESTR:A%多餘的奶水被賣出了獲得{Y * 100}pts
+
+MONEY += Y * 100
+EX_FLAG:4444 += Y * 100
+ENDIF
+
+BEGIN TURNEND
+RETURN 1
+
+;結婚生活
+
+;-----------------------------------------
+@MARRIAGE_DAY_DOG,ARG
+;-----------------------------------------
+
+
+PRINTFORMW %SAVESTR:ARG%和野狗在狗屋生活著。
+
+IF A == 0 && TALENT:(ARG):136 == 0 && (ABL:(ARG):39 <= 1 || CFLAG:(ARG):602 < 50)
+	;你の場合
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%抱著野狗，肛門完全接收了野狗的陰莖。
+		PRINTFORML 肛門經驗+{Y}
+		EXP:(ARG):1 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%抱著野狗，完全接收了野狗的陰莖。
+		PRINTFORML 私處經驗+{Y}
+		EXP:(ARG):0 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+		CFLAG:(ARG):106 += Y
+	ENDIF
+ELSEIF TALENT:(ARG):136 == 1
+	;牝犬の場合
+	PRINTFORM %SAVESTR:ARG%
+	;夫への親密
+	SIF CFLAG:(ARG):602 > 40
+		PRINT 滿心歡喜地
+	;人狼
+	IF TALENT:(ARG):314 == 2
+		PRINT 搖著尾巴
+	ELSE
+		PRINT 搖著屁股
+	ENDIF
+	;露出癖3以上
+	SIF ABL:(ARG):17 >= 3
+		PRINT 在公眾場所
+	
+	SIF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINT 用肛門
+	
+	PRINT 和野狗
+	
+	IF RAND:3 == 0
+		PRINTW 發情交尾著。
+	ELSEIF RAND:2 == 0
+		PRINTW 交配著。
+	ELSE
+		PRINTW 愛愛著。
+	ENDIF
+	
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		;アナル
+		PRINTFORML 肛門經驗+{Y}
+		EXP:(ARG):1 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+		;------------------------------增加
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+		JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORMW 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		;-------------------------------此段
+	ELSE
+		PRINTFORML 私處經驗+{Y}
+		EXP:(ARG):0 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+		;------------------------------增加
+		PRINTFORML 私處點數+{CFLAG:A:602 * 10 * Y + 10}
+		JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+		PRINTFORMW 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		;-------------------------------此段
+		CFLAG:(ARG):106 += Y
+	ENDIF
+ELSEIF ABL:(ARG):39 >= 1 || CFLAG:(ARG):602 > 40
+	;獸姦中毒Lv1以上、または結婚愛情40超
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%在用肛門與狗交配的時候，感覺到了愛意。
+		PRINTFORML 肛門經驗+{Y}
+		EXP:(ARG):1 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+		;------------------------------增加
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 8 * Y + 8}
+		JUEL:A:2 += (CFLAG:A:602 * 8 * Y + 8)
+		PRINTFORMW 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在與狗交配的時候，感覺到了愛意。
+		PRINTFORML 私處經驗+{Y}
+		EXP:(ARG):0 += Y
+		PRINTFORMW 獸姦經驗+{Y}
+		EXP:(ARG):56 += Y
+		;------------------------------增加
+		PRINTFORML 私處點數+{CFLAG:A:602 * 8 * Y + 8}
+		JUEL:A:1 += (CFLAG:A:602 * 8 * Y + 8)
+		PRINTFORMW 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		;-------------------------------此段
+		CFLAG:(ARG):106 += Y
+	ENDIF
+ELSEIF CFLAG:(ARG):602 > 20
+	;結婚愛情20超
+	IF TALENT:(ARG):11 == 1
+		;反抗心
+		PRINTFORMW %SAVESTR:ARG%終於理解自己的狀況了……
+		;------------------------------增加
+		PRINTFORMW 屈服點數+{CFLAG:A:602 * Y + 10}
+		JUEL:A:6 += (CFLAG:A:602 * Y + 10)
+		
+		;-------------------------------此段		
+	ELSEIF TALENT:(ARG):12 == 1
+		;剛強
+		PRINTFORMW %SAVESTR:ARG%和野狗一起玩耍，關係加深了……
+		;------------------------------增加
+		PRINTFORMW 屈服點數+{CFLAG:A:602 * Y + 10}
+		JUEL:A:6 += (CFLAG:A:602 * Y + 10)
+		
+		;-------------------------------此段
+	ELSEIF TALENT:(ARG):13 == 1 || TALENT:(ARG):317 == 12
+		;坦率・かわいい動物が好き
+		PRINTFORMW %SAVESTR:ARG%與野狗接吻的樣子被目擊了。
+		;------------------------------增加
+		PRINTFORML 屈服點數+{CFLAG:A:602 * 10 * Y + 10}
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10)
+		PRINTFORMW 欲情點數+{CFLAG:A:602 * 10 * Y + 10}
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10)
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%用刷子為野狗刷毛……
+		;------------------------------增加
+		PRINTFORMW 恭順點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5)
+		
+		;-------------------------------此段
+	ENDIF
+ELSE
+	IF TALENT:(ARG):11 == 1
+		;反抗心
+		PRINTFORMW %SAVESTR:ARG%用手推開靠過來的野狗。
+		;------------------------------增加
+		PRINTFORMW 屈服點數+{CFLAG:A:602 * 2 * Y + 2}
+		JUEL:A:6 += (CFLAG:A:602 * 2 * Y + 2)
+		
+		;-------------------------------此段
+	ELSEIF TALENT:(ARG):12 == 1
+		;剛強
+		PRINTFORMW %SAVESTR:ARG%有空就去照看野狗。
+		;------------------------------增加
+		PRINTFORMW 恭順點數+{CFLAG:A:602 * 2 * Y + 2}
+		JUEL:A:4 += (CFLAG:A:602 * 2 * Y + 2)
+		
+		;-------------------------------此段		
+	ELSEIF TALENT:(ARG):13 == 1 || TALENT:(ARG):317 == 12
+		;坦率・かわいい動物が好き
+		PRINTFORMW %SAVESTR:ARG%有空就去和野狗玩耍。
+		;------------------------------增加
+		PRINTFORMW 欲情點數+{CFLAG:A:602 * 2 * Y + 2}
+		JUEL:A:5 += (CFLAG:A:602 * 2 * Y + 2)
+		;-------------------------------此段	
+	ELSE
+		PRINTFORMW 從不正眼看野狗，%SAVESTR:ARG%陷入了深深的絕望中……
+		
+		;------------------------------增加
+		PRINTFORMW 恐怖點數+{CFLAG:A:602 * 2 * Y + 2}
+		JUEL:A:10 += (CFLAG:A:602 * 2 * Y + 2)
+		
+		;-------------------------------此段
+		
+	ENDIF
+ENDIF
+
+
+RETURN 0
+
+
+;--------------------------------------------
+@MARRIAGE_DAY_YOU,ARG
+;--------------------------------------------
+;同じ場所にいないとダメ
+SIF CFLAG:(ARG):1 != 0 || CFLAG:MASTER:1 != 0
+	RETURN 0
+
+PRINTFORML %SAVESTR:ARG%與%SAVESTR:MASTER%一起生活著。
+
+IF TALENT:(ARG):85 == 1
+	;愛慕
+	PRINTFORMW %SAVESTR:ARG%常常一言不發，柔情似水地凝望著你。一副自豪的樣子在你身旁侍奉著。
+	;------------------------------增加
+	PRINTFORMW 為成為一個好妃子努力修行著。自動接受著各種羞恥的調教。
+		
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{ABL:A:10 * Y * 10}
+		JUEL:A:6 += (ABL:A:10 * Y * 10)
+		JUEL:A:5 += (ABL:A:10 * Y * 10)
+		JUEL:A:4 += (ABL:A:10 * Y * 10)
+		JUEL:A:8 += (ABL:A:10 * Y * 10)
+		PRINTFORML 陰核,乳房,肛門,私處點數+{ABL:A:10 * Y * 10}
+		JUEL:A:0 += (ABL:A:10 * Y * 10)
+		JUEL:A:14 += (ABL:A:10 * Y * 10)
+		JUEL:A:1 += (ABL:A:10 * Y * 10)
+		JUEL:A:2 += (ABL:A:10 * Y * 10)
+		PRINTFORML 話術+{ABL:A:10 * Y * 10}
+		JUEL:A:7 += (ABL:A:10 * Y * 10)
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 5 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 5 + 10 )
+		PRINTFORML 私處,肛門,口交經驗+{Y}
+		EXP:A:0 += Y 
+		EXP:A:1 += Y 
+		EXP:A:22 += Y 
+		PRINTFORML 性交經驗,百合經驗,精液經驗+{Y}
+		EXP:A:5 += Y
+		EXP:A:40 += Y
+		EXP:A:20 += Y
+		PRINTFORML 調教會話經驗+{Y}
+		EXP:A:73 += Y
+		PRINTFORML 自慰經驗,調教自慰經驗+{Y}
+		EXP:A:10 += Y
+		EXP:A:11 += Y
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 施虐經驗,被虐經驗+{Y}
+		EXP:A:30 += Y
+		EXP:A:33 += Y
+				
+		;-------------------------------此段
+ELSEIF TALENT:(ARG):76 == 1
+	;淫亂
+	PRINTFORM %SAVESTR:ARG%經常在身邊露出淫媚的笑容，在你的
+	IF TALENT:(ARG):121 || TALENT:(ARG):122
+		;扶她・男人
+		PRINT 陰莖
+	ELSE
+		PRINT 身體
+	ENDIF
+	PRINTFORMW 上不停摩挲著。
+	;------------------------------增加
+	PRINTFORMW 心裡卻盤算著如何偷偷引誘你某幾個部下...
+		
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{ABL:A:10 * Y * 10}
+		JUEL:A:6 += (ABL:A:11 * Y * 10)
+		JUEL:A:5 += (ABL:A:11 * Y * 10)
+		JUEL:A:4 += (ABL:A:11 * Y * 10)
+		JUEL:A:8 += (ABL:A:11 * Y * 10)
+		PRINTFORML 陰核,乳房,肛門,私處點數+{ABL:A:10 * Y * 10}
+		JUEL:A:0 += (ABL:A:11 * Y * 10)
+		JUEL:A:14 += (ABL:A:11 * Y * 10)
+		JUEL:A:1 += (ABL:A:11 * Y * 10)
+		JUEL:A:2 += (ABL:A:11 * Y * 10)
+		PRINTFORML 話術+{ABL:A:11 * Y * 10}
+		JUEL:A:7 += (ABL:A:11 * Y * 10)
+		PRINTFORML 苦痛點數+{ABL:A:11 * Y * 5 + 10}
+		JUEL:A:9 += (ABL:A:11 * Y * 5 + 10)
+		PRINTFORML 私處,肛門,口交經驗+{Y / 2}
+		EXP:A:0 += Y / 2
+		EXP:A:1 += Y / 2
+		EXP:A:22 += Y / 2	
+		PRINTFORML 性交經驗,百合經驗,精液經驗+{Y / 2}
+		EXP:A:5 += Y / 2
+		EXP:A:40 += Y / 2
+		EXP:A:20 += Y / 2
+		PRINTFORML 獸姦經驗,異常經驗,賣淫經驗+{Y / 2}
+		EXP:A:50 += Y / 2
+		EXP:A:56 += Y / 2
+		EXP:A:74 += Y / 2
+		PRINTFORML 調教會話經驗+{Y / 2}
+		EXP:A:73 += Y / 2
+		PRINTFORML 自慰經驗,調教自慰經驗+{Y / 2}
+		EXP:A:10 += Y / 2
+		EXP:A:11 += Y / 2
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORML 施虐經驗,被虐經驗+{Y / 2}
+		EXP:A:30 += Y / 2
+		EXP:A:33 += Y / 2
+				
+		;-------------------------------此段
+	
+		
+ELSEIF ABL:(ARG):10 >= 3
+	;順從3以上
+	PRINTFORMW %SAVESTR:ARG%作為勇者陷落的象徵，勉為其難地陪侍著你身邊。
+	;------------------------------增加
+	PRINTFORMW 偶爾象徵性的表示期望你的調教...
+		
+	PRINTFORML 屈服,欲情,恭順,恥情點數+{ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8}
+		JUEL:A:6 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:5 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:4 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:8 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+	PRINTFORML 陰核,乳房,肛門,私處點數+{ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8}
+		JUEL:A:0 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:14 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:1 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+		JUEL:A:2 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+	PRINTFORMW 話術+{ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8}
+		JUEL:A:7 += (ABL:A:11 * Y * 8 + ABL:A:10 * Y * 8 + 8)
+	;-------------------------------此段
+ELSEIF MARK:A:3 >= 1
+	;反抗刻印
+	PRINTFORMW %SAVESTR:ARG%被鏈子鎖著，用充滿殺意的目光望著你。
+	;------------------------------增加
+	PRINTFORMW 但已經被調教過的身體是誠實的...
+		
+	PRINTFORML 屈服,欲情,恭順,恥情點數+{ABL:A:11 * Y * 5 + ABL:A:10 * Y * 5 + 5}
+		JUEL:A:6 += (ABL:A:11 * Y * 5 + ABL:A:10 * Y * 5 + 5)
+		JUEL:A:5 += (ABL:A:11 * Y * 5 + ABL:A:10 * Y * 5 + 5)
+		JUEL:A:4 += (ABL:A:11 * Y * 5 + ABL:A:10 * Y * 5 + 5)
+		JUEL:A:8 += (ABL:A:11 * Y * 5 + ABL:A:10 * Y * 5 + 5)
+
+	;-------------------------------此段
+	
+ELSE
+	PRINTFORMW %SAVESTR:ARG%被鏈子鎖著，放棄了似得自暴自棄。
+	;------------------------------增加
+	PRINTFORMW 被恐懼、羞恥與絕望侵蝕著...
+		
+	PRINTFORMW 屈服,恐懼,痛苦點數+{ABL:A:11 * Y * 2 + ABL:A:10 * Y * 2 + 2}
+		JUEL:A:6 += (ABL:A:11 * Y * 2 + ABL:A:10 * Y * 2 + 2)
+		JUEL:A:9 += (ABL:A:11 * Y * 2 + ABL:A:10 * Y * 2 + 2)
+		JUEL:A:10 += (ABL:A:11 * Y * 2 + ABL:A:10 * Y * 2 + 2)
+			
+	;-------------------------------此段
+ENDIF
+
+
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@MARRIAGE_DAY_LOVERS,ARG:0,ARG:1
+;--------------------------------------------
+
+PRINTFORM %SAVESTR:(ARG:1)%和
+CALL NAME_LOVER,ARG:0,1
+PRINTL 一起生活著。
+
+CALL DUNGEON_TOWN_LOVER,ARG:1
+
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@MARRIAGE_DAY_SLAVE,ARG:0,ARG:1
+;--------------------------------------------
+
+PRINTFORM %SAVESTR:(ARG:0)%和
+IF ARG:1 < 0
+	PRINT 奴隷
+ELSE
+	PRINTFORM %SAVESTR:(ARG:1)%
+ENDIF
+PRINTL 一起生活著。
+WAIT
+RETURN 0
+
+;--------------------------------------------
+;@MARRIAGE_DAY_YOU,ARG,CHARA
+;#DIM CHARA
+;--------------------------------------------
+
+;同じ場所にいないとダメ
+;SIF CFLAG:(ARG):1 != 0 || CFLAG:CHARA:1 != 0
+;	RETURN 0
+
+;PRINTFORML %SAVESTR:ARG%與%SAVESTR:CHARA%一起生活著。
+
+;WAIT
+;RETURN 0
+
+;--------------------------------------------
+@ORC_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%在洞穴里生活著。
+
+IF A == 0 && CFLAG:A:602 < 40
+	;你の場合
+	IF RAND:2 == 0
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINTFORMW %SAVESTR:ARG%好像為變成%ITEMNAME:(CFLAG:ARG:601)%的精液便器而喜悅著……
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 口交經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			EXP:(ARG):0 += Y
+			EXP:(ARG):22 += Y
+			EXP:(ARG):20 += Y
+		ELSE
+			PRINTFORMW %SAVESTR:ARG%好像為變成%ITEMNAME:(CFLAG:ARG:601)%的精液便器而喜悅著……
+			PRINTFORML 私處經驗+{Y}
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 口交經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			EXP:(ARG):0 += Y
+			EXP:(ARG):1 += Y
+			EXP:(ARG):22 += Y
+			EXP:(ARG):20 += Y
+			CFLAG:(ARG):107 += Y
+		ENDIF
+	ELSEIF  CFLAG:A:602 > 40
+		GOTO ORC_MARRIAGE_DAY40
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在%ITEMNAME:(CFLAG:ARG:601)%身上感到了愛意。
+		PRINTFORML 口交經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		EXP:(ARG):22 += Y
+		EXP:(ARG):20 += Y
+	ENDIF
+ELSEIF CFLAG:(ARG):602 > 40
+	$ORC_MARRIAGE_DAY40
+	;40日後
+	IF RAND:2 == 0
+		;性交系
+		PRINTFORM %SAVESTR:ARG%
+		;露出癖3以上
+		SIF ABL:(ARG):17 >= 3
+			PRINT 在丈夫朋友的圍觀下，
+		;60日後
+		SIF CFLAG:(ARG):602 > 60
+			PRINT 已經非常坦然了。
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINT 打開肛門，
+		ELSE
+			PRINT 張開大腿，
+		ENDIF
+		PRINTFORMW 作為%ITEMNAME:(CFLAG:ARG:601)%丈夫的
+		IF RAND:2 == 0
+			PRINT 性慾處理
+		ELSE
+			PRINT 精液處理
+		ENDIF
+		PRINTW 便器而感到喜悅……
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINTFORML 肛門經驗+{Y * 3}
+			PRINTFORML 口交經驗+{Y * 3}
+			PRINTFORML 精液經驗+{Y * 3}
+			EXP:(ARG):0 += Y * 3
+			EXP:(ARG):22 += Y * 3
+			EXP:(ARG):20 += Y * 3
+		;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 陰核,乳房,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y * 3 / 2}
+		EXP:A:2 += Y * 3 / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y * 3
+		EXP:A:30 += Y * 3
+		;-------------------------------此段
+		ELSE
+			PRINTFORML 私處經驗+{Y}
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 口交經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			EXP:(ARG):0 += Y
+			EXP:(ARG):1 += Y
+			EXP:(ARG):22 += Y
+			EXP:(ARG):20 += Y
+			CFLAG:(ARG):107 += Y
+		;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段	
+		ENDIF
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在%ITEMNAME:(CFLAG:ARG:601)%身上感到了愛意。
+		PRINTFORML 口交經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		EXP:(ARG):22 += Y
+		EXP:(ARG):20 += Y
+		;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 陰核,乳房點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+		
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段	
+	ENDIF
+ELSEIF ABL:(ARG):30 >= 1
+	;性交中毒
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的肛交中感到喜悅……
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 口交經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		EXP:(ARG):1 += Y
+		EXP:(ARG):22 += Y
+		EXP:(ARG):20 += Y
+			;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 陰核,乳房,肛門點數+{CFLAG:A:602 * 20 * Y + 10}
+		JUEL:A:0 += (CFLAG:A:602 * 20 * Y + 10)
+		JUEL:A:14 += (CFLAG:A:602 * 20 * Y + 10)
+		JUEL:A:2 += (CFLAG:A:602 * 20 * Y + 10)
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 20 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的性交中感到喜悅……
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 口交經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		EXP:(ARG):0 += Y
+		EXP:(ARG):22 += Y
+		EXP:(ARG):20 += Y
+		CFLAG:(ARG):107 += Y
+		;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 *20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 陰核,乳房,私處點數+{CFLAG:A:602 * 20 * Y + 10}
+		JUEL:A:0 += (CFLAG:A:602 * 20 * Y + 10)
+		JUEL:A:14 += (CFLAG:A:602 * 20 * Y + 10)
+		
+		JUEL:A:1 += (CFLAG:A:602 * 20 * Y + 10)
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 20 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 20 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+	ENDIF
+ELSE
+	PRINTFORMW %SAVESTR:ARG%作為%ITEMNAME:(CFLAG:ARG:601)%的妻子，被強迫進行著精液處理的服務。
+	PRINTFORML 口交經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	EXP:(ARG):22 += Y
+	EXP:(ARG):20 += Y
+		;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 10 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 10 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+ENDIF
+
+
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@SLIME_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+;------------------------------增加
+PRINTFORMW %ITEMNAME:(CFLAG:ARG:601)%在她身上所有能進入的洞口裡來回蠕動著.....
+SIF ABL:A:11 >= 3
+    PRINTFORMW %SAVESTR:A%情不自禁的自慰了起來......
+PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORML 陰核,乳房,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:14 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+
+PRINTFORML 絕頂經驗+{Y / 2}
+EXP:A:2 += Y / 2
+SIF ABL:A:11 >= 3
+  PRINTFORML 自慰經驗+{Y}
+SIF ABL:A:11 >= 3  
+  EXP:A:10 += Y
+PRINTFORMW 異常,被虐經驗+{Y}
+EXP:A:50 += Y
+EXP:A:30 += Y
+;-------------------------------此段
+RETURN 0
+
+;--------------------------------------------
+@INSECT_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+;------------------------------增加
+IF TALENT:A:0 == 0 && TALENT:A:122 == 0 
+   IF RAND:10 == 0 && ABL:A:11 >= 5 && TALENT:A:153 == 0 && TALENT:A:130 == 0 
+   PRINTFORML 今天的%ITEMNAME:(CFLAG:ARG:601)%似乎不太一樣,在%SAVESTR:A%的子宮腸道里產下大量的卵
+   PRINTFORML 不一會%SAVESTR:A%的肚子迅速的鼓了漲起來......
+   PRINTFORML 隨著四散的尿液,百十隻%ITEMNAME:(CFLAG:ARG:601)%幼蟲從%SAVESTR:A%的陰道和肛門裡噴射出來.....
+   PRINTFORMW 被折磨一天的%SAVESTR:A%被%ITEMNAME:(CFLAG:ARG:601)%改造的肉體開始分泌乳汁.....
+   PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 5 * Y + 5 }
+   JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:10 += (CFLAG:A:602 * 5 * Y + 5 )
+   PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+   JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+   PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+   EXP:A:1 += Y
+   EXP:A:0 += Y
+   EXP:A:50 += Y
+   EXP:A:30 += Y
+   PRINTFORML %SAVESTR:A% 獲得【%TALENTNAME:130%】
+    PRINTFORML %SAVESTR:A% 獲得【%TALENTNAME:190%】
+	 PRINTFORMW %SAVESTR:A% 獲得【%TALENTNAME:191%】
+      TALENT:A:130 = 1
+      TALENT:A:190 = 1
+       TALENT:A:191 = 1
+	   ;泌乳,陰道寄生,肛門寄生
+  ELSEIF RAND:5 == 0 && ABL:A:11 >= 5 && TALENT:A:153 == 0 && TALENT:A:130 == 1 && TALENT:A:155 == 0
+    PRINTFORML 赤裸著身體挺著巨大肚子正在打掃城堡的%SAVESTR:A%突然雙腿顫抖著扶著掃帚呻吟著.....
+   PRINTFORML  尿液和乳汁四散飛濺,百餘隻%ITEMNAME:(CFLAG:ARG:601)%幼蟲從%SAVESTR:A%的陰道和肛門裡噴射出來.「啊~~,真不乖,那麼快出來了...」
+   PRINTFORMW  良久,已經習慣多次產下%ITEMNAME:(CFLAG:ARG:601)%幼蟲的%SAVESTR:A%用慈愛的目光看著一地的孩子們,「哎,又要重新打掃了。」
+    PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 5 * Y + 5 }
+   JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:10 += (CFLAG:A:602 * 5 * Y + 5 )
+   PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+   JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+   PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+   EXP:A:1 += Y
+   EXP:A:0 += Y
+   EXP:A:50 += Y
+   EXP:A:30 += Y
+       PRINTFORML %SAVESTR:A% 獲得【%TALENTNAME:155%】
+   	TALENT:A:155 = 1
+	;獲得母性
+   ELSEIF RAND:5 <= 1 && ABL:A:11 >= 5 && TALENT:A:153 == 0 && TALENT:A:155 == 1 && TALENT:A:130 == 1 && ABL:A:11 <= 9 
+      PRINTFORML 你無語地看著總是赤裸著身體在你面前表演《%ITEMNAME:(CFLAG:ARG:601)%出產秀》的 %SAVESTR:A%
+      PRINTFORML 尿液,乳汁,腸液流了一地,幼蟲正在吸食著一切.....
+      PRINTFORML 「魔王大人,好像食物不夠啊,請您賞孩子一點」說完就給魔王做起了口舌侍奉.....
+	  PRINTFORML  %SAVESTR:A%對你的好感度上升了 300
+	  PRINTFORMW %SAVESTR:A%爲了獲得更多的體液,出去捕食了......
+	   CFLAG:A:2 += 300
+	   
+	 
+	 ;慾望LV UP
+	 IF  ABL:A:11 >= 5 && JUEL:A:5 >= POWER(2,(ABL:A:11 - 4)) * 10000
+	   	      JUEL:A:5 -= (POWER(2,(ABL:A:11 - 4)) * 10000) 
+			  ABL:A:11 += 1
+		PRINTFORMW 	%SAVESTR:A%慾望等級+1
+		PRINTFORMW 	欲情點數減少{POWER(2,(ABL:A:11 - 4)) * 10000}
+	 ENDIF  
+	 
+	 
+	  Y += ABL:A:11
+	  
+	 PRINTFORML 侍奉快樂經驗,賣淫經驗+{Y * 10}
+	   EXP:A:21 += Y * 10
+	   EXP:A:74 += Y * 10
+	 
+	 
+	
+	 
+	 PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 5 * Y + 5 } 
+   JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:10 += (CFLAG:A:602 * 5 * Y + 5 )
+   PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+   JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+   PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+   EXP:A:1 += Y
+   EXP:A:0 += Y
+   EXP:A:50 += Y
+   EXP:A:30 += Y
+  
+      SIF ABL:A:11 >= 8 && TALENT:A:180 == 0
+	  PRINTFORMW 經常勾引男性和女性獲得體液的%SAVESTR:A%成為一出色的妓女,獲得【%TALENTNAME:180%】
+	  SIF ABL:A:11 >= 8 && TALENT:A:180 == 0
+	    TALENT:A:180 = 1
+		;獲得 妓女
+	  
+	  IF ABL:A:11 >= 9 && TALENT:A:181 == 0
+	      IF TALENT:A:190 == 1 || TALENT:A:191 == 1 || TALENT:A:192 == 1 || TALENT:A:192 == 1
+	      PRINTFORMW %SAVESTR:A% 發現寄生在兩穴的孩子影響到體液獲取,只能清除了自己的寄生狀態...
+		 
+         SIF TALENT:A:190 == 1
+	      PRINTFORMW %SAVESTR:A%失去【%TALENTNAME:190%】
+		 SIF TALENT:A:191 == 1
+	       PRINTFORMW %SAVESTR:A%失去【%TALENTNAME:191%】
+	      SIF TALENT:A:192 == 1
+	       PRINTFORMW %SAVESTR:A%失去【%TALENTNAME:192%】
+		  SIF TALENT:A:193 == 1
+	        PRINTFORMW %SAVESTR:A%失去【%TALENTNAME:193%】
+
+		 SIF TALENT:A:190 == 1
+	        TALENT:A:190 = 0
+		 SIF TALENT:A:191 == 1
+	        TALENT:A:191 = 0
+	      SIF TALENT:A:192 == 1
+	        TALENT:A:192 = 0
+		  SIF TALENT:A:193 == 1
+	        TALENT:A:193 = 0
+          ENDIF
+			;寄生去除
+	  PRINTFORMW 爲了獲得跟多體液,%SAVESTR:A%精心打扮自己,完美的展示了自己的淫蕩的模樣,獲得【%TALENTNAME:181%】
+	  	    TALENT:A:181 = 1
+       ;獲得傾城
+	   ENDIF
+	  
+	  SIF ABL:A:11 == 10 && TALENT:A:182 == 0
+	  PRINTFORMW 妓女工作讓%SAVESTR:A%懂得如何說得更多顧客並且如何呻吟來激發對方更深層的慾望,獲得【%TALENTNAME:182%】
+	  SIF ABL:A:11 ==10 && TALENT:A:182 == 0
+	    TALENT:A:182 = 1
+		;獲得 巧言
+	  
+	   
+ ELSEIF RAND:5 <= 2 && ABL:A:11 == 10 && TALENT:A:153 == 0 && TALENT:A:155 == 1 && TALENT:A:130 == 1 && TALENT:A:180 == 1 && TALENT:A:181 == 1 && TALENT:A:182 == 1 && (TALENT:A:185 == 0 || TALENT:A:186 == 0 || TALENT:A:113 == 0 || TALENT:A:126 == 0)
+      PRINTFORML 爲了獲得更優質的體液,吸引強大的魔族注意%SAVESTR:A%開始學習黑暗藝術.....
+	   Y += ABL:A:37 + ABL:A:11
+      
+	  PRINTFORML 《如何利用高潮唱歌技巧大全》《跳躍與體液噴射》《自慰舞蹈精選》
+	  PRINTFORMW 《叫床,潮噴,灌腸,歌舞融合法則》《肉體極限與道具》奇怪的知識習得了....
+      	 
+		 
+	
+	  SIF TALENT:A:113 == 0 && ABL:A:37 >= 6
+	   PRINTFORMW 舞蹈與歌唱學習讓%SAVESTR:A%更有氣質了,%SAVESTR:A%獲得【%TALENTNAME:113%】
+	  SIF TALENT:A:113 == 0 && ABL:A:37 >= 6
+	  TALENT:A:113 = 0
+	  
+	   SIF TALENT:A:126 == 0 && ABL:A:37 >= 8
+	   PRINTFORMW 淫賤與大膽的歌舞表演,讓%SAVESTR:A%獲得更多人的關注,%SAVESTR:A%獲得【%TALENTNAME:126%】
+	  SIF TALENT:A:126 == 0 && ABL:A:37 >= 8
+	  TALENT:A:126 = 1
+	  
+	  
+      SIF TALENT:A:185 == 0 && ABL:A:37 == 10
+      PRINTFORMW 長久的學習與實踐后%SAVESTR:A%已經可以在灌腸噴射帶來的絕頂高潮中完美的表演歌唱了,%SAVESTR:A%獲得【%TALENTNAME:185%】
+      SIF TALENT:A:185 == 0
+	  TALENT:A:185 = 1
+     ;歌姬
+      	  
+	  SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+      PRINTFORML %SAVESTR:A%在舞臺上表演曼妙優美的舞姿,旋轉跳躍中揮灑出乳汁,腸液,尿液與潮噴液構成的美妙4重絕頂,
+	  SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+	  PRINTFORMW 觀眾們集體鼓掌,並爭先恐後給%SAVESTR:A%的身體上塗滿濃臭的精液或尿液,%SAVESTR:A%獲得【%TALENTNAME:186%】
+      SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+	  TALENT:A:186 = 1
+     ;舞姬
+	 PRINTFORMW 賣淫經驗+ {Y * 10}
+	 EXP:A:74 += Y * 10
+	 
+	 
+	
+      PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 5 * Y + 5 }
+   JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:10 += (CFLAG:A:602 * 5 * Y + 5 )
+   PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+   JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+   
+   ;賣淫LV UP
+	 IF  ABL:A:37 <=9 && JUEL:A:4 >= POWER(2,(ABL:A:37)) * 1500 && JUEL:A:5 >= POWER(2,(ABL:A:37)) * 2000 && JUEL:A:6 >= POWER(2,(ABL:A:37)) * 1000 && EXP:A:74 >= POWER(2,(ABL:A:37)) * 20
+	   	      JUEL:A:4 -= (POWER(2,(ABL:A:37)) * 1500) 
+			  JUEL:A:5 -= (POWER(2,(ABL:A:37)) * 2000) 
+			  JUEL:A:6 -= (POWER(2,(ABL:A:37)) * 1000) 
+			  EXP:A:74 -= (POWER(2,(ABL:A:37)) * 20)
+			 ABL:A:37 += 1
+		
+		PRINTFORMW 	%SAVESTR:A%賣淫等級+1
+		PRINTFORML 	恭順點數減少{POWER(2,(ABL:A:37)) * 1500}
+		PRINTFORML  情慾點數減少{POWER(2,(ABL:A:37)) * 2000}
+		PRINTFORML  情慾點數減少{POWER(2,(ABL:A:37)) * 1000}
+		PRINTFORMW  賣淫經驗減少{POWER(2,(ABL:A:37)) * 20}
+	 ENDIF  
+  
+   PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+   EXP:A:1 += Y
+   EXP:A:0 += Y
+   EXP:A:50 += Y
+   EXP:A:30 += Y
+   
+	 
+ ELSEIF CFLAG:A:602 >= 10 && ABL:A:11 == 10 && ABL:A:37 == 10 && TALENT:A:153 == 0 && TALENT:A:155 == 1 && TALENT:A:130 == 1 && TALENT:A:180 == 1 && TALENT:A:182 == 1 && TALENT:A:185 == 1 && TALENT:A:186 == 1 && TALENT:A:181 == 1 && TALENT:A:113 == 1 && TALENT:A:126 == 1 && TALENT:A:209 == 0
+	 Y += 20
+	 PRINTFORMW 萬衆矚目的%SAVESTR:A%發現自己偏離的當初撫養孩子的本意,決定放棄了一切.......
+	 SIF TALENT:A:200 == 1
+	 TALENT:A:200 = 0
+	 SIF TALENT:A:201 == 1
+	 TALENT:A:201 = 0
+	  SIF TALENT:A:202 == 1
+	 TALENT:A:202 = 0
+	  SIF TALENT:A:203 == 1
+	 TALENT:A:203 = 0
+	  SIF TALENT:A:204 == 1
+	 TALENT:A:204 = 0
+	  SIF TALENT:A:205 == 1
+	 TALENT:A:205 = 0
+	  SIF TALENT:A:206 == 1
+	 TALENT:A:206 = 0
+	  SIF TALENT:A:207 == 1
+	 TALENT:A:207 = 0
+	  SIF TALENT:A:208 == 1
+	 TALENT:A:208 = 0
+	 PRINTFORMW %SAVESTR:A%準備安心的做個母親....直到魔王的召喚....
+	  SIF TALENT:A:209 == 0
+	 TALENT:A:209 = 1
+	  PRINTFORMW %SAVESTR:A%變成了【%TALENTNAME:209%】
+	 
+	   PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 5 * Y + 5 }
+   JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+   JUEL:A:10 += (CFLAG:A:602 * 5 * Y + 5 )
+   PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+   JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+   JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+  
+   PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+   EXP:A:1 += Y
+   EXP:A:0 += Y
+   EXP:A:50 += Y
+   EXP:A:30 += Y
+   
+ELSE	 
+PRINTFORMW %ITEMNAME:(CFLAG:ARG:601)%在兩穴里蠕動....鉆入鑽出.....
+PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:14 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+PRINTFORMW 私處,肛門,異常,被虐經驗+{Y}
+EXP:A:1 += Y
+EXP:A:0 += Y
+EXP:A:50 += Y
+EXP:A:30 += Y 
+	 
+	 
+  ENDIF 
+   
+  
+   
+   
+ELSE
+PRINTFORMW %ITEMNAME:(CFLAG:ARG:601)%在肛門裡蠕動鉆入鑽出.....
+PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORML 陰核,乳房,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:14 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+
+PRINTFORMW 肛門,異常,被虐經驗+{Y}
+EXP:A:1 += Y
+EXP:A:50 += Y
+EXP:A:30 += Y
+
+ENDIF
+;-------------------------------此段
+RETURN 0
+
+;--------------------------------------------
+@IVY_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+;------------------------------增加
+IF ABL:A:11 >= 4
+ PRINTFORML %SAVESTR:A% 用愛慕的眼光站在您的身後,一手舉著的放滿酒水的托盤....
+ PRINTFORML 當你在寶座上小寐時,後退了幾步背靠在一顆魔界植物邊上....
+ PRINTFORML 踮著腳翹起了屁股,一手依舊舉著托盤,一手把魔界植物的粗大的枝幹偷偷送入肛門.....
+  PRINTFORML 「這裡養分多哦」「前面是留給魔王大人的！」「好粗,要裂開了...好舒服」.....
+  PRINTFORML 低聲壓抑著淫蕩的呻吟不時的從高潮顫抖的身體中透出.....
+
+   
+   IF ABL:A:16 >= 1 
+      Y += 2
+	   PRINTFORML 無法被%ITEMNAME:(CFLAG:ARG:601)%滿足的%SAVESTR:A%爬倒了你的胯前,伸出舌頭舔向你的下體...
+       IF ABL:A:31 >= 1
+	   Y += 2
+	   PRINTFORML 一邊給你作著口舌侍奉,一邊用手指瘋狂自慰著。
+	   PRINTFORML 陰核點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10 )
+	   PRINTFORML 口交經驗,自慰經驗+{Y}
+	   EXP:A:22 += Y
+	   EXP:A:10 += Y
+	   ELSE 
+	   PRINTFORML 認真的給你作著口舌侍奉....
+	   PRINTFORML 口交經驗+{Y}
+	   EXP:A:22 += Y
+	   ENDIF
+	PRINTFORML 你被下身的快感弄醒,看見%SAVESTR:A%一臉淫蕩的樣子,忍不住也丟了....
+	
+	               
+	   
+	 PRINTFORML %SAVESTR:A%把嘴裡和自己流出的腥臭體液裝入空的杯子......
+	 PRINTFORML 在你的注視下,慢慢的喝了下去.....
+	 PRINTFORML %SAVESTR:A% 一邊喝著一邊高潮絕頂了....
+	 PRINTFORMW 絕頂經驗+{Y / 2}
+     EXP:A:2 += Y / 2
+   ENDIF
+
+  PRINTFORMW %SAVESTR:A% 對你的好感提升+100 侍奉快樂+{Y * 10}
+  CFLAG:A:2 += 100
+  EXP:A:21 += Y * 10
+  
+  PRINTFORML 恭順,欲情,屈服,話術,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+ JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+ PRINTFORMW 肛門,被虐經驗+{Y}
+ EXP:A:30 += Y
+ EXP:A:1 += Y
+
+
+
+
+
+ ELSE
+ PRINTFORML 你戲謔的看著%SAVESTR:A%的四肢被%ITEMNAME:(CFLAG:ARG:601)%的根莖纏住,撅著屁股被固定在地上........
+ PRINTFORMW 「好痛啊」「為什麼又是後面！」「快放開我」...痛苦的喊叫並沒有減緩%ITEMNAME:(CFLAG:ARG:601)%的動作
+ PRINTFORML 恭順,欲情,屈服點數+{CFLAG:A:602 * 10 * Y + 10 }
+ENDIF 
+
+PRINTFORML 恥情,苦痛,話術,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+ JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+ JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORML 肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+
+PRINTFORMW 肛門,被虐經驗+{Y}
+EXP:A:1 += Y
+
+EXP:A:30 += Y
+;-------------------------------此段
+
+RETURN 0
+
+;--------------------------------------------
+@SYOKUSYU_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORML %SAVESTR:A%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+PRINTFORMW .....嘴巴被堵住,只能仍憑%ITEMNAME:(CFLAG:ARG:601)%在身上肆虐...
+
+IF TALENT:A:273 == 1 || (CFLAG:A:42 == 79 && (CFLAG:A:40 & 64) && FLAG:37) || TALENT:A:122 == 1
+;------------------------------增加	
+PRINTFORML 陰核,乳房,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:14 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+
+
+
+ELSE
+PRINTFORML 陰核,乳房,私處,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:14 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+
+PRINTFORML 私處經驗+{Y}
+		EXP:A:0 += Y
+ENDIF
+
+PRINTFORML 欲情,屈服,恥情,苦痛,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORML 口交,肛門經驗+{Y}
+EXP:A:1 += Y
+EXP:A:22 += Y
+PRINTFORMW 觸手,被虐經驗+{Y}
+
+EXP:A:55 += Y
+EXP:A:30 += Y
+;-------------------------------此段
+
+RETURN 0
+
+;--------------------------------------------
+@FAILY_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:A%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+;------------------------------增加	
+
+
+
+
+
+PRINTFORMW 「今天玩點啥呢？塞入哪個玩具好呢？.... 」
+Y += ABL:A:11 + ABL:A:10 + ABL:A:37
+PRINTFORML 陰核,恭順,欲情,屈服,苦痛點數+{CFLAG:A:602 * 10 * Y + 10}
+JUEL:A:0 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+PRINTFORMW 肛門,施虐,異常,被虐,絕頂經驗+{Y}
+EXP:A:1 += Y
+EXP:A:33 += Y
+EXP:A:50 += Y
+EXP:A:30 += Y
+EXP:A:2 += Y
+IF RAND:10 == 0
+PRINTFORMW %ITEMNAME:(CFLAG:ARG:601)%對%SAVESTR:A%淫蕩的身體非常滿意,傳授給%SAVESTR:A%作為調教師的技術....
+  IF TALENT:A:91 == 0
+     TALENT:A:91 = 1
+	PRINTFORMW 獲得了【%TALENTNAME:91% 】
+  ELSEIF TALENT:A:92 == 0
+   TALENT:A:92 = 1
+	PRINTFORMW 獲得了【%TALENTNAME:92% 】
+  ELSEIF TALENT:A:93 == 0
+   TALENT:A:93 = 1
+	PRINTFORMW 獲得了【%TALENTNAME:93% 】
+   ELSE
+   PRINTFORMW 但是%SAVESTR:A%已經是個出色的調教師了...試試勾引個實驗品吧...
+   
+    SIF TALENT:A:113 == 1
+	 Y += 1
+	 SIF TALENT:A:126 == 1 
+	  Y += 1
+	 SIF TALENT:A:180 == 1
+	 Y += 1
+	 SIF TALENT:A:181 == 1
+	 Y += 1
+	 SIF TALENT:A:182 == 1
+	 Y += 1
+	 SIF TALENT:A:183 == 1
+	 Y += 1
+	 SIF TALENT:A:185 == 1
+	 Y += 1 
+	  SIF TALENT:A:186 == 1
+	 Y += 1  
+	  
+   
+   PRINTFORMW 話術+{CFLAG:A:602 * 10 * Y + 10}
+   PRINTFORMW 賣淫經驗+{Y * 10}
+   JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+   EXP:A:74 += Y * 10  
+   
+   SIF ABL:A:37 >= 4 && ABL:A:11 >= 3 && TALENT:A:180 == 0
+   PRINTFORMW 沉迷於在勾引試驗品的%SAVESTR:A% 更加墮落了,%SAVESTR:A%獲得【%TALENTNAME:180%】
+   SIF ABL:A:37 >= 4 && ABL:A:11 >= 4 && TALENT:A:180 == 0
+   TALENT:A:180 = 1
+   ; 獲得妓女
+   
+    SIF ABL:A:37 >= 4 && ABL:A:11 >= 4 && TALENT:A:181 == 0
+   PRINTFORMW %SAVESTR:A%精心打扮自己,完美的展示了自己的淫蕩的模樣,%SAVESTR:A%獲得【%TALENTNAME:181%】
+   SIF ABL:A:37 >= 4 && ABL:A:11 >= 4 && TALENT:A:181 == 0
+   TALENT:A:181 = 1
+   ; 獲得傾城
+   
+   
+    SIF ABL:A:37 >= 5 && ABL:A:11 >= 4 && TALENT:A:181 == 0
+   PRINTFORMW %SAVESTR:A%作為妓女的技術又更進一步,%SAVESTR:A%獲得【%TALENTNAME:181%】
+   SIF ABL:A:37 >= 4 && ABL:A:11 >= 4 && TALENT:A:181 == 0
+   TALENT:A:181 = 1
+   
+   
+   IF ABL:A:37 >= 5 && ABL:A:11 >= 5 && TALENT:A:0 == 0 && TALENT:A:122 == 0
+       PRINTFORML %SAVESTR:A% 在%ITEMNAME:(CFLAG:ARG:601)%的特殊藏書館中學習
+      PRINTFORML 《如何利用高潮唱歌技巧大全》《跳躍與體液噴射》《自慰舞蹈精選》
+	  PRINTFORML 《叫床,潮噴,灌腸,歌舞融合法則》《肉體極限與道具》奇怪的知識習得了....
+      PRINTFORMW  %SAVESTR:A% 在小妖精開設的黑暗表演舞臺上表演....
+		 
+	
+	  SIF TALENT:A:113 == 0 && ABL:A:37 >= 6
+	   PRINTFORMW 舞蹈與歌唱學習讓%SAVESTR:A%更有氣質了,%SAVESTR:A%獲得【%TALENTNAME:113%】
+	  SIF TALENT:A:113 == 0 && ABL:A:37 >= 6
+	  TALENT:A:113 = 0
+	  
+	   SIF TALENT:A:126 == 0 && ABL:A:37 >= 8
+	   PRINTFORMW 淫賤與大膽的歌舞表演,讓%SAVESTR:A%獲得更多人的關注,%SAVESTR:A%獲得【%TALENTNAME:126%】
+	  SIF TALENT:A:126 == 0 && ABL:A:37 >= 8
+	  TALENT:A:126 = 1
+	  
+	  
+      SIF TALENT:A:185 == 0 && ABL:A:37 == 10
+      PRINTFORMW 長久的學習與實踐后%SAVESTR:A%已經可以在灌腸噴射帶來的絕頂高潮中完美的表演歌唱了,%SAVESTR:A%獲得【%TALENTNAME:185%】
+      SIF TALENT:A:185 == 0
+	  TALENT:A:185 = 1
+     ;歌姬
+      	  
+	  SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+      PRINTFORML %SAVESTR:A%在舞臺上表演曼妙優美的舞姿,旋轉跳躍中揮灑出乳汁,腸液,尿液與潮噴液構成的美妙4重絕頂,
+	  SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+	  PRINTFORMW 觀眾們集體鼓掌,並爭先恐後給%SAVESTR:A%的身體上塗滿濃臭的精液或尿液,%SAVESTR:A%獲得【%TALENTNAME:186%】
+      SIF TALENT:A:186 == 0 && ABL:A:37 == 10
+	  TALENT:A:186 = 1
+     ;舞姬
+	 
+	 ;賣淫LV UP
+	 IF  ABL:A:37 <=9 && JUEL:A:4 >= POWER(2,(ABL:A:37)) * 1500 && JUEL:A:5 >= POWER(2,(ABL:A:37)) * 2000 && JUEL:A:6 >= POWER(2,(ABL:A:37)) * 1000 && EXP:A:74 >= POWER(2,(ABL:A:37)) * 20
+	   	      JUEL:A:4 -= (POWER(2,(ABL:A:37)) * 1500) 
+			  JUEL:A:5 -= (POWER(2,(ABL:A:37)) * 2000) 
+			  JUEL:A:6 -= (POWER(2,(ABL:A:37)) * 1000) 
+			  EXP:A:74 -= (POWER(2,(ABL:A:37)) * 20)
+			 ABL:A:37 += 1
+		
+		PRINTFORMW 	%SAVESTR:A%賣淫等級+1
+		PRINTFORML 	恭順點數減少{POWER(2,(ABL:A:37)) * 1500}
+		PRINTFORML  情慾點數減少{POWER(2,(ABL:A:37)) * 2000}
+		PRINTFORML  情慾點數減少{POWER(2,(ABL:A:37)) * 1000}
+		PRINTFORMW  賣淫經驗減少{POWER(2,(ABL:A:37)) * 20}
+	 ENDIF  
+	 
+	
+	 
+	  PRINTFORMW  %SAVESTR:A% 在表演后被某個貴族看中了,陪貴族玩了一天的變態遊戲,把獲得的{Y * ABL:A:11 * ABL:A:37}pts全部獻給了國庫
+	  
+	 MONEY += Y * ABL:A:11 * ABL:A:37 
+	  
+	 EX_FLAG:4444 += Y * ABL:A:11 * ABL:A:37 
+  ENDIF
+   
+  ENDIF
+  
+ ENDIF 
+ 
+
+;-------------------------------此段
+RETURN 0
+
+;--------------------------------------------
+@GIANT_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+
+IF A == 0 && CFLAG:(ARG):602 < 55
+	;你の場合
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的肛交中感到喜悅……
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		PRINTFORML 肛門擴張經驗+1
+		EXP:(ARG):1 += Y
+		EXP:(ARG):20 += Y
+		EXP:(ARG):53 += 1
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的性交中感到喜悅……
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		PRINTFORML 陰道擴張經驗+1
+		EXP:(ARG):0 += Y
+		EXP:(ARG):20 += Y
+		EXP:(ARG):52 += 1
+		CFLAG:(ARG):107 += Y
+	ENDIF
+ELSEIF TALENT:(ARG):76 == 1 || CFLAG:(ARG):602 > 50
+	;淫亂・または結婚50日以降
+	IF RAND:2 == 0
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			;尻穴狂
+			IF TALENT:(ARG):77
+				PRINTFORML  %SAVESTR:ARG%的尻穴被擴張到極限，勉強地吞入了巨人的巨莖。
+				Y += 1
+			ENDIF
+			PRINTFORMW %SAVESTR:ARG%作為%ITEMNAME:(CFLAG:ARG:601)%的飛機杯，過著幸福的日子。
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			PRINTFORML 肛門擴張經驗+1
+			EXP:(ARG):1 += Y
+			EXP:(ARG):20 += Y
+			EXP:(ARG):53 += 1
+			;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 陰核,乳房點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+		JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+		ELSE
+			PRINTFORMW %SAVESTR:ARG%作為%ITEMNAME:(CFLAG:ARG:601)%的飛機杯，過著幸福的日子。
+			PRINTFORML 私處經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			PRINTFORML 陰道擴張經驗+1
+			EXP:(ARG):0 += Y
+			EXP:(ARG):20 += Y
+			EXP:(ARG):52 += Y
+			CFLAG:(ARG):107 += 1
+				;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 陰核,乳房點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:0 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:14 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 私處點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+		ENDIF
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%把%ITEMNAME:(CFLAG:ARG:601)%滿溢的精液喝光了。
+		PRINTFORML 口交經驗+{Y*10}
+		PRINTFORML 精液經驗+{Y*10}
+		EXP:(ARG):22 += Y * 10
+		EXP:(ARG):20 += Y * 10
+	ENDIF
+ELSEIF ABL:(ARG):10 >= 2 || CFLAG:(ARG):602 > 30
+	;順從2以上または結婚30日以降
+	IF RAND:2 == 0
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINTFORMW %SAVESTR:ARG%爲了習慣與%ITEMNAME:(CFLAG:ARG:601)%的肛交，用巨型假陽具張開了自己的肛門。
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 肛門擴張經驗+{Y}
+			EXP:(ARG):1 += Y
+			EXP:(ARG):53 += Y
+			;------------------------------增加
+			PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		;-------------------------------此段
+		ELSE
+			PRINTFORMW %SAVESTR:ARG%爲了習慣與%ITEMNAME:(CFLAG:ARG:601)%的性愛，用巨型假陽具張開了自己的私處。
+			PRINTFORML 私處經驗+{Y}
+			PRINTFORML 陰道擴張經驗+{Y}
+			EXP:(ARG):0 += Y
+			EXP:(ARG):52 += Y
+				;------------------------------增加
+			PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 私處點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+		;-------------------------------此段
+		ENDIF
+	ELSE
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的肛交中感到喜悅……
+			PRINTFORML 肛門經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			PRINTFORML 肛門擴張經驗+1
+			EXP:(ARG):1 += Y
+			EXP:(ARG):20 += Y
+			EXP:(ARG):53 += 1
+			;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 陰核,乳房點數+{CFLAG:A:602 * 20 * Y + 10}
+		JUEL:A:0 += (CFLAG:A:602 * 20 * Y + 10)
+		JUEL:A:14 += (CFLAG:A:602 * 20 * Y + 10)
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 20 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+		ELSE
+			PRINTFORMW %SAVESTR:ARG%在與%ITEMNAME:(CFLAG:ARG:601)%的性交中感到喜悅……
+			PRINTFORML 私處經驗+{Y}
+			PRINTFORML 精液經驗+{Y}
+			PRINTFORML 陰道擴張經驗+1
+			EXP:(ARG):0 += Y
+			EXP:(ARG):20 += Y
+			EXP:(ARG):52 += 1
+			CFLAG:(ARG):107 += Y
+			;------------------------------增加
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 陰核,乳房點數+{CFLAG:A:602 * 20 * Y + 10}
+		JUEL:A:0 += (CFLAG:A:602 * 20 * Y + 10)
+		JUEL:A:14 += (CFLAG:A:602 * 20 * Y + 10)
+		PRINTFORML 私處點數+{CFLAG:A:602 * 5 * Y + 5}
+		JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 20 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+		ENDIF
+	ENDIF
+ELSE
+	PRINTFORMW %SAVESTR:ARG%作為%ITEMNAME:(CFLAG:ARG:601)%的妻子，被強迫進行著精液處理的服務。
+	PRINTFORML 口交經驗+{Y*5}
+	PRINTFORML 精液經驗+{Y*5}
+	EXP:(ARG):22 += Y * 5
+	EXP:(ARG):20 += Y * 5
+		;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 10 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 10 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 異常,被虐經驗+{Y}
+		EXP:A:50 += Y
+		EXP:A:30 += Y
+		;-------------------------------此段
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@MAN_MARRIAGE_DAY,ARG
+#DIM BONUS,10
+;--------------------------------------------
+
+FOR LOCAL,0,10
+	BONUS:LOCAL = 0
+NEXT
+
+;BONUS:0 = 恥情
+;BONUS:1 = 苦痛
+
+;旦那の種類
+IF TALENT:(ARG):141
+	LOCALS = 中年
+ELSEIF TALENT:(ARG):143
+	LOCALS = 少年
+ELSE
+	LOCALS = 
+ENDIF
+
+
+PRINTFORMW %SAVESTR:ARG%和%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+
+IF A == 0 && CFLAG:(ARG):602 < 55
+	;你の場合
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%的肛門接受了%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的陰莖。
+		PRINTFORML 肛門點數+{Y}
+		PRINTFORML 恭順點數+{Y}
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):2 += Y
+		JUEL:(ARG):4 += Y
+		EXP:(ARG):1 += Y
+		EXP:(ARG):20 += Y
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%的陰道接受了%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的陰莖。
+		PRINTFORML 私處點數+{Y}
+		PRINTFORML 恭順點數+{Y}
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):1 += Y
+		JUEL:(ARG):4 += Y
+		EXP:(ARG):0 += Y
+		EXP:(ARG):20 += Y
+		CFLAG:(ARG):107 += Y
+	ENDIF
+ELSEIF TALENT:(ARG):76 == 1 || CFLAG:(ARG):602 > 50
+	;淫亂・または結婚50日以降
+	
+	;マゾっ気3以上
+	IF ABL:(ARG):21 >= 3
+		PRINT 全身都被繩子束縛著，
+		BONUS:1 += Y
+	ENDIF
+	
+	PRINTFORM %SAVESTR:ARG%
+	
+	;露出癖3以上
+	IF ABL:(ARG):17 >= 3
+		PRINT 在丈夫朋友的圍觀下，
+		BONUS:0 += Y
+	ENDIF
+	
+	;サドっ気3以上
+	SIF ABL:(ARG):20 >= 3
+		PRINT 戴著道具
+	
+	PRINTFORM 和%LOCALS%
+	
+	IF CFLAG:(ARG):602 > 80
+		PRINT 不停地變換著各種體位，
+	ELSEIF CFLAG:(ARG):602 > 65
+		PRINT 熱情地相擁著，
+	ELSE
+		PRINT 和睦地相擁著，
+	ENDIF
+	
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW 沉醉在肛交的快感之中了……
+		PRINTFORML 肛門點數+{Y}
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):2 += Y
+		EXP:(ARG):1 += Y
+		EXP:(ARG):20 += Y
+		;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW 專心地享受造人的過程……
+		PRINTFORML 私處點數+{CFLAG:A:602 * 5 * Y + 5}
+		PRINTFORML 恭順點數+{Y}
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):1 += (CFLAG:A:602 * 5 * Y + 5)
+		EXP:(ARG):0 += Y
+		EXP:(ARG):20 += Y
+		CFLAG:(ARG):107 += Y
+			;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:7 += (CFLAG:A:602 * 5 * Y + 5 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+	ENDIF
+	
+	
+	IF TALENT:A:143 == 1 && ABL:A:11 >= 4
+	     IF RAND:5 == 0 && TALENT:A:31 == 1
+	PRINTFORMW %LOCALS%%ITEMNAME:(CFLAG:ARG:601)%那幼小的陰莖無法滿足%SAVESTR:A%
+	PRINTFORMW %SAVESTR:A%終於忍耐不住體內的慾望..偷偷的賣春了....
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 5}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 5
+	     ENDIF
+	     IF RAND:5 <= 1 
+	PRINTFORMW %SAVESTR:A%越來越渴望欺負可愛的%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%
+	PRINTFORMW 眼中閃著施虐的慾望的%SAVESTR:A%綁住了%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%...
+	PRINTFORML 欲情點數+{CFLAG:A:602 * 5 * Y + 5 }
+	JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 施虐,異常經驗+{Y * 3}
+	EXP:A:33 += Y * 3
+	EXP:A:50 += Y * 3
+	     ENDIF
+	ELSEIF TALENT:A:141 == 1 && ABL:A:11 >= 4  
+    	IF RAND:5 == 0 && TALENT:A:31 == 1
+    	PRINTFORMW 年輕時縱慾過渡的%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%已經無法滿足%SAVESTR:A%
+	    PRINTFORMW %SAVESTR:A%終於忍耐不住體內的慾望..偷偷的賣春了....
+	    PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+     	PRINTFORMW 賣淫經驗+{Y * 5}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 5
+	    ENDIF
+	     IF RAND:5 <= 1 || TALENT:A:88 == 1
+	    PRINTFORMW %SAVESTR:A%越來越渴望%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的欺負...
+	    PRINTFORMW 故意做了錯事,期待著%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的懲罰.....
+	    PRINTFORML 苦痛,屈服點數+{CFLAG:A:602 * 5 * Y + 5 }
+	    JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+	    PRINTFORMW 被虐,異常,絕頂經驗+{Y * 3}
+		EXP:A:2 += Y * 3
+	    EXP:A:30 += Y * 3
+	    EXP:A:50 += Y * 3
+	     ENDIF
+	ENDIF
+	
+	
+	
+	
+	
+   ;-------------------------------此段
+	;下面關閉
+	;IF BONUS:0 > 0
+	;	PRINTFORML 恥情點數+{BONUS:0}
+	;	JUEL:(ARG):8 += BONUS:0
+	;ENDIF
+	
+	;IF BONUS:1 > 0
+	;	PRINTFORML 苦痛點數+{BONUS:1}
+	;	JUEL:(ARG):9 += BONUS:1
+	;ENDIF
+	
+ELSEIF ABL:(ARG):10 >= 2 || CFLAG:(ARG):602 > 30
+	;順從2以上または結婚30日以降
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%習慣了用菊穴和%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%過夫妻生活了。
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 20 * Y + 10}
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):2 += (CFLAG:A:602 * 20 * Y + 10 )
+		EXP:(ARG):1 += Y
+		EXP:(ARG):20 += Y
+		;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:9 += (CFLAG:A:602 * 20 * Y + 10 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%習慣了和%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%過夫妻生活了。
+		PRINTFORML 私處點數+{CFLAG:A:602 * 20 * Y + 10}
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:(ARG):1 += (CFLAG:A:602 * 20 * Y + 10)
+		EXP:(ARG):0 += Y
+		EXP:(ARG):20 += Y
+		CFLAG:(ARG):107 += Y
+			;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 20 * Y + 10 )
+		JUEL:A:9 += (CFLAG:A:602 * 20 * Y + 10 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 20 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 20 * Y + 10 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		
+		;-------------------------------此段
+	ENDIF
+ELSE
+	;新婚
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		PRINTFORMW %SAVESTR:ARG%的肛門被強行侵犯。
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+		PRINTFORML 肛門經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10 )
+		EXP:A:1 += Y
+		EXP:A:20 += Y
+		;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		
+		;-------------------------------此段
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%被%ITEMNAME:(CFLAG:ARG:601)%強行播種。
+		PRINTFORML 私處點數+{CFLAG:A:602 * 10 * Y + 10}
+		PRINTFORML 私處經驗+{Y}
+		PRINTFORML 精液經驗+{Y}
+		JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+		
+		EXP:A:0 += Y
+		EXP:A:20 += Y
+		CFLAG:A:107 += Y
+			;------------------------------增加
+	PRINTFORML 屈服,欲情,恭順,恥情,苦痛點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:9 += (CFLAG:A:602 * 10 * Y + 10 )
+		
+		PRINTFORML 話術+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:7 += (CFLAG:A:602 * 10 * Y + 10 )
+						
+		PRINTFORMW 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		
+		;-------------------------------此段
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@GIRL_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+;嫁の種類
+IF TALENT:(ARG):140
+	LOCALS = 熟女
+ELSEIF TALENT:(ARG):143
+	LOCALS = 幼女
+ELSE
+	LOCALS = 
+ENDIF
+
+PRINTFORMW %SAVESTR:ARG%和%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+
+IF TALENT:(ARG):122 || TALENT:(ARG):121
+	;男人・扶她
+	IF TALENT:(ARG):318 == 2
+		;短小包莖
+		
+		;不倫判定（NTRフラグあり）
+		IF CFLAG:(ARG):603 == 0 && RAND:10 == 0 && (FLAG:5 & 128)
+			;浮気になる
+			CFLAG:(ARG):603 = 1
+		ELSEIF CFLAG:(ARG):603 == 1 && RAND:10 == 0
+			;不倫になる
+			CFLAG:(ARG):603 = 2
+		ELSEIF CFLAG:(ARG):603 == 1 && RAND:9 == 0
+			;浮気をやめてくれる
+			CFLAG:(ARG):603 = 0
+		ELSEIF CFLAG:(ARG):603 == 2 && RAND:10 == 0
+			;不倫相手の子供ができちゃった
+			CFLAG:(ARG):603 = 3
+		ELSEIF CFLAG:(ARG):603 == 2 && RAND:9 == 0
+			;不倫をやめてくれる
+			CFLAG:(ARG):603 = 0
+		ENDIF
+		
+		IF CFLAG:(ARG):603 == 2 || CFLAG:(ARG):603 == 3
+			;不倫中・不倫妊娠中
+			PRINTFORMW %LOCALS%%ITEMNAME:(CFLAG:ARG:601)%對%SAVESTR:ARG%的短小包莖已經感到厭倦了。
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 短小包莖的%SAVESTR:ARG%無法滿足%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%，沒抽動幾次就去了。
+		ELSE
+			PRINTFORMW 短小包莖的%SAVESTR:ARG%被%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%用手輕易地搞定。
+		ENDIF
+		
+	ELSEIF TALENT:(ARG):318 == 1
+		;巨根
+		IF RAND:2 == 0
+			PRINTFORMW 巨根的%SAVESTR:ARG%被%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%纏著做了通宵。
+		ELSE
+			PRINTFORMW 巨根的%SAVESTR:ARG%被%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%榨取了好幾次。
+		ENDIF
+	ELSEIF TALENT:(ARG):318 == 4
+		;馬
+		PRINTFORMW 持有馬陰莖的%SAVESTR:ARG%像要把%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%操壞似得持續做愛著。
+	ELSE
+		;その他
+		IF RAND:2 == 0
+			PRINTFORMW %SAVESTR:ARG%成為肉壺的俘虜了。
+		ELSE
+			PRINTFORMW %SAVESTR:ARG%腰都快被%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%弄得直不起來了。
+		ENDIF
+	ENDIF
+ELSEIF ABL:(ARG):33 >= 1 || A == 0
+	IF RAND:2 == 0
+		PRINTFORMW %SAVESTR:ARG%在與%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的生活中感到喜悅……
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%在與%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%的情愛中感到喜悅……
+	ENDIF
+ELSEIF ABL:(ARG):22 >= 1
+	PRINTFORMW %SAVESTR:ARG%被%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%抱著，也不是不能接受。
+ELSE
+	PRINTFORMW %SAVESTR:ARG%緊緊地封閉著自己的心。
+	;------------------------------增加
+	PRINTFORMW 憤怒的%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%拿起了鞭子狠狠的教育了%SAVESTR:A%
+	PRINTFORML 苦痛,屈服點數+{CFLAG:A:602 * 2 * Y + 2 }
+	    JUEL:A:9 += (CFLAG:A:602 * 2 * Y + 2 )
+		JUEL:A:6 += (CFLAG:A:602 * 2 * Y + 2 )
+	PRINTFORMW 被虐,異常,絕頂經驗+{Y}
+		EXP:A:2 += Y 
+	    EXP:A:30 += Y
+	    EXP:A:50 += Y 
+	;-------------------------------此段
+ENDIF
+
+IF CFLAG:(ARG):603 == 1
+	;浮気
+	PRINTFORMW %SAVESTR:ARG%的%ITEMNAME:(CFLAG:ARG:601)%妻子有外遇了。
+ELSEIF CFLAG:(ARG):603 == 2
+	;不倫
+	PRINTFORMW 從門縫裡偷看到，%SAVESTR:ARG%的%ITEMNAME:(CFLAG:ARG:601)%妻子正在床上與陌生男子做愛。
+	PRINTFORMW %SAVESTR:ARG%悄悄地離開了那個地方……
+ELSEIF CFLAG:(ARG):603 == 3
+	;不倫妊娠
+	PRINTFORMW 從門縫裡偷看到，%SAVESTR:ARG%的腹部膨脹的%ITEMNAME:(CFLAG:ARG:601)%妻子正在床上與陌生男子做愛。
+	PRINTFORMW %SAVESTR:ARG%悄悄地離開了那個地方……
+ENDIF
+
+
+IF CFLAG:(ARG):603 == 2 || CFLAG:(ARG):603 == 3
+	;不倫中・不倫妊娠中
+		;------------------------------增加
+	PRINTFORMW %SAVESTR:A%考慮著如何報復出軌的妻子
+	IF RAND:2 == 0 && TALENT:A:83 == 0 
+	PRINTFORMW 於是,慾望驅使下,%SAVESTR:A%賣春了...
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 2}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 2
+	ELSE
+	PRINTFORMW 於是,%SAVESTR:A%抽出鞭子準備狠狠的教訓%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%
+	PRINTFORML 欲情點數+{CFLAG:A:602 * 5 * Y + 5 }
+	JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 施虐,異常經驗+{Y * 2}
+	EXP:A:33 += Y * 2
+	EXP:A:50 += Y * 2
+	ENDIF
+	;-------------------------------此段
+ELSEIF TALENT:(ARG):122
+	;男人
+	PRINTFORML 陰核點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	PRINTFORML 射精經驗+1
+	JUEL:(ARG):0 += Y * 10
+	JUEL:(ARG):5 += Y * 10
+	EXP:(ARG):3 += 1
+ELSEIF TALENT:(ARG):121
+	;扶她
+	;------------------------------增加
+	
+	IF  (TALENT:A:31 == 1 || TALENT:A:81 == 1 || TALENT:A:89 == 1 || ABL:A:11 >= 3) && RAND:2 == 0
+	PRINTFORMW 慾望驅使下,%SAVESTR:A%賣春了...
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 2}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 2
+	ELSEIF	TALENT:A:76 == 1 || TALENT:A:180 == 1 || TALENT:A:181 == 1 || TALENT:A:183 == 1 || TALENT:A:184 == 1
+	PRINTFORMW 慾望驅使下,%SAVESTR:A%賣春了...
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 2}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 2
+	ENDIF
+	
+	
+	IF (TALENT:A:83 == 1 || TALENT:A:87 == 1) && RAND:10 <= 6
+	PRINTFORMW 意猶未盡的%SAVESTR:A%抽出鞭子狠狠的教訓了%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%
+	PRINTFORML 欲情點數+{CFLAG:A:602 * 5 * Y + 5 }
+	JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 施虐,異常經驗+{Y * 3}
+	EXP:A:33 += Y * 2
+	EXP:A:50 += Y * 2
+	ELSEIF  TALENT:A:88 == 1
+	PRINTFORMW %SAVESTR:A%叼著鞭子,像狗一樣爬到%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%跟前.....
+	PRINTFORML 苦痛,屈服點數+{CFLAG:A:602 * 5 * Y + 5 }
+	    JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 被虐,異常,絕頂經驗+{Y * 3}
+		EXP:A:2 += Y * 3
+	    EXP:A:30 += Y * 3
+	    EXP:A:50 += Y * 3
+	ENDIF
+	
+	
+	
+	;-------------------------------此段
+ELSE
+	;------------------------------增加
+	
+	IF  (TALENT:A:31 == 1 || TALENT:A:81 == 1 || TALENT:A:89 == 1 || ABL:A:11 >= 3) && RAND:2 == 0
+	PRINTFORMW 慾望驅使下,%SAVESTR:A%賣春了...
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 2}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 2
+	ELSEIF	TALENT:A:76 == 1 || TALENT:A:180 == 1 || TALENT:A:181 == 1 || TALENT:A:183 == 1 || TALENT:A:184 == 1
+	PRINTFORMW 慾望驅使下,%SAVESTR:A%賣春了...
+	PRINTFORML 屈服,欲情,恭順點數+{CFLAG:A:602 * 5 * Y + 5 }
+	PRINTFORMW 賣淫經驗+{Y * 2}
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		EXP:A:74 += Y * 2
+	ENDIF
+		
+	IF (TALENT:A:83 == 1 || TALENT:A:87 == 1) && RAND:10 <= 6
+	PRINTFORMW 意猶未盡的%SAVESTR:A%抽出鞭子狠狠的教訓了%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%
+	PRINTFORML 欲情點數+{CFLAG:A:602 * 5 * Y + 5 }
+	JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 施虐,異常經驗+{Y * 3}
+	EXP:A:33 += Y * 2
+	EXP:A:50 += Y * 2
+	ELSEIF  TALENT:A:88 == 1
+	PRINTFORMW %SAVESTR:A%叼著鞭子,像狗一樣爬到%LOCALS%%ITEMNAME:(CFLAG:ARG:601)%跟前.....
+	PRINTFORML 苦痛,屈服點數+{CFLAG:A:602 * 5 * Y + 5 }
+	    JUEL:A:9 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+	PRINTFORMW 被虐,異常,絕頂經驗+{Y * 3}
+		EXP:A:2 += Y * 3
+	    EXP:A:30 += Y * 3
+	    EXP:A:50 += Y * 3
+	ENDIF
+	
+	;-------------------------------此段
+ENDIF
+
+IF CFLAG:(ARG):603 == 3 && RAND:10
+	;不倫妊娠出産
+	PRINTFORMW %SAVESTR:ARG%的%ITEMNAME:(CFLAG:ARG:601)%妻子平安分娩。
+	;不倫狀態に戻る
+	CFLAG:(ARG):603 = 2
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@BEAST_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+
+IF TALENT:(ARG):136 == 1 || A == 0
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		  ;------------------------------增加
+		PRINTFORMW %SAVESTR:A%如牝犬一般吐著舌頭興奮地扭動腰肢迎接著%ITEMNAME:(CFLAG:ARG:601)%。
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+				JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 獸姦,異常,被虐經驗+{Y}
+		EXP:A:56 += Y 
+		EXP:A:50 += Y 
+		EXP:A:30 += Y 
+		;-------------------------------此段
+	ELSE
+	  ;------------------------------增加
+		PRINTFORMW %SAVESTR:A%如牝犬一般吐著舌頭興奮地扭動腰肢迎接著%ITEMNAME:(CFLAG:ARG:601)%。
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 5 * Y + 5 }
+		JUEL:A:6 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:5 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:4 += (CFLAG:A:602 * 5 * Y + 5 )
+		JUEL:A:8 += (CFLAG:A:602 * 5 * Y + 5 )
+		PRINTFORML 私處,肛門點數+{CFLAG:A:602 * 5 * Y + 5}
+		
+		JUEL:A:2 += (CFLAG:A:602 * 5 * Y + 5)
+		JUEL:A:1 += (CFLAG:A:602 * 5 * Y + 5)
+		
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 50 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 50 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y / 2}
+		EXP:A:2 += Y / 2
+		PRINTFORMW 獸姦,異常,被虐經驗+{Y}
+		EXP:A:56 += Y 
+		EXP:A:50 += Y 
+		EXP:A:30 += Y 
+		;-------------------------------此段
+		
+		CFLAG:A:107 += Y
+		
+	ENDIF
+ELSEIF ABL:(ARG):39 >= 1 || CFLAG:(ARG):602 > 40
+	IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+		 ;------------------------------增加
+		PRINTFORMW %SAVESTR:A%如牝犬一般吐著舌頭興奮地扭動腰肢迎接著%ITEMNAME:(CFLAG:ARG:601)%。
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+				JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 100 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 100 + 10 )
+		PRINTFORML 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		PRINTFORMW 獸姦,異常,被虐經驗+{Y}
+		EXP:A:56 += Y * 2
+		EXP:A:50 += Y * 2
+		EXP:A:30 += Y * 2
+		;-------------------------------此段
+	ELSE
+		;------------------------------增加
+		PRINTFORMW %SAVESTR:A%如牝犬一般吐著舌頭興奮地扭動腰肢迎接著%ITEMNAME:(CFLAG:ARG:601)%。
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORML 私處,肛門點數+{CFLAG:A:602 * 10 * Y + 10}
+		
+		JUEL:A:2 += (CFLAG:A:602 * 10 * Y + 10)
+		JUEL:A:1 += (CFLAG:A:602 * 10 * Y + 10)
+		
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 100 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 100 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y}
+		EXP:A:2 += Y
+		PRINTFORMW 獸姦,異常,被虐經驗+{Y}
+		EXP:A:56 += Y * 2
+		EXP:A:50 += Y * 2
+		EXP:A:30 += Y * 2
+		;-------------------------------此段
+	ENDIF
+ELSE
+	PRINTFORMW 從不正眼看%ITEMNAME:(CFLAG:ARG:601)%，%SAVESTR:ARG%陷入了深深的絕望中……
+	PRINTFORMW 屈服,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+    JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+     JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+@BRAIN_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一同生活著。
+
+IF TALENT:A:57 == 1 || RAND:20 == 0
+PRINTFORMW 偶然看到%ITEMNAME:(CFLAG:ARG:601)%的樣子,%SAVESTR:A%就忍不住失禁了。
+ IF TALENT:A:57 == 0
+PRINTFORMW %SAVESTR:A%獲得【%TALENTNAME:57%】
+     TALENT:A:57 = 1
+ ENDIF
+ENDIF
+PRINTFORMW 屈服,恐怖點數+{CFLAG:A:602 * 10 * Y + 10 }
+JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+JUEL:A:10 += (CFLAG:A:602 * 10 * Y + 10 )
+
+RETURN 0
+
+;--------------------------------------------
+@HORSE_MARRIAGE_DAY,ARG
+;--------------------------------------------
+
+PRINTFORMW %SAVESTR:ARG%和%ITEMNAME:(CFLAG:ARG:601)%一起在馬廄里生活著。
+
+IF TALENT:(ARG):136 == 1 || A == 0
+	IF RAND:2 == 0
+		IF TALENT:(ARG):273 == 1 || (CFLAG:(ARG):42 == 79 && (CFLAG:(ARG):40 & 64) && FLAG:37) || TALENT:(ARG):122 == 1
+			PRINTFORMW %SAVESTR:ARG%嬉笑著跨上了木馬，沉浸在與%ITEMNAME:(CFLAG:ARG:601)%的肛交之中……
+			 ;------------------------------增加
+		
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 15 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 15 * Y + 10 )
+		PRINTFORML 肛門點數+{CFLAG:A:602 * 15 * Y + 10}
+				JUEL:A:2 += (CFLAG:A:602 * 15 * Y + 10)
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 200 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 200 + 10 )
+		PRINTFORML 絕頂經驗+{Y * 10}
+		EXP:A:2 += Y * 10
+		PRINTFORML 獸姦,異常,被虐經驗+{Y * 10}
+		EXP:A:56 += Y * 10
+		EXP:A:50 += Y * 10
+		EXP:A:30 += Y * 10
+		;-------------------------------此段
+		
+			PRINTFORML 肛門經驗+{Y * 10}
+			PRINTFORMW 肛門擴張經驗+{Y * 10}
+			EXP:A:1 += Y * 10
+			EXP:A:53 += Y * 10
+			
+			
+		ELSE
+			 ;------------------------------增加
+			PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 15 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 15 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 15 * Y + 10 )
+		PRINTFORML 私處點數+{CFLAG:A:602 * 15 * Y + 10}
+		
+		
+		JUEL:A:1 += (CFLAG:A:602 * 15 * Y + 10)
+		
+		PRINTFORML 苦痛點數+{ABL:A:10 * Y * 200 + 10}
+		JUEL:A:9 += (ABL:A:10 * Y * 20 + 10 )
+				
+		PRINTFORML 絕頂經驗+{Y * 10}
+		EXP:A:2 += Y * 10
+		PRINTFORML 獸姦,異常,被虐經驗+{Y * 10}
+		EXP:A:56 += Y * 10
+		EXP:A:50 += Y * 10
+		EXP:A:30 += Y * 10
+			PRINTFORML 私處經驗+{Y * 10}
+			PRINTFORMW 陰道擴張經驗+{Y * 10}
+			EXP:A:0 += Y * 10
+			EXP:A:52 += Y * 10
+		;-------------------------------此段	
+			CFLAG:A:107 += Y
+			
+		ENDIF
+	ELSE
+		PRINTFORMW %SAVESTR:ARG%把%ITEMNAME:(CFLAG:ARG:601)%滿溢的精液喝光了。
+		;-------------------------------增加	
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 10 * Y + 10 }
+		JUEL:A:6 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:5 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:4 += (CFLAG:A:602 * 10 * Y + 10 )
+		JUEL:A:8 += (CFLAG:A:602 * 10 * Y + 10 )
+		PRINTFORML 口交經驗+{Y * 5}
+		PRINTFORML 精液經驗+{Y * 5}
+		EXP:A:22 += Y * 5
+		EXP:A:20 += Y * 5
+		PRINTFORMW 獸姦經驗+{Y * 5}
+		EXP:A:56 += Y * 5
+		;-------------------------------此段	
+	ENDIF
+ELSEIF ABL:(ARG):39 >= 1 || CFLAG:(ARG):602 > 40
+	PRINTFORMW %SAVESTR:ARG%細心地舔舐著%ITEMNAME:(CFLAG:ARG:601)%的陰莖。
+	;-------------------------------增加	
+		PRINTFORML 屈服,欲情,恭順,恥情點數+{CFLAG:A:602 * 8 * Y + 8 }
+		JUEL:A:6 += (CFLAG:A:602 * 8 * Y + 8 )
+		JUEL:A:5 += (CFLAG:A:602 * 8 * Y + 8 )
+		JUEL:A:4 += (CFLAG:A:602 * 8 * Y + 8 )
+		JUEL:A:8 += (CFLAG:A:602 * 8 * Y + 8 )
+		PRINTFORML 口交經驗+{Y * 5}
+		PRINTFORML 精液經驗+{Y * 5}
+		EXP:A:22 += Y * 5
+		EXP:A:20 += Y * 5
+		PRINTFORMW 獸姦經驗+{Y * 5}
+		EXP:A:56 += Y * 5
+		;-------------------------------此段	
+ELSE
+	PRINTFORMW %SAVESTR:ARG%蹲在馬廄的角落裡，深深地絕望了。
+	PRINTFORMW 屈服,恐怖點數+{CFLAG:A:602 * 8 * Y + 8 }
+	JUEL:A:6 += (CFLAG:A:602 * 8 * Y + 8 )
+	JUEL:A:10 += (CFLAG:A:602 * 8 * Y + 8 )
+ENDIF
+
+RETURN 0

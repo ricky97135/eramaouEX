@@ -1,0 +1,340 @@
+﻿;施虐狂ッ気のLvUP処理とその可否判定
+;eratohoA ver1,204のスクリプトをベースに処理を簡略化
+;eraIM@Sから導入しました(eramaou)
+
+;-------------------------------------------------
+;施虐狂ッ気のLvUP
+;-------------------------------------------------
+@ABLUP20
+DRAWLINE
+;PRINTL 奴隸的S氣質提升了。
+;PRINTL S氣質越高，越容易在施予別人苦痛時欲情高漲。
+;CUSTOMDRAWLINE ‥
+;施虐狂ッ気はLv5が上限
+;[倒錯的][施虐狂][逆襲]が付いている場合はLv10まで開放
+IF ABL:20 >= 5 && (TALENT:80 == 0 && TALENT:83 == 0 && TALENT:127 == 0)
+	PRINTW 需要特殊素質才能繼續提升
+	RETURN 0
+;抖S氣質＋抖M氣質は20以上にならない
+ELSEIF ABL:20 + ABL:21 >= 20
+	PRINTFORMW 抖S氣質({ABL:20})＋抖M氣質({ABL:21})上限為20
+	RETURN 0
+ELSEIF ABL:20 >= 10
+	PRINTW 已達最高級
+	RETURN 0
+ENDIF
+
+;必要な欲情點數
+A = 0
+;必要な施虐快樂經驗回數
+B = 0
+;必要な異常經驗回數
+C = 0
+
+;條件別にＯＫかダメかを記録する
+;欲情點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+I = 0
+
+CALL DECIDE_ABLUP20
+
+;慾望が抖S氣質＋１レベルでないといけない
+PRINTFORML %ABLNAME:11%LV{ABL:20+1}以上(現在LV{ABL:11})且
+
+;ＬＶ３から４、４から５に上げるときは異常經驗必要（素質：[倒錯的][施虐狂][嫉妒][小惡魔]なら無視できる）
+SIF C > 0
+	PRINTFORML %EXPNAME:50%{C}以上（現在{EXP:50}）且
+
+PRINTFORM [0] - %PALAMNAME:5%點數×{JUEL:5}/{A} ……
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 點數不足 
+	SIF I & 2
+		PRINT 經驗不足
+	SIF I & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+;施虐快樂經驗
+SIF B > 0
+	PRINTFORML 　　　%EXPNAME:33%　{EXP:33}/{B}
+
+PRINTL [100] - 停止
+
+INPUT
+IF RESULT != 0 && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:20 += 1
+
+JUEL:5 -= A
+
+PRINTFORML %ABLNAME:20%變為LV{ABL:20}。
+
+RETURN 0
+
+
+;-------------------------------------------------
+@CORE_ABLUP20
+;-------------------------------------------------
+ABL:20 ++
+
+IF I == 0
+	JUEL:5 -= A
+ENDIF
+
+
+;-------------------------------------------------
+;抖M氣質のLvUP可否判定
+;-------------------------------------------------
+@DECIDE_ABLUP20
+;[倒錯的][施虐狂][逆襲]が付いている場合はLv10まで開放
+SIF ABL:20 >= 5 && (TALENT:80 == 0 && TALENT:83 == 0 && TALENT:127 == 0)
+	RETURN 0
+;抖S氣質＋抖M氣質は20以上にならない
+SIF ABL:20 + ABL:21 >= 20
+	RETURN 0
+;施虐狂ッ気はLv10が上限
+SIF ABL:20 >= 10
+	RETURN 0
+
+
+;必要な欲情點數
+A = 0
+;必要な施虐快樂經驗回數
+B = 0
+;必要な異常經驗回數
+C = 0
+
+;條件別にＯＫかダメかを記録する
+;欲情點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+I = 0
+
+IF ABL:20 == 0
+	A = 100
+	B = 5
+ELSEIF ABL:20 == 1
+	A = 500
+	B = 20
+ELSEIF ABL:20 == 2
+	A = 1500
+	B = 50
+ELSEIF ABL:20 == 3
+	A = 3000
+	B = 120
+ELSEIF ABL:20 == 4
+	A = 5000
+	B = 300
+ELSEIF ABL:20 == 5
+	A = 8000
+	B = 600
+ELSEIF ABL:20 == 6
+	A = 12000
+	B = 1500
+ELSEIF ABL:20 == 7
+	A = 15000
+	B = 3000
+ELSEIF ABL:20 == 8
+	A = 25000
+	B = 5000
+ELSEIF ABL:20 == 9
+	A = 30000
+	B = 8000
+ENDIF
+
+;戒備森嚴
+IF TALENT:27
+	IF ABL:20 == 3
+		TIMES C , 1.50
+		TIMES D , 1.50
+		TIMES E , 1.50
+	ELSEIF ABL:20 == 4
+		TIMES C , 2.00
+		TIMES D , 2.00
+		TIMES E , 2.00
+	ELSEIF ABL:20 == 5
+		TIMES C , 2.50
+		TIMES D , 2.50
+		TIMES E , 2.50
+	ELSEIF ABL:20 >= 6
+		TIMES C , 3.00
+		TIMES D , 3.00
+		TIMES E , 3.00
+	ENDIF
+ENDIF
+
+;ＬＶ３から４、４から５、７から８に上げるときは異常經驗必要（素質：[倒錯的][施虐狂][嫉妒][小惡魔]なら無視できる）
+SIF (ABL:20 == 3 || ABL:20 == 4 || ABL:20 == 7) && TALENT:80 == 0 && TALENT:83 == 0 && TALENT:84 == 0 && TALENT:87 == 0
+	C = ABL:20 - 2
+
+;必要な絕頂經驗數は全レベル1
+G = 1
+
+;膽怯
+IF TALENT:10
+	TIMES A , 1.50
+ENDIF
+;反抗心
+IF TALENT:11
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+;剛強
+SIF TALENT:12
+	TIMES A , 0.90
+;文靜
+SIF TALENT:14
+	TIMES A , 1.20
+;囂張
+IF TALENT:16
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+
+;高姿態
+IF TALENT:15
+	TIMES A , 0.90
+	TIMES B , 0.90
+;低姿態
+ELSEIF TALENT:17
+	TIMES A , 1.10
+	TIMES B , 1.10
+ENDIF
+
+;克制
+IF TALENT:20
+	TIMES A , 1.20
+	TIMES B , 1.20
+ENDIF
+;冷漠
+IF TALENT:21
+	TIMES A , 1.20
+	TIMES B , 1.20
+ENDIF
+;感情淡薄
+IF TALENT:22
+	TIMES A , 1.50
+	TIMES B , 1.20
+ENDIF
+;好奇心
+IF TALENT:23
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+;悲觀的
+SIF TALENT:26
+	TIMES A , 1.10
+;愛表現
+IF TALENT:28
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+;看重貞操
+IF TALENT:30
+	TIMES A , 1.10
+	TIMES B , 1.10
+;看輕貞操
+ELSEIF TALENT:31
+	TIMES A , 0.95
+	TIMES B , 0.95
+ENDIF
+
+;壓抑
+IF TALENT:32
+	TIMES A , 0.95
+	TIMES B , 0.95
+;開放
+ELSEIF TALENT:33
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+
+;討厭男人or男人婆
+IF TALENT:79 || TALENT:82
+	TIMES A , 0.95
+	TIMES B , 0.95
+ENDIF
+
+;害怕疼痛
+IF TALENT:40
+	TIMES A , 1.20
+	TIMES B , 1.20
+;不懼疼痛
+ELSEIF TALENT:41
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+
+;淫亂
+IF TALENT:76
+	TIMES A , 0.80
+	TIMES B , 0.80
+	TIMES C , 0.80
+	TIMES D , 0.80
+	TIMES E , 0.80
+ENDIF
+;倒錯的
+IF TALENT:80
+	TIMES A , 0.80
+	TIMES B , 0.80
+ENDIF
+;施虐狂
+IF TALENT:83
+	TIMES A , 0.50
+	TIMES B , 0.50
+ENDIF
+;受虐狂
+IF TALENT:88
+	TIMES A , 1.20
+	TIMES B , 1.20
+ENDIF
+;嫉妒
+IF TALENT:84
+	TIMES A , 0.80
+	TIMES B , 0.80
+ENDIF
+;小惡魔
+IF TALENT:87
+	TIMES A , 0.80
+	TIMES B , 0.80
+ENDIF
+;瘋狂
+IF TALENT:123
+	TIMES A , 0.50
+	TIMES B , 0.50
+ENDIF
+;崩壞
+IF TALENT:9
+	TIMES A , 2.00
+	TIMES B , 2.00
+ENDIF
+
+;欲情點數が不足
+SIF JUEL:5 < A
+	I |= 1
+
+;施虐快樂經驗が不足
+SIF EXP:33 < B
+	I |= 2
+
+;異常經驗が不足
+SIF EXP:50 < C
+	I |= 2
+
+;慾望が抖S氣質＋１レベルでないといけない
+SIF ABL:11 < ABL:20 + 1
+	I |= 4
+
+IF I == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+

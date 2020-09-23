@@ -1,0 +1,1190 @@
+﻿;------------------------------------------
+@BANISHMENT
+#DIM LV
+#DIMS MATURO
+#DIM FAMILY,3
+#DIM L_孩子
+;ZはTARGETを保存してるため使用禁止
+;------------------------------------------
+;追放系コマンド
+
+SIF A == 0
+	RETURN 0
+B = A
+
+FAMILY = CFLAG:A:605
+FAMILY:1 = FAMILY % 10
+CALL SEARCH_FAMILY, A
+FAMILY:2 = RESULT
+M = FAMILY:2
+
+PRINTW 要來點有意思的放逐嗎？
+PRINTL 
+PRINTL [0] 就這樣流放掉
+PRINTFORML [1] 施予\@TALENT:A:122 ? 女 # 男 \@性化的詛咒
+PRINTL [2] 消去之前的記憶
+PRINTL [3] 變成小動物後放生
+PRINTL [4] 讓她回到成為勇者前的生活
+PRINTFORML \@!TALENT:A:122 && !TALENT:A:153? [5] 送她個孩子當餞別禮、播種受孕後再流放 # \@
+PRINTL [100] 返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 5 && (TALENT:A:122 || TALENT:A:153)
+	GOTO INPUT_LOOP
+ELSEIF RESULT > 5 && RESULT != 100
+	GOTO INPUT_LOOP
+ENDIF
+
+IF RESULT == 100
+	TARGET = FLAG:1
+	RETURN 0
+ENDIF
+
+IF RESULT == 5
+	PRINTFORML %SAVESTR:MASTER%派魅魔去找%SAVESTR:A%、並且告訴她
+	IF TALENT:A:85
+		PRINTFORML 「你要被趕走了、東西趕快收一收準備滾」
+		PRINTFORML 原本抵死不從的%SAVESTR:A%、在魅魔說了
+		PRINTFORML 「由於魔王大人的慈悲、會臨幸你最後一次……好好把握吧」
+	ELSE
+		PRINTFORML 「只要獻身給魔王並自願懷上孩子就可以放你離開」
+		PRINTFORML 原本抵死不從的%SAVESTR:A%、在魅魔說了
+		PRINTFORML 「還是你比較想永遠留下來？留在這遲早也會被侵犯到懷上吧」
+	ENDIF
+	PRINTFORML 之後、面如死灰地同意了
+	PRINTL
+	PRINTFORML %SAVESTR:MASTER%將%SAVESTR:A%帯到廣場上、在眾目睽睽之下讓%SAVESTR:A%自己跨上來侍奉
+	IF TALENT:A:0
+		PRINTFORML %SAVESTR:A%不久前還是處女的小穴、現在已經被擴張成%SAVESTR:MASTER%的形狀了
+		TALENT:A:0 = 0
+	ENDIF
+	PRINTFORML 隨著%SAVESTR:MASTER%注入熱騰騰的精種、魅魔們事先畫在%SAVESTR:A%肚子上的淫紋亮了起來、圖樣漸漸變得更加繁複
+	PRINTFORML 當圖樣徹底變成象徵受孕成功的模樣時、%SAVESTR:A%的肚子一瞬間膨脹起來、胸部也開始流出母乳
+	PRINTFORML 突如其來的感官衝擊讓%SAVESTR:A%弓起身子陷入高潮、腹中胎兒對父親魔力的強烈渴望讓%SAVESTR:A%無意識地更加扭動腰肢索求著
+	PRINTFORMW 【%SAVESTR:A%懷上了%SAVESTR:MASTER%的孩子】
+	PRINTL
+	TALENT:A:153 = 1
+	CFLAG:A:102 = 1
+	RESULT = 0
+ENDIF
+
+TARGET = A
+
+IF TALENT:TARGET:220 != 1 && EX_TALENT:TARGET:1 != 1 
+	EX_FLAG:99 += 2
+	PRINTFORML 威望值增加
+ELSE
+	EX_FLAG:99 -= 10
+	PRINTFORML 威望值減少
+ENDIF
+TFLAG:510 = RESULT
+
+CALL BANISHMENT_KOUJO
+
+IF TFLAG:510 == 0
+	PRINTFORML %SAVESTR:A%的力量被封印起來、
+	PRINTW 放逐到地下城的外面
+	IF TALENT:A:85 && !TALENT:A:153
+		PRINTFORMW %SAVESTR:A%不知所措的被放逐了、嘴中還在重複著你的名字。
+		PRINTFORMW %SAVESTR:A%帶著一副快要崩潰的悲傷表情，慢慢的消失在遠方的森林中…………
+	ELSEIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%不知所措的被放逐了、嘴中還在重複著你的名字。
+		PRINTFORMW 還在懷孕期的%SAVESTR:A%一副快要崩潰的悲傷表情，慢慢的消失在遠方的森林中…………
+	ELSEIF TALENT:A:153
+		PRINTFORMW 還在懷孕期的%SAVESTR:A%一臉茫然，慢慢的消失在遠方的森林中…………
+	ENDIF
+	PRINTL
+	
+	$TRANS_WOMAN
+	
+	;末路分岐
+	IF TALENT:A:244 || TALENT:A:245 || TALENT:A:246 || TALENT:A:247
+		;悪魔素質
+		PRINTFORMW %SAVESTR:A%被附近的村民捕獲、空有惡魔般的外表，只能當觀賞物在馬戲團中渡過餘生……
+		MATURO = 玩物
+	ELSEIF TALENT:A:204
+		;肉便器
+		PRINTFORML 早已淪為肉便器的%SAVESTR:A%如今啊、濃妝豔抹、到處派送寫著個人聯繫方式和真名的宣傳單、
+		PRINTFORMW 每天都在水晶球前，努力地扭動腰肢呢……
+		;動畫の內容
+		IF TALENT:A:75 || TALENT:A:76 || TALENT:A:31
+			;淫亂?セックス狂?貞操無頓著
+			PRINTFORMW 因為%SAVESTR:A%“是個男的就行”的性愛準則，“公開濫交女”的名頭在視頻界已經變得非常響亮了呢……
+			MATURO = 淫娃蕩婦
+		ELSEIF ABL:A:39 > 0 || TALENT:A:317 == 12
+			;獣姦中毒?かわいい動物が好き
+			PRINTFORMW 由於只拍攝獸奸視頻，%SAVESTR:A%“只艸動物”的名頭已經變得非常響亮了呢……
+			MATURO = 動物愛好者
+		ELSEIF TALENT:A:121 && TALENT:A:318 == 1
+			;ふたなり巨根
+			PRINTFORML %SAVESTR:A%作為扶她女優
+			PRINTFORMW 卻總是喜歡在視頻中炫耀自己巨大陰莖……不過這種行為也讓她變得非常出名。
+			MATURO = 行行行，你JB大你先射
+		ELSEIF TALENT:A:121 && TALENT:A:318 == 2
+			;ふたなり短小包莖
+			PRINTFORML 扶她化的%SAVESTR:A%非常出名，
+			PRINTFORMW 因為總是在水晶球視頻中露出自己的短小包莖還總是射的一塌糊塗。
+			MATURO = 六郎
+		ELSEIF TALENT:A:121
+			;その他のふたなり  中文存疑，原文究竟是濫交還是精力充沛不懂
+			PRINTFORML 身為扶他的%SAVESTR:A%喜歡只和女性交往，還總將性愛過程拍攝下來
+			PRINTFORMW 因為精力持久，那超長馬拉松般的性愛視頻飽受熱議
+			MATURO = 雌性種馬
+		ELSEIF ABL:A:22 > 0
+			;レズっ気
+			PRINTFORMW %SAVESTR:A%因為總是拍攝激烈的女同性愛視頻變得非常有名
+			MATURO = 妖豔百合
+		ELSEIF TALENT:A:104 || TALENT:A:232
+			;V敏感?淫壺
+			PRINTFORMW 因為總是喜歡把1:1大小的巨龍陽具按摩棒塞進陰道，%SAVESTR:A%的水晶球視頻在紳士群體中非常暢銷……
+			MATURO = 陰道擴張女優
+		ELSEIF TALENT:A:106 || TALENT:A:233
+			;A敏感?淫肛
+			PRINTFORMW 由於喜歡使用巨型帶拖網肛門按摩棒的變態行為，%SAVESTR:A%的水晶球視頻在紳士群體中非常暢銷……
+			MATURO = 肛門擴張女優
+		ELSEIF TALENT:A:102 || TALENT:A:230
+			;C敏感?淫核
+			PRINTFORMW 由於%SAVESTR:A%那極端肥大化的陰蒂，視頻在紳士群體中一直很暢銷……
+			MATURO = 陰蒂肥大女優
+		ELSEIF TALENT:A:108 || TALENT:A:231
+			;B敏感?淫乳
+			PRINTFORMW 因為%SAVESTR:A%那極端肥大化的乳頭，視頻在紳士群體中一直很暢銷……
+			MATURO = 乳頭開發女優
+		ELSEIF ABL:A:17 > 0
+			;露出癖
+			PRINTFORMW %SAVESTR:A%因為熱衷於野外暴露下體的性愛視頻而遠近聞名……
+			MATURO = 野戰
+		ELSEIF ABL:A:21 > 0
+			;マゾっ気
+			PRINTFORMW 因為嗜好被各種調教的被虐狂，%SAVESTR:A%在水晶球前的奴隸姿態成為了熱議話題。
+			MATURO = 抖M女優
+		ELSEIF TALENT:A:60 || TALENT:A:74
+			;自慰しやすい?自慰狂い
+			PRINTFORMW 呐，你知道黑猩猩每天都要自慰八個小時，而且每次都會絕頂嗎？嗯，%SAVESTR:A%在視頻裡也一樣。
+			MATURO = 自慰女優
+		ELSEIF TALENT:A:317 == 13
+			;綺麗な裝飾品が好き
+			PRINTFORML 由於%SAVESTR:A%熱衷於在各種性器官上穿環的變態行為
+			PRINTFORMW 成為了知名的肉體改造發燒友
+			MATURO = 肉體改造發燒友
+		ELSEIF TALENT:A:57
+			;おもらし癖
+			PRINTFORMW %SAVESTR:A%因為熱衷於在野外和各種沒人的地方排便，水晶球視頻廣受各大漏尿癖愛好者的好評
+			MATURO = 野外放尿女優
+		ELSEIF TALENT:A:48
+			;近視
+			PRINTFORMW 因為%SAVESTR:A%在視頻中總是帶著眼鏡的呆萌表情，身體卻又極度淫蕩的強烈反差而出名了。
+			MATURO = 眼鏡女優
+		ELSEIF TALENT:A:314 == 1
+			;エルフ
+			PRINTFORMW %SAVESTR:A%作為“那個在視頻裡總是喜歡艸橡樹的變態精靈”出名了
+			MATURO = 戀物癖女優
+		ELSEIF TALENT:A:0
+			;処女
+			PRINTFORMW 身為知名的尻穴便器，%SAVESTR:A%的小穴一直保持著默默無聞未經開發的狀態，但是她那已經擴張到極限的肛門卻截然相反，每天……都熱鬧的很呐……
+			MATURO = 尻穴便器女優
+		ELSE
+			PRINTFORMW %SAVESTR:A%因為在街上變態的癡女行為而出名
+			MATURO = 癡女女優
+		ENDIF
+		;見てくれてありがとう
+		IF TALENT:A:317 == 4 || TALENT:317 == 11
+			;故郷の戀人?憧れの人が好き
+			PRINTFORML 昔日的戀人費勁周折打聽%SAVESTR:A%的消息，卻只得到一個水晶球、
+			PRINTFORMW 看著%SAVESTR:A%已經面目全非的淫穢表演，他一邊哭泣著一邊自慰起來……
+		ELSEIF TALENT:A:315 == 1
+			;元學生
+			PRINTFORML 某個一直單戀著%SAVESTR:A%的同學看著手中的水晶球、
+			PRINTFORMW 視頻裡%SAVESTR:A%淫亂的姿態讓他的心中充滿了羞恥，卻情不自禁的摸向了雙腿之間……
+		ELSEIF TALENT:A:315 == 8
+			;元貴族
+			PRINTFORML 某個曾經憧憬著身為高級貴族%SAVESTR:A%的男性入手了一個水晶球、
+			PRINTFORMW 看著%SAVESTR:A%淫亂的姿態讓他的心中充滿了羞恥，卻情不自禁的摸向了雙腿之間……
+		ELSEIF TALENT:A:315 == 12
+			;元聖女
+			PRINTFORML 某個曾經憧憬著身為聖女%SAVESTR:A%的少年入手了一個水晶球、
+			PRINTFORMW 看著%SAVESTR:A%變態的行為讓他的心中充滿了羞恥，卻情不自禁的摸向了雙腿之間……
+		ELSEIF TALENT:A:315 == 15
+			;元商人
+			PRINTFORML 某個一直暗戀著商店看板娘%SAVESTR:A%的青年入手了一個水晶球、
+			PRINTFORMW 看著%SAVESTR:A%墮落淫亂的樣子，忍不住一邊哭泣一邊自慰起來……
+		ELSEIF TALENT:A:315 == 18
+			;元パン屋
+			PRINTFORML 某個一直暗戀著麵包店看板娘%SAVESTR:A%的青年入手了一個水晶球、
+			PRINTFORMW 看著%SAVESTR:A%墮落淫亂的樣子，忍不住一邊哭泣一邊自慰起來……
+		ELSEIF TALENT:A:315 == 19
+			;元軍人
+			PRINTFORML 一群原本是%SAVESTR:A%部下的軍人們集體入手了一整套水晶球、
+			PRINTFORMW 看著原本可信賴的上司和領袖%SAVESTR:A%變成淫賤牝犬的姿態，軍營中傳出了一陣粗重的喘息聲……
+		ENDIF
+	
+	ELSEIF TALENT:A:85 && CFLAG:A:601 == 901 && TALENT:A:153 && RAND:2 == 0
+		PRINTFORML 傷心欲絕的%SAVESTR:A%抱著肚子漫遊著，無法理解你為何如此狠心
+		PRINTFORML 雖然懷著身孕諸多不便，一路上卻有驚無險，似乎冥冥中有什麼庇佑存在
+		PRINTFORML 
+		PRINTFORML 直到%SAVESTR:A%已經遠離魔族的疆域，步入那遙遠的異鄉，身體似乎也快接近臨盆之日的時候
+		PRINTFORML 無名指上的戒指一陣閃耀……這是%SAVESTR:A%身邊除了孩子外僅剩的與你有連繫的東西
+		PRINTFORML 塵封其中的真相突兀地浮現於%SAVESTR:A%腦海裡
+		PRINTFORML 
+		PRINTFORML 魔族即將遭逢大變
+		PRINTFORML 而自己肚子裡的孩子就是將來的最後一線希望
+		PRINTFORML 
+		PRINTFORML %SAVESTR:A%泣不成聲，並下定決心好好將孩子養育長大
+		MATURO = 埋藏於遠方的希望之種
+	
+	;深く依存系
+	ELSEIF TALENT:A:46
+		;薬物中毒
+		PRINTFORMW 之後，已經上癮的%SAVESTR:A%屈服於欲望之下、變成了一個只要給她藥物便會張開雙腿的娼妓……
+		MATURO = 藥物中毒的娼婦
+	ELSEIF TALENT:A:316 == 3 || TALENT:316 == 18
+		;啓示を受けて?夢に見たから
+		PRINTFORML 曾經的信仰被唾棄，%SAVESTR:A%開始尋找新的精神寄託
+		PRINTFORMW 終於，在新興宗教信徒的淫亂性愛派對中、她似乎找到了歸宿……
+		MATURO = 新興宗教的信者
+	ELSEIF TALENT:A:153 && CFLAG:A:102 == 1 && !TALENT:A:85 && !TALENT:A:76 && RAND:2 == 0
+		PRINTFORML 挺著個大肚子%SAVESTR:A%經歷了漫長的旅途後終於回到了故鄉
+		IF CFLAG:A:70 == 1 && RAND:2 == 0
+			PRINTFORML 作為勇者討伐魔王卻失敗了，還因此被變成女性甚至失身懷上孩子
+			PRINTFORMW 不知道該如何向家人道出真相的%SAVESTR:A%，自稱是%SAVESTR:A%的傾慕者
+			PRINTFORML 
+			PRINTFORML 她的家鄉被魔族侵略而毀滅了，自己也被魔族抓住，因姿色不錯預定作為奴隸出售
+			PRINTFORML 押送途中被英勇的%SAVESTR:A%拯救了，她為了報答於是對%SAVESTR:A%獻身
+			PRINTFORMW 一夜溫存後%SAVESTR:A%讓無家可歸的她先前往自己故鄉，並承諾有朝一日會回來完婚
+			PRINTFORML 
+			PRINTFORML 聽完敘述並確認過來自%SAVESTR:A%的信物，%SAVESTR:A%的家人相信了%SAVESTR:A%捏造的說法
+			PRINTFORML ……畢竟沒人會想到眼前這面帶羞怯的孕婦就是%SAVESTR:A%本人
+			PRINTFORML 作為%SAVESTR:A%的未婚妻又懷著%SAVESTR:A%的骨肉，得到了新身份的%SAVESTR:A%就這樣在原本的家中安頓下來
+			IF TALENT:A:317 == 4
+				PRINTFORML 關於%SAVESTR:A%的消息在村中傳開，翌日%SAVESTR:A%曾經的戀人登門拜訪了
+				PRINTFORML 看出面前的女孩眼中滿是誤以為%SAVESTR:A%出軌的失望，只是性格溫婉的她沒有因此對個孕婦發作
+				PRINTFORML 無數次發自內心的道歉後，%SAVESTR:A%滿懷愧疚地送她離開，並在心中默默祝福對方早日找到更好的歸宿
+			ENDIF
+			PRINTFORML 不久後%SAVESTR:A%生下了個可愛的女兒，全家洋溢著歡欣的氣氛
+			PRINTFORMW 似乎是在腹中就感應到%SAVESTR:A%擔心暴露的想法，生下來的孩子像正常人一般，並沒有出現明顯的魔族特徵
+			PRINTFORML 
+			PRINTFORML 光陰似箭，%SAVESTR:A%的女兒已成長為美貌的少女，並充分展現出青出於藍的戰鬥天分
+			PRINTFORML 某日，當年攻入魔王城後就毫無音訊的%SAVESTR:A%被國家判定為已經戰死
+			PRINTFORML 消息傳至%SAVESTR:A%的故鄉，家中上下一片悲慟
+			PRINTFORML 在設置並祭拜%SAVESTR:A%的衣冠塚後，%SAVESTR:A%的女兒做出成為勇者為父親報仇的決定
+			PRINTFORML %SAVESTR:A%為了阻止女兒只好私下向女兒說出實情
+			PRINTFORML 沒想到女兒知道真相後仍執意討伐魔王，理由是為被始亂終棄的母親討回公道
+			PRINTFORMW 在%SAVESTR:A%擔憂的目光下，%SAVESTR:A%的女兒就這樣踏上討伐自己親生父親的征途……
+			;容易自慰or自慰狂or50%
+			IF (TALENT:A:60 || TALENT:A:74) || RAND:2
+				PRINTFORML 
+				PRINTFORML 而自從女兒離開後，%SAVESTR:A%每日總是關在房間裡深居簡出，也謝絕一切慰問
+				PRINTFORML 旁人見到失去未婚夫甚至可能要再失去女兒的%SAVESTR:A%如此堅強，紛紛稱讚她的氣節
+				PRINTFORML 沒有人知道在隔絕一切的房間內，%SAVESTR:A%正努力用仿造%NAME:MASTER%那裡的淫具在自己下身抽插
+				PRINTFORML 回憶起失身那夜的細節，想到繼承自己外貌的女兒可能也會成為%NAME:MASTER%的女人
+				PRINTFORMW %SAVESTR:A%懷著對女兒的羨慕嫉妒，沉浸於一次又一次高潮中……
+			ENDIF
+			MATURO = 魔王大人你的女兒來討伐你了
+			ADDCHARA NO:A
+			CALL ADDCHARA_EX, CHARANUM-1
+			L_孩子 = CHARANUM - 1
+			EX_TALENT:L_孩子:1 = 1
+			EX_TALENT:L_孩子:2 = 1
+			CALL CHARA_NAME_RANDOM_DEFINE(L_孩子,NID_GET_TYPE(NID(A)))
+			TALENT:L_孩子:種族 = TALENT:A:種族
+			IF RAND:2 == 0
+				PRINTFORML 
+				PRINTFORMW 得知了自己真正身世的%SAVESTR:L_孩子%，在前往魔王城的旅途中覺醒了隱藏在血脈中的魔族力量
+				EX_TALENT:L_孩子:1 = 1
+				EX_TALENT:L_孩子:2 = 1
+				TALENT:L_孩子:種族 = 9
+				TALENT:L_孩子:原種族 = TALENT:A:種族
+				TALENT:L_孩子:現種族 = RAND:3 + 191
+				SIF TALENT:L_孩子:現種族 == 192
+					TALENT:L_孩子:124 = 1
+			ENDIF
+			CALL FAMILY_BIRTHTO_MOM(L_孩子,A)
+			CALL FAMILY_BIRTHTO_DAD(L_孩子,MASTER)
+			CALL CHARA_MAKE(L_孩子 , 0 , (TALENT:L_孩子:種族 == 0? -1 # TALENT:L_孩子:種族))
+			CALL CHARA_MAKE_INHERIT(L_孩子,A,MASTER)
+			CSTR:L_孩子:8 = %SAVESTR:A%
+			TALENT:L_孩子:244 = 0
+			IF TALENT:L_孩子:253 + TALENT:L_孩子:255 > 1
+				SELECTCASE RAND:3
+					CASE 0
+						TALENT:L_孩子:253 = 0
+					CASE 1
+						TALENT:L_孩子:253 = 0
+						TALENT:L_孩子:255 = 0
+					CASE 2
+						TALENT:L_孩子:255 = 0
+				ENDSELECT
+			ENDIF
+			TALENT:L_孩子:成為勇者的契機 = 8
+			TALENT:L_孩子:成為勇者前的生活 = 93 + RAND:2
+			LOCAL = (CFLAG:MASTER:9 + CFLAG:A:9)/2
+			LOCAL = (LOCAL * 6 + RAND:LOCAL * 2)/10
+			REPEAT LOCAL
+				CALL ST_UP, L_孩子
+			REND
+			PRINTL *****************************************
+			PRINTFORML %SAVESTR:A%的女兒、勇者%SAVESTR:L_孩子%開始了地下城的攻略！
+			PRINTL *****************************************
+			;善惡值調整
+			SIF CFLAG:L_孩子:151 < -100
+				CFLAG:L_孩子:151 = -100
+			TARGET = A
+			A = L_孩子
+			CALL ENTERENEMY_KOUJO
+			CFLAG:L_孩子:580 += CFLAG:A:580 + CFLAG:A:9 + 500
+			CFLAG:L_孩子:1 = 2
+			CFLAG:L_孩子:501 = 1
+			CFLAG:L_孩子:502 = 0
+			PRINTL
+			CALL SHOW_CHARA_INFO, L_孩子
+			PRINTL
+		ELSEIF (TALENT:A:157 || TALENT:A:317 == 4) && RAND:2 == 0
+			IF CFLAG:A:70 == 1
+				PRINTFORML 然而%SAVESTR:A%卻猶豫了……討伐魔王失敗，自己還變成這副模樣，還有回家的資格嗎？
+				PRINTFORML 就在%SAVESTR:A%正在街口煩惱著的時候，突然有個熟悉的聲音搭話詢問是否需要幫助
+				PRINTFORML 那是%SAVESTR:A%朝思暮想，當初出發討伐魔王前曾互許終身的戀人
+				PRINTFORML %SAVESTR:A%的淚水一下子潰堤了，對著戀人泣訴自己的遭遇
+				PRINTFORML 聽完%SAVESTR:A%的遭遇，%SAVESTR:A%的戀人先是吃了一驚，隨即不顧村人的反對將她迎回家中
+				GOTO BOTE_MARRIGE
+			ENDIF
+			PRINTFORML 原本要迎接%SAVESTR:A%進村的村民們，注意到%SAVESTR:A%的肚子後詢問起來
+			PRINTFORML 然而當村民知道%SAVESTR:A%腹中是被魔王侵犯而懷上的孩子時
+			PRINTFORML 對魔物的恐懼讓村民們議論紛紛，甚至有人鼓噪著想將她趕出村子
+			PRINTFORML 此時聞訊而來的\@TALENT:157 ? 丈夫 # 未婚夫 \@看到大腹便便的%SAVESTR:A%先是吃了一驚，隨即不顧村人的反對將她迎回家中
+			$BOTE_MARRIGE
+			PRINTFORML 愛人肯不計前嫌接納被魔族姦汙過還因姦成孕的自己，生下來的女孩也被視如己出，令%SAVESTR:A%感動不已
+			PRINTFORML 帶有魔族血統的女兒發育特別快，不久就成長為亭亭玉立又乖巧可愛的少女，一家三口從此過著幸福的日子
+			IF (CFLAG:A:70 == 1) || (RAND:2 == 0)
+				PRINTFORMW ……本該如此，直到有天女兒問起自己的真正身世
+				PRINTFORML 
+				PRINTFORML 由於女兒身上的魔族特徵顯而易見，在村子裡也不時因此受到排擠
+				PRINTFORML 儘管\@CFLAG:A:70 ? 兩位母親都 # 父親也 \@相當疼愛自己，但真正的生父……恐怕是魔族吧？
+				PRINTFORMW 知道無法瞞過女兒，%SAVESTR:A%對女兒說出當初在魔王城的遭遇
+				PRINTL 
+				PRINTFORML 隔天一早%SAVESTR:A%就被神色慌張的\@CFLAG:A:70 ? 伴侶 # 丈夫 \@叫醒
+				PRINTFORML %SAVESTR:A%的女兒不見了，在桌上留了一封信
+				PRINTFORML 內容寫著自己下定決心要討伐魔王為母親報仇，以及感謝雙親長久以來的照顧
+				PRINTFORMW 已經被封印力量的%SAVESTR:A%無力阻止，只能在\@CFLAG:A:70 ? 伴侶 # 丈夫 \@安慰下默默為女兒祈禱
+				MATURO = 魔王大人你的女兒來討伐你了
+				ADDCHARA NO:A
+				CALL ADDCHARA_EX, CHARANUM-1
+				L_孩子 = CHARANUM - 1
+				EX_TALENT:L_孩子:1 = 1
+				EX_TALENT:L_孩子:2 = 1
+				TALENT:L_孩子:種族 = 9
+				TALENT:L_孩子:原種族 = 9
+				TALENT:L_孩子:現種族 = RAND:3 + 191
+				SIF TALENT:L_孩子:現種族 == 192
+					TALENT:L_孩子:124 = 1
+				CALL CHARA_NAME_RANDOM_DEFINE(L_孩子,NID_GET_TYPE(NID(A)))
+				CALL FAMILY_BIRTHTO_MOM(L_孩子,A)
+				CALL FAMILY_BIRTHTO_DAD(L_孩子,MASTER)
+				CALL CHARA_MAKE(L_孩子 , 0 , (TALENT:L_孩子:種族 == 0? -1 # TALENT:L_孩子:種族))
+				CALL CHARA_MAKE_INHERIT(L_孩子,A,MASTER)
+				CSTR:L_孩子:8 = %SAVESTR:A%
+				TALENT:L_孩子:244 = 0
+				IF TALENT:L_孩子:253 + TALENT:L_孩子:255 > 1
+					SELECTCASE RAND:3
+						CASE 0
+							TALENT:L_孩子:253 = 0
+						CASE 1
+							TALENT:L_孩子:253 = 0
+							TALENT:L_孩子:255 = 0
+						CASE 2
+							TALENT:L_孩子:255 = 0
+					ENDSELECT
+				ENDIF
+				TALENT:L_孩子:成為勇者的契機 = 8
+				TALENT:L_孩子:成為勇者前的生活 = 93 + RAND:2
+				LOCAL = (CFLAG:MASTER:9 + CFLAG:A:9)/2
+				LOCAL = (LOCAL * 6 + RAND:LOCAL * 2)/10
+				REPEAT LOCAL
+					CALL ST_UP, L_孩子
+				REND
+				PRINTL *****************************************
+				PRINTFORML %SAVESTR:A%的女兒、勇者%SAVESTR:L_孩子%開始了地下城的攻略！
+				PRINTL *****************************************
+				;善惡值調整
+				SIF CFLAG:L_孩子:151 < -100
+					CFLAG:L_孩子:151 = -100
+				TARGET = A
+				A = L_孩子
+				CALL ENTERENEMY_KOUJO
+				CFLAG:L_孩子:580 += CFLAG:A:580 + CFLAG:A:9 + 500
+				CFLAG:L_孩子:1 = 2
+				CFLAG:L_孩子:501 = 1
+				CFLAG:L_孩子:502 = 0
+				PRINTL
+				CALL SHOW_CHARA_INFO, L_孩子
+				PRINTL
+			;接盤俠喜獲混血蘿
+			ELSE
+				PRINTFORMW ……本該如此，直到%SAVESTR:A%懷上下一胎
+				PRINTL 
+				PRINTFORML 由於擔心影響到胎兒，%SAVESTR:A%懷孕後便不再跟丈夫行房並分房睡覺
+				PRINTFORML 某天半夜起床如廁時，隱約聽到從丈夫的房間似乎傳來什麼聲響，仔細一聽竟是男女交歡之聲
+				PRINTFORML %SAVESTR:A%怒氣沖沖地衝入丈夫的房間打算興師問罪，卻發現正一絲不掛跨在丈夫身上扭腰嬌喘的是自己的愛女
+				PRINTFORML 而且女兒那正隨著動作邊跳動邊流出乳汁的胸部，跟平時藏在寬鬆衣物底下、此時明顯隆起的肚子，都說明兩人也已珠胎暗結
+				PRINTFORMW 在一番肥皂劇般的家庭鬥爭後，%SAVESTR:A%無奈地接受母女共侍一夫的現實……
+				MATURO = 母女丼
+			ENDIF
+		ELSE
+			PRINTFORML 原本要迎接%SAVESTR:A%進村的村民們，注意到%SAVESTR:A%的肚子後詢問起來
+			PRINTFORML 然而當村民知道%SAVESTR:A%腹中是被魔王侵犯而懷上的孩子時
+			PRINTFORM 對魔物的恐懼讓村民們叫囂著朝她丟石頭想將她趕出村子
+			IF TALENT:A:157 || TALENT:A:317 == 4
+				IF CFLAG:A:70 == 1
+					PRINTFORML ，其中甚至包含%SAVESTR:A%曾經的未婚妻的身影
+				ELSE
+					PRINTFORML ，其中甚至包含\@TALENT:157 ? 丈夫 # 未婚夫 \@的身影
+				ENDIF
+			ELSE
+				IF RAND:2 == 0
+					PRINTFORML ，此時卻有個青年挺身而出阻止了村人的暴行
+					IF TALENT:A:315 == 1
+						PRINTFORM 他是%SAVESTR:A%求學時的同窗
+					ELSEIF TALENT:A:315 == 2
+						PRINTFORM 他是過去%SAVESTR:A%擔任修女時醫治過的信徒
+					ELSEIF TALENT:A:315 == 11
+						PRINTFORM 他是過去%SAVESTR:A%擔任巫女時醫治過的信徒
+					ELSEIF TALENT:A:315 == 12
+						PRINTFORM 他是過去%SAVESTR:A%擔任聖女時醫治過的信徒
+					ELSE
+						PRINTFORM 他過去曾受%SAVESTR:A%的\@RAND:2 ? 救命之恩 # 照拂 \@
+					ENDIF
+					PRINTFORML ，心裡一直抱著對%SAVESTR:A%的憧憬
+					PRINTFORML 「對曾經犧牲一切為我們抵抗魔物的勇者恩將仇報，簡直比魔物還不如！」
+					PRINTFORML 青年一番義正詞嚴的指責讓村民們羞愧不已……那正直的身影映在%SAVESTR:A%眼中，心裡已芳心暗許
+					PRINTFORMW 安頓下來的%SAVESTR:A%接受了青年的追求，不久後兩人便成婚了
+					PRINTFORML 
+					GOTO BOTE_MARRIGE
+				ENDIF
+			ENDIF
+			PRINTFORML 好不容易逃出村莊的%SAVESTR:A%遍體鱗傷，無力地倒在荒野中啜泣著
+			PRINTFORML 充斥於心中的悲傷、恐懼、憤怒甚至憎恨等負面情感被腹中的魔王之子吸收，轉化為龐大的魔力
+			PRINTFORML 那天夜裡，一個強大的惡魔降生於世……隔天%SAVESTR:A%的故鄉就此消失在一片火海中
+			PRINTFORML 不久後大陸上開始流傳這樣的傳聞：
+			PRINTFORML 如果有個罩著斗篷抱著孩子的陌生女性來求宿，務必好好招待她
+			PRINTFORMW ……如果不想立刻喪生於火海中的話……
+			MATURO = 步於紅蓮業火中的惡魔之母
+		ENDIF
+	;過去の業に引きずられた系
+	ELSEIF TALENT:A:317 == 4 || TALENT:A:317 == 11
+		;故郷の戀人?憧れの人が好き
+		PRINTFORML %SAVESTR:A%經歷了漫長的旅途後終於回到了故鄉、
+		PRINTFORMW 看著曾經的愛人和\@ !CFLAG:A:70 ? 妻子 # 丈夫 \@相對微笑的場景，她又默默地消失在黑暗中……
+		MATURO = 下落不明
+	ELSEIF TALENT:A:316 == 7
+		;故郷を救うために勇者になったのに……
+		PRINTFORML 當初為了拯救大家的%SAVESTR:A%回到故鄉、看著已經荒蕪落敗的村莊、
+		PRINTFORML 被已經成為奴隸的原村人捕獲，成為大家公用的泄欲肉便器，
+		PRINTFORMW 還被迫掛著一塊木牌，上面刻著“對不起”……
+		MATURO = 慰安用肉便器
+	ELSEIF TALENT:A:315 == 8
+		;元貴族
+		PRINTFORML 身為原貴族的%SAVESTR:A%回到家鄉後得知、自己的家族早已沒落
+		;姉がいるか
+		LOCAL = TALENT:A:320 % 1000000
+		LOCAL /= 100000
+		;妹がいるか
+		LOCAL:1 = TALENT:A:320 % 100000000
+		LOCAL:1 /= 10000000
+		IF LOCAL > 0 && LOCAL:1 > 0
+			;姉妹がいる
+			PRINTFORML %SAVESTR:A%原本身為美麗貴婦的姐妹們、如今只能在妓院賣淫為生
+		ELSEIF LOCAL > 0
+			;姉がいる
+			PRINTFORML %SAVESTR:A%原本身為美麗貴婦的姐姐、如今只能在妓院賣淫為生
+		ELSEIF LOCAL:1 > 0
+			;妹がいる
+			PRINTFORML %SAVESTR:A%原本身為美麗貴婦的妹妹、如今只能在妓院賣淫為生
+		ENDIF
+		PRINTFORMW 而成為妓女的%SAVESTR:A%如今、被當初自己所看不起的低等市民日夜姦淫著……
+		MATURO = 高級娼婦
+	ELSEIF TALENT:A:316 == 2
+		;お金が必要だったのに……
+		PRINTFORML 曾經身為勇者的%SAVESTR:A%當初為了冒險，欠下了一大筆債、
+		PRINTFORML 如今被債務人找上，為了還清債務捨棄了最後的尊嚴開始工作
+		PRINTFORMW 如今身為變態性癖的富豪的玩物，只要主人命令，連大便都要含笑吞下呢……
+		MATURO = 妓女
+	ELSEIF TALENT:A:317 == 8
+		;家族が好き
+		;姉がいるか
+		LOCAL = TALENT:A:320 % 1000000
+		LOCAL /= 100000
+		;兄がいるか
+		LOCAL:1 = TALENT:A:320 % 10000000
+		LOCAL:1 /= 1000000
+		;妹がいるか
+		LOCAL:2 = TALENT:A:320 % 100000000
+		LOCAL:2 /= 10000000
+		;弟がいるか
+		LOCAL:3 = TALENT:A:320 % 1000000000
+		LOCAL:3 /= 100000000
+		IF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			;兄弟姉妹
+			PRINT 被自己兄弟姐妹喜愛的
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 被哥哥和姐妹喜愛的
+		ELSEIF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 被哥哥和姐弟喜愛的
+		ELSEIF LOCAL > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 被姐妹和弟弟喜愛的
+		ELSEIF LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 被兄弟和妹妹喜愛的
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0
+			PRINT 被哥哥和姐姐寵愛的
+		ELSEIF  LOCAL > 0 && LOCAL:2 > 0
+			PRINT 被姐姐和妹妹喜愛的
+		ELSEIF LOCAL > 0 && LOCAL:3 > 0
+			PRINT 被姐姐和弟弟喜愛的
+		ELSEIF  LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 被哥哥和妹妹喜愛的
+		ELSEIF LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 被哥哥和弟弟喜愛的
+		ELSEIF LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 被妹妹和弟弟景仰的
+		ELSEIF  LOCAL > 0
+			PRINT 被姐姐寵愛的
+		ELSEIF  LOCAL:1 > 0
+			PRINT 被哥哥寵愛的
+		ELSEIF LOCAL:2
+			PRINT 被妹妹景仰的
+		ELSEIF LOCAL:3 > 0
+			PRINT 被弟弟景仰的
+		ELSE
+			PRINT 被父母寵愛的
+		ENDIF
+		PRINTFORML %SAVESTR:A%回到家鄉，發現自己的家庭早已債臺高築，支離破碎
+		PRINTFORM %SAVESTR:A%的
+		IF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			;兄弟姉妹
+			PRINT 兄弟姐妹
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 哥哥和姐妹
+		ELSEIF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 哥哥和姐弟
+		ELSEIF LOCAL > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 姐妹和弟弟
+		ELSEIF LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 兄弟和妹妹
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0
+			PRINT 哥哥和姐姐
+		ELSEIF  LOCAL > 0 && LOCAL:2 > 0
+			PRINT 姐姐和妹妹
+		ELSEIF LOCAL > 0 && LOCAL:3 > 0
+			PRINT 姐姐和弟弟
+		ELSEIF  LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 哥哥和妹妹
+		ELSEIF LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 哥哥和弟弟
+		ELSEIF LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 妹妹和弟弟
+		ELSEIF  LOCAL > 0
+			PRINT 姐姐
+		ELSEIF  LOCAL:1 > 0
+			PRINT 哥哥
+		ELSEIF LOCAL:2
+			PRINT 妹妹
+		ELSEIF LOCAL:3 > 0
+			PRINT 弟弟
+		ELSE
+			PRINT 父親和母親
+		ENDIF
+		PRINT 為了償還欠債，出演了一部
+		IF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			;兄弟姉妹
+			PRINT 主題是近親亂倫的
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 主題是近親亂倫的
+		ELSEIF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 主題是近親亂倫的
+		ELSEIF LOCAL > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 主題是近親亂倫的
+		ELSEIF LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 主題是近親亂倫的
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0
+			PRINT 主題是兄妹亂倫的
+		ELSEIF  LOCAL > 0 && LOCAL:2 > 0
+			PRINT 主題是姐妹百合的
+		ELSEIF LOCAL > 0 && LOCAL:3 > 0
+			PRINT 主題是姐弟亂倫的
+		ELSEIF  LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 主題是兄妹亂倫的
+		ELSEIF LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 主題是兄弟搞基的
+		ELSEIF LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 主題是兄妹亂倫的
+		ELSEIF  LOCAL > 0
+			PRINT 主題是戀物癖的
+		ELSEIF  LOCAL:1 > 0
+			PRINT 百合的
+		ELSEIF LOCAL:2
+			PRINT 主題是抖M被狠狠調教的
+		ELSEIF LOCAL:3 > 0
+			PRINT 百合的
+		ELSE
+			PRINT 主題是濫交夫婦的
+		ENDIF
+		PRINTL 水晶球色情視頻，
+		PRINTFORM %SAVESTR:A%自己也加入了進去、
+		IF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			;兄弟姉妹
+			PRINT 和兄弟姐妹們一起，激烈的交媾著……
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 和姐妹們一同趴在哥哥的面前，搖晃著饑渴的臀部，乞求著哥哥的大肉棒……
+		ELSEIF LOCAL > 0 && LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 在哥哥和姐姐面前含弄著弟弟的肉棒……
+		ELSEIF LOCAL > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 和姐妹們一起侵犯青澀的弟弟……
+		ELSEIF LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 在弟弟妹妹的注視下和哥哥一起高潮……
+		ELSEIF  LOCAL > 0 && LOCAL:1 > 0
+			PRINT 和姐姐一起趴在哥哥的面前，搖晃著饑渴的臀部，乞求著哥哥的大肉棒……
+		ELSEIF  LOCAL > 0 && LOCAL:2 > 0
+			PRINT 和姐妹一起高潮……
+		ELSEIF LOCAL > 0 && LOCAL:3 > 0
+			PRINT 和姐姐一起侵犯青澀的弟弟……
+		ELSEIF  LOCAL:1 > 0 && LOCAL:2 > 0
+			PRINT 和妹妹一起趴在哥哥的面前，搖晃著饑渴的臀部，乞求著哥哥的大肉棒……
+		ELSEIF LOCAL:1 > 0 && LOCAL:3 > 0
+			PRINT 被兄弟分別從前後一起插入……
+		ELSEIF LOCAL:2 > 0 && LOCAL:3 > 0
+			PRINT 和妹妹一起侵犯青澀的弟弟……
+		ELSEIF  LOCAL > 0
+			PRINT 和姐姐交纏著……
+		ELSEIF  LOCAL:1 > 0
+			PRINT 被哥哥激烈的侵犯……
+		ELSEIF LOCAL:2
+			PRINT 和妹妹交纏著……
+		ELSEIF LOCAL:3 > 0
+			PRINT 侵犯青澀的弟弟……
+		ELSE
+			PRINT 和母親一起趴在父親的面前，搖晃著饑渴的臀部，乞求著父親的大肉棒……
+		ENDIF
+		PRINTW 感覺自己所有關於家庭的美好回憶都崩壞了……
+		MATURO = 亂倫女憂
+		
+	;性癖のせいで変態癡女に系
+	ELSEIF ABL:A:39 > 0
+		;獣姦中毒
+		PRINTFORMW 沒多久，%SAVESTR:A%在草叢中和流浪野狗交尾的身姿被人發現……
+		MATURO = 變態獸奸女
+	ELSEIF ABL:A:32 > 0
+		;精液中毒
+		PRINTFORML 沒多久，某處公共廁所裡五花八門的塗鴉中，混雜著出現了%SAVESTR:A%的名字和聯繫方式。
+		PRINTFORMW 「好想喝乳白色的“果汁”。等你聯絡喲？?」
+		MATURO = 精液便器
+	ELSEIF ABL:A:17 > 0
+		;露出癖
+		PRINTFORMW 一段時間後，有人發現了%SAVESTR:A%趁著夜色在街道上全裸自慰的身影，成為了這條街上有名的癡女
+		MATURO = 露出狂
+	ELSEIF ABL:A:21 > 0
+		;マゾっ気
+		PRINTFORMW 一段時間後，%SAVESTR:A%以大眾情婦的身份出現在盜賊團中、被當成受虐母豬一樣對待依然樂此不疲……
+		MATURO = 口交母豬
+	ELSEIF TALENT:A:60 || TALENT:A:74
+		;自慰しやすい?自慰狂い
+		PRINTFORML 之後，表面上恢復正常工作的%SAVESTR:A%、暗地裡早已淪為手淫的宮能奴隸
+		PRINTFORMW 薪水全部花在宮能小說和猥褻的性玩具上、每天都在賣力的搓弄著下體……
+		MATURO = 自慰狂
+	
+	;変わった體質
+	ELSEIF TALENT:A:121 && TALENT:A:318 == 2
+		;ふたなり短小包莖
+		PRINTFORML 身為扶她的%SAVESTR:A%因為自己的短小包莖無法滿足女性、
+		PRINTFORMW 只能靠看水晶球裡的色情影片來發洩因為扶她化而產生的，對女性肉體的饑渴……
+		MATURO = 扶她色情狂
+	ELSEIF TALENT:A:121
+		;その他のふたなり
+		PRINTFORML 扶她化的%SAVESTR:A%、每天收工後、都會光顧街道上的便宜妓院
+		PRINTFORMW 發洩著因為扶她化而產生的，對女性肉體的饑渴……
+		MATURO = 扶她嫖客
+	ELSEIF TALENT:A:273
+		;処女封印
+		PRINTFORML 無法支付解除私處封印的高昂費用，%SAVESTR:A%只好成為了專門提供肛交服務的妓女
+		PRINTFORMW 肛交的嫖資非常低廉，%SAVESTR:A%在妓院的盤剝下苦苦掙扎日益淪陷……
+		MATURO = 骯髒的屁眼交易
+	
+	;夢を葉えた系
+	ELSEIF TALENT:A:317 == 3
+		;歌が好き
+		PRINTFORML 喜歡唱歌的%SAVESTR:A%、決定以歌手的身份工作養活自己
+		PRINTFORMW 可是沒人喜歡%SAVESTR:A%的歌、最近已經淪為便宜畫家的裸體模特……
+		MATURO = 不入流的歌手
+	ELSEIF TALENT:A:317 == 6
+		;踴りが好き
+		PRINTFORML 喜歡跳舞的%SAVESTR:A%、決定以舞者的身份工作養活自己
+		PRINTFORMW 可是沒人喜歡%SAVESTR:A%的舞蹈、跳舞時的服裝越來越少，最近只剩一根絲帶掛在身上了……
+		MATURO = 不入流的舞者
+	ELSEIF TALENT:A:317 == 7
+		;絵が好き
+		PRINTFORML 喜歡繪畫的%SAVESTR:A%、決定靠賣自己的裸體畫掙錢養活自己
+		PRINTFORMW 可是沒人喜歡%SAVESTR:A%的作品、最近畫作的主題已經逐漸變成男女的交媾……
+		MATURO = 不入流的畫家
+	ELSEIF TALENT:A:317 == 18
+		;小説が好き
+		PRINTFORML 喜歡小說的%SAVESTR:A%、決定以官能小説家的身份工作養活自己
+		PRINTFORMW 可是沒人喜歡%SAVESTR:A%的文風、最近小說描寫的細節越來越變態……
+		MATURO = 不入流的小説家
+		
+	;どこにも転ばず仕方なく系
+	ELSEIF TALENT:A:315 == 5
+		;元娼婦
+		PRINTFORMW %SAVESTR:A%又回到了過去妓女的生活中，站在街頭招攬生意……
+		MATURO = 妓女
+	ELSEIF TALENT:A:315 == 7
+		;元物乞い
+		PRINTFORMW %SAVESTR:A%又回到了過去乞丐的生活中，蹲在街角乞討……
+		MATURO = 乞丐
+	ELSEIF TALENT:A:315 == 9
+		;元貧民
+		PRINTFORMW %SAVESTR:A%又回到了過去貧民的生活中，繼續居住在破爛的草棚子裡……
+		MATURO = 貧民
+	;元男性
+	ELSEIF !TALENT:A:122 && CFLAG:A:70 && TALENT:A:0 == 1
+		PRINTFORMW 在%SAVESTR:A%返鄉的路上碰到了過去的好基友，然而性轉換後的姣好姿色徹底激發了基友的慾望
+		PRINTFORMW 毫無戒心的%SAVESTR:A%被基友誘騙到家中強姦了，力量已經被封印而完全無力抵抗的%SAVESTR:A%就這樣失去性轉換後的處女
+		PRINTFORMW 被監禁起來每日侵犯，最後身心徹底淪陷的%SAVESTR:A%懷上了基友的孩子，挺著個大肚子以妻子的身分跟原本的基友步入禮堂
+		PRINTFORMW 兩人成婚後又生下許多孩子，如膠似漆的甜蜜夫妻生活為附近鄉裡所津津樂道……
+		MATURO = 基友的愛妻
+	ELSE
+		PRINTFORMW 此後%SAVESTR:A%的行蹤也逐漸消失了……
+		MATURO = 下落不明
+	ENDIF
+	
+	PRINTL  
+	PRINTL 得到了象徵勇者之力的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+
+ELSEIF TFLAG:510 == 1
+	IF TALENT:A:122
+		PRINTFORMW %SAVESTR:A%所有的力量都在烙印被打上的那一瞬間被封印了，男性的肉體被咒語改變成為了女性，不可逆轉。
+		PRINTFORMW 被%NAME:MASTER%女性化的%SAVESTR:A%體力耗盡，被放逐了。
+		PRINTFORMW 儘管口頭上不願意承認、在女性身體的影響下%SAVESTR:A%的心理也逐漸向女性轉化著……
+		PRINTFORML 
+		TALENT:A:122 = 0
+		TALENT:A:0 = 1
+		TALENT:A:1 = 0
+		CFLAG:A:70 = 1
+		PRINTFORML %SAVESTR:A%已經被變成女性了
+		PRINTL 就這樣放逐嗎？
+		PRINTL [0] 可以了，牛蒡！
+		PRINTL [1] 讓她成為真正的女人再流放
+		$INPUT_LOOP2
+		INPUT
+		IF RESULT == 0
+			CALL BANISHMENT_KOUJO
+			PRINTFORMW 對自己身體變化不知所措的%SAVESTR:A%一臉茫然，慢慢的消失在遠方的森林中…………
+			PRINTL 
+			GOTO TRANS_WOMAN
+		ELSEIF RESULT == 1
+			PRINTFORML 沒錯，做事就要做全套
+			PRINTFORMW 讓她體驗到女性的快感，身心都徹底成為女人才行
+			PRINTFORML 
+			PRINTFORML 讓魅魔們舉行必要的儀式後，%SAVESTR:A%被帶回%NAME:MASTER%寢室
+			PRINTFORML 被換上淫猥衣裝的%SAVESTR:A%兩頰潮紅，不斷試圖用手遮掩薄紗下若隱若現的胸部與股間
+			PRINTFORML 儘管明白接下來會發生什麼，%SAVESTR:A%的反抗心已逐漸淹沒在體內因儀式而騷騰不已的雌性本能之下
+			PRINTFORML 剛成為女性的身體裡釋放了這身體的第一顆卵子，子宮因此躁動不安而渴求著強大的雄性
+			PRINTFORMW ……而整個魔王領中最強大的雄性唯有魔王，也就是%SAVESTR:A%眼前的%NAME:MASTER%
+			PRINTFORML 
+			PRINTFORML 躺在床上的%NAME:MASTER%欣賞著%SAVESTR:A%的誘人驅體，並用玩味的眼光打量%SAVESTR:A%的反應
+			PRINTFORML 從%SAVESTR:A%的表情變化感覺到時機差不多了，%NAME:MASTER%褲襠一褪，先前蟄伏其中的怪物頓時昂首咆哮頂天立地
+			PRINTFORML 衝擊性的畫面與撲面而來的雄性氣息讓%SAVESTR:A%的雌性本能再難克制，顫抖著爬到%NAME:MASTER%身上
+			PRINTFORML 將巨大的陽物對準陰戶後猛然坐下，處女膜被貫穿的痛苦與快感瞬間爆發開來
+			PRINTFORMW %SAVESTR:A%心理殘留的男性部份徹底粉碎了，腦海中只剩下如何取悅眼前的雄性，以讓他滿足子宮內的飢渴感
+			PRINTFORML 
+			PRINTFORML %SAVESTR:A%在%NAME:MASTER%身上舞動般激烈地上下扭動腰肢
+			PRINTFORML 臉上掛著母狗般的淫霏表情，口中用充滿誘惑力的柔音嬌喘並索求著%NAME:MASTER%的寵幸
+			PRINTFORML 不久前剛破處的雌穴深深吞吐著肉棒，同時從結合處溢出大量夾雜著血絲的愛液
+			PRINTFORML %SAVESTR:A%數次抽搐著達到高潮，不過總是在不久後就更賣力動腰以搾取%NAME:MASTER%的精液
+			PRINTFORML 當期待已久的精液灌滿了子宮，%SAVESTR:A%表情恍惚地沉浸在無上般的幸福感中，隨著一陣高聲嬌喘攀登絕頂
+			PRINTFORML 此刻起%SAVESTR:A%身心都徹底成為了女人
+			PRINTFORML 而剛排出不久的卵子很快地被大量精子圍攻拿下，迎入新生命的子宮歡欣鼓舞
+			PRINTFORML %SAVESTR:A%對腹中的變化仍一無所知，只是趴在%NAME:MASTER%胸口靜靜享受著餘韻
+			PRINTFORMW 【在魅魔儀式的影響下，被雌性本能支配的%SAVESTR:A%向%NAME:MASTER%獻身並因此受精了】
+			TALENT:A:0 = 0
+			TALENT:A:153 = 1
+			CFLAG:A:102 = 1
+			PRINTFORML 
+			TARGET = A
+			TFLAG:510 = 0
+			CALL BANISHMENT_KOUJO
+			PRINTFORML 一夜歡愉後，%SAVESTR:A%身上的儀式效果消退了。
+			PRINTFORML 即使不再被雌性本能支配，所體驗過的快感已經在%SAVESTR:A%的身心刻下無法磨滅的印記。
+			PRINTFORML 被放逐時%SAVESTR:A%仍死命按捺著心中作為女性留下讓魔王寵愛的想法。
+			PRINTFORMW 神色複雜的%SAVESTR:A%慢慢的消失在遠方的森林中…………
+			PRINTL  
+			PRINTFORML 離開魔王城後，%SAVESTR:A%踏上了歸鄉之途
+			PRINTFORML %SAVESTR:A%也逐漸適應起身為女性的生活方式
+			PRINTFORML 偶爾在夜深人靜四下無人時，%SAVESTR:A%會忍不住回憶著與%NAME:MASTER%的那一夜，並試著用手滿足自己的空虛感
+			PRINTFORML 途中身體逐漸出現不適症狀，求醫後才知道自己竟然懷孕了
+			PRINTFORMW 隨著旅程的時間流逝，%SAVESTR:A%的肚子也一天一天大起來
+			PRINTL  
+			GOTO TRANS_WOMAN
+		ELSE
+			GOTO INPUT_LOOP2
+		ENDIF
+	ELSE
+		PRINTFORMW %SAVESTR:A%所有的力量都在烙印被打上的那一瞬間被封印了、女性的肉體被咒語改變成為了男性，不可逆轉。
+		PRINTFORMW 被%NAME:MASTER%男性化的%SAVESTR:A%體力耗盡，被放逐了。
+		PRINTW 放逐的過程中也漸漸忘記了自己曾是女性的事實、決定今後將作為男性繼續活下去……
+		MATURO = 一個爺們站起來了
+	ENDIF
+	PRINTL  
+	PRINTL 得到了象徵勇者之力的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+ELSEIF TFLAG:510 == 2
+	PRINTFORMW %SAVESTR:A%所有的力量都在烙印被打上的那一瞬間被封印了、迄今為止所有的人生記憶也被全部抹去。
+	PRINTFORMW 被%NAME:MASTER%抹去記憶的%SAVESTR:A%茫然失措、被放逐了
+	PRINTW 她還在彷徨的回想著自己是誰…
+	PRINTL  
+	PRINTL 得到了象徵勇者之力的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	MATURO = 記憶碎片
+	
+ELSEIF TFLAG:510 == 3
+	PRINTFORMW %SAVESTR:A%所有的力量都在被%NAME:MASTER%打上烙印的那一瞬間封印了、
+	PRINTFORMW 加上%SAVESTR:A%所有關於“自己曾是人類”的記憶都被封鎖。
+	PRINTFORMW 隨後%NAME:MASTER%將她變成了
+		IF RAND:8 == 0
+				;ポニー的な
+				PRINT 一匹馬
+				MATURO = My little Pony！
+		ELSEIF RAND:8 == 1
+				;ごすずん！
+				PRINT 一條狗
+				MATURO = 汪？
+		ELSEIF RAND:8 == 2
+				;フライングまうまう
+				PRINT 一隻小鳥
+				MATURO = 吱？
+		ELSEIF RAND:8 == 3
+				;お…おま…
+				PRINT 一隻兔子
+				MATURO = 顫抖的雙耳
+		ELSEIF RAND:8 == 4
+				;あぁ迷える子羊ってそういう…
+				PRINT 一隻羊
+				MATURO = 羊……
+		ELSEIF RAND:8 == 5
+				;こゃーん
+				PRINT 一隻狐狸
+				MATURO = 狐狸
+		ELSE
+				;ぬっぬっぬ
+				PRINT 一隻貓
+				MATURO = 喵~
+		ENDIF
+	PRINTW 的樣子。
+	PRINTFORMW %NAME:MASTER%將已經變成小動物的%SAVESTR:A%放逐了。
+	PRINTFORMW 她以後不會記得自己曾經是人類了……
+	PRINTL  
+	PRINTL 得到了象徵勇者之力的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+ELSEIF TFLAG:510 == 4
+	PRINTFORMW %SAVESTR:A%所有的力量都在被%NAME:MASTER%打上烙印的那一瞬間封印了、
+	PRINTFORMW 被放逐回成為勇者前的生活
+	
+	MATURO = 
+	SELECTCASE TALENT:(A):成為勇者前的生活
+	CASE 0
+		;不明
+		PRINTFORMW 之後，%SAVESTR:A%的下落不明……
+		MATURO = 下落不明
+	CASE 1
+		;學生
+		IF TALENT:A:204
+			;肉便器
+			PRINTFORM 已經淪為肉便器的%SAVESTR:A%成為學校裡有名的蕩婦。
+			MATURO += "淫娃"
+		ENDIF
+		IF TALENT:A:48
+			;近視
+			PRINTFORM 樸素的眼鏡看上去頗有學霸的潛力。
+			MATURO += "眼鏡娘"
+		ENDIF
+		IF TALENT:A:180
+			;娼婦
+			PRINTFORM 放學後，靠援交掙錢養活自己。
+			MATURO += "賣淫"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%以學生的身份，盡情“享受”著生活。
+		MATURO += "學生"
+	CASE 2
+		;修道女
+		IF ABL:A:13 > 0 || TALENT:A:52
+			;奉仕技術1以上、または舌使い
+			PRINTFORM %SAVESTR:A%十分享受被舔弄陰莖時少年神官那愉悅和苦悶並存的神情。
+			MATURO += "淪為口交母豬的"
+		ENDIF
+		IF ABL:A:3 > 0 || TALENT:A:106
+			;A感覚1以上、またはA敏感
+			PRINTFORM %SAVESTR:A%因為無法抗拒尻穴性交的背德感、偷偷地進行著尻穴買春的行為。
+			MATURO += "尻穴買春的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%仍在主持著神殿的日常工作，請多多關照哦。
+		MATURO += "修女"
+	CASE 3
+		;農家
+		IF TALENT:A:13
+			;素直
+			PRINTFORM %SAVESTR:A%坦然面對自己的過去，嫁給了農夫、每日下地辛勤耕作。
+			MATURO += "種田的"
+		ENDIF
+		IF EXP:A:56 >= 5
+			;獣姦経験5以上
+			PRINTFORM 似乎%SAVESTR:A%無法忘卻那些交尾的經驗、他們家農耕用的家畜似乎都很活躍呢……
+			MATURO += "獸奸的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%成為了一名農婦，過著平凡的生活。
+		MATURO += "農婦"
+	CASE 4
+		;漁師
+		IF TALENT:A:13
+			;素直
+			PRINTFORM %SAVESTR:A%坦然面對自己的過去，努力工作，修補漁網的工作越來越得心應手。
+			MATURO += "工作上手的"
+		ENDIF
+		IF EXP:A:74 >= 5
+			;売春経験5以上
+			PRINTFORM 偶爾有商船停泊%SAVESTR:A%所在的漁村時，她也會張開雙腿掙點外快。
+			MATURO += "賣淫的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%成為了一名漁夫，過著平凡的生活。
+		MATURO += "漁婦"
+	CASE 5
+		;娼婦
+		IF ABL:A:21 > 0
+			;マゾっ気1以上
+			PRINTFORM 身為抖M的%SAVESTR:A%手活不錯，在店裡很受歡迎。
+			MATURO += "手交豬玀"
+		ENDIF
+		IF ABL:A:17 > 0 || TALENT:A:28
+			;露出癖1以上、または目立ちたがり
+			PRINTFORM %SAVESTR:A%喜歡在公開場合賣淫做愛取樂、反而要向圍觀群眾收票錢……
+			MATURO += "露出狂"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%又回到了之前的妓女生涯。
+		MATURO += "妓女"
+	CASE 6
+		;盜人
+		IF ABL:A:22 > 0 || TALENT:A:81 || TALENT:A:82
+			;レズっ気1以上、または両刀、または男嫌い
+			PRINTFORM %SAVESTR:A%熱衷於專門誘拐女性賣淫犯罪。只是每一位受害人都被她先上過……
+			MATURO += "誘拐人口的"
+		ENDIF
+		PRINTFORML 於是，%SAVESTR:A%再次淪為社會底層的犯罪份子。
+		MATURO += "盜賊"
+	CASE 7
+		;物乞い
+		IF TALENT:A:180
+			;娼婦
+			PRINTFORM 不久後傳來消息，%SAVESTR:A%已經淪為最底層的站街女，付多付少都給上。
+			MATURO += "低賤的"
+		ENDIF
+		PRINTFORML %SAVESTR:A%再次成為社會底層的廉價娼婦。
+		MATURO += "乞丐妓女"
+	CASE 8
+		;貴族
+		MATURO = 貴族的
+		PRINTFORM 身為原貴族的%SAVESTR:A%回到家族，過著和之前一樣的生活，
+		IF ABL:A:11 > 0 || TALENT:A:102 || TALENT:A:60
+			;欲望1以上、またはC敏感、または自慰しやすい
+			PRINTFORM 但%SAVESTR:A%無法壓抑甜美的欲望，經常躲在房間裡不可抑制的瘋狂手淫。
+			MATURO += "手淫中毒的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%又回到了貴族社交圈之中。
+		MATURO += "千金小姐"
+	CASE 9
+		;貧民
+		IF EXP:A:70 >= 5
+			;被寫経験5以上
+			PRINTFORM 因為曾經拍攝的水晶球視頻流出，%SAVESTR:A%回到貧民區後，鄰居的男性都蜂擁而至……
+			MATURO += "前女優"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%回到了貧民的生活中。
+		MATURO += "貧民"
+	CASE 10
+		;墓守
+		IF ABL:A:17 > 0 || TALENT:A:28
+			;露出癖1以上、または目立ちたがり
+			PRINTFORM %SAVESTR:A%十分享受哪些躲在周圍陰暗處偷窺的淫穢目光，畢竟“全裸的守墓人”聽上去就很刺激啊……
+			MATURO += "露出狂"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%繼續她守墓人的生涯。
+		MATURO += "守墓人"
+	CASE 11
+		;巫女
+		IF ABL:A:3 > 0 || TALENT:A:106
+			;A感覚1以上、またはA敏感
+			PRINTFORM 回到神殿的%SAVESTR:A%難以抵抗自己的欲望，偷偷進行著肛交賣淫的事業，明知這是骯髒的背德交易、卻依舊樂此不疲……
+			MATURO += "肛交賣淫的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%開始繼續著神殿的日常工作了。
+		MATURO += "巫女"
+	CASE 12
+		;聖女
+		IF ABL:A:13 > 0 || TALENT:A:52
+			;奉仕技術1以上、または舌使い
+			PRINTFORM 回到神殿的%SAVESTR:A%很是享受自己的日常生活，尤其是舔弄那些少年神官的肉棒時，他們臉上苦悶和愉悅混雜的表情。
+			MATURO += "淪為口交母豬的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%開始繼續著神殿的日常工作了。
+		MATURO += "聖女"
+	CASE 13
+		;予言者
+		IF ABL:A:13 > 0 || TALENT:A:52
+			;奉仕技術1以上、または舌使い
+			PRINTFORM 回到神殿的%SAVESTR:A%很是享受自己的日常生活，尤其是舔弄那些少年神官的肉棒時，他們臉上苦悶和愉悅混雜的表情。
+			MATURO += "淪為口交母豬的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%開始繼續著神殿的日常工作了。
+		MATURO += "予言者"
+	CASE 14
+		;占い師
+		IF ABL:A:11 > 0 || TALENT:A:36
+			;欲望1以上、または恥薄い
+			PRINTFORM 被放逐的%SAVESTR:A%回到故地，繼續她的占卜事業，並在其中加入了性騷擾的元素，時常讓前來占卜的顧客面紅耳赤……
+			MATURO += "性騷擾"
+		ENDIF
+		PRINTFORML 於是，街頭巷尾都流傳著關於“變態色情占卜師”%SAVESTR:A%的故事……
+		MATURO += "占卜師"
+	CASE 15
+		;商人
+		IF TALENT:A:204
+			;肉便器
+			PRINTFORM 身為肉便器的%SAVESTR:A%回到家鄉繼續經營之前的商店，只是商店似乎多了不少讓男性顧客趨之若鶩的可疑“副業”。
+			MATURO += "淪為肉便器的"
+		ENDIF
+		PRINTFORML “今天，你進去了麼？”凡是路過%SAVESTR:A%商店的男客人都會露出會心的笑容……
+		MATURO += "看板娘"
+	CASE 16
+		;薬草取り
+		IF ABL:A:17 > 0 || TALENT:A:28
+			;露出癖1以上、または目立ちたがり
+			PRINTFORM 回到曾經居住的村莊後，%SAVESTR:A%喜歡獨自一人時在森林中脫光衣服，享受著森林浴帶來的奇妙感覺……
+			MATURO += "裸體"
+		ENDIF
+		PRINTFORML 看來%SAVESTR:A%打算在那個寂靜的村莊中渡過餘生。
+		MATURO += "村娘"
+	CASE 17
+		;隠者
+		IF ABL:A:17 > 0 || TALENT:A:28
+			;露出癖1以上、または目立ちたがり
+			PRINTFORM 雖然%SAVESTR:A%依舊不常露面，但是市面上她主演的水晶球視頻卻偷偷發售了……
+			MATURO += "神秘的"
+		ENDIF
+		PRINTFORML 總之，%SAVESTR:A%又回到了之前的隱居生活。
+		MATURO += "隱居者"
+	CASE 18
+		;パン屋
+		MATURO = 麵包店的
+		IF TALENT:A:204
+			;肉便器
+			PRINTFORM 身為肉便器的%SAVESTR:A%回到家鄉繼續經營之前的麵包店，只是店裡似乎多了不少讓男性顧客趨之若鶩的可疑“副業”
+			MATURO += "淪為肉便器的"
+		ENDIF
+		PRINTFORML “太可疑了，為什麼顧客都去%SAVESTR:A%的店裡買麵包？！”競爭對手偷偷的討論著。
+		MATURO += "看板娘"
+	CASE 19
+		;軍人
+		IF EXP:A:70 >= 5
+			;被寫経験5以上
+			PRINTFORM 然而在軍隊內部，%SAVESTR:A%的水晶球視頻已經流傳甚廣、軍營中已經開始出現奇怪的流言……
+			MATURO += "恥辱的"
+		ENDIF
+		PRINTFORML 歸隊的%SAVESTR:A%從軍之路看來並不會很順利呐。
+		MATURO += "女將校"
+	CASE 20
+		;奴隷
+		IF TALENT:A:143 || TALENT:A:13
+			;ショタコンまたは素直
+			PRINTFORM 幾經倒賣的%SAVESTR:A%像商品一樣被轉手給了某位性格溫柔的少年主人，新主人似乎很重視她。
+			MATURO += "少年專用的"
+		ENDIF
+		PRINTFORML 被放逐的%SAVESTR:A%又回到了之前的奴隸生涯。
+		MATURO += "奴隸"
+	CASE 21
+		;主婦
+		IF EXP:A:56 >= 5
+			;獣姦経験5以上
+			PRINTFORM %SAVESTR:A%最近新買了一隻寵物犬。只是每次%SAVESTR:A%看著狗狗的眼神中總是充滿了情欲。
+			MATURO += "愛好獸奸的"
+		ENDIF
+		PRINTFORML 面對自己過往，毫不知情的丈夫，%SAVESTR:A%又回到了之前平靜的主婦生活。
+		MATURO += "主婦"
+	CASEELSE
+		PRINTFORMW 在此之後，%SAVESTR:A%下落不明了……
+		MATURO = 下落不明
+	ENDSELECT
+	
+	PRINTFORMW ——下場：%MATURO%
+	
+ENDIF
+
+SIF FAMILY:2 >= 0
+	CSTR:(FAMILY:2):5 = %MATURO%%SAVESTR:A%
+TSTR:30 = %MATURO%%SAVESTR:A%
+CALL VIDEO_MATURO
+	
+A = TARGET
+
+;武器解除
+W:0 = CFLAG:A:550
+CALL EQUIP_GET
+CFLAG:A:550 = -1
+;指輪解除
+W:0 = CFLAG:A:551
+CALL EQUIP_GET
+CFLAG:A:551 = -1
+;指輪解除
+W:0 = CFLAG:A:552
+CALL EQUIP_GET
+CFLAG:A:552 = -1
+
+LV = CFLAG:A:9
+
+X = NO:A + 199
+FLAG:X = 1
+
+;前回の助手?調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手?調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, A
+
+DELCHARA A
+
+CALL NAME_RESET
+
+
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+PRINTFORMW 《你抽取了被封印的勇者之力盡為己用，獲得了{LV}經驗值》
+
+TARGET = -1
+RETURN 0

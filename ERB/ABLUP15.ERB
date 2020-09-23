@@ -1,0 +1,307 @@
+﻿;話術のLvUP処理とその可否判定
+;eraIm@s_ver.0.17βdのスクリプトをベースに処理を簡略化
+;eraIM@Sから導入しました(eramaou)
+
+
+;-------------------------------------------------
+;話術のLvUP
+;-------------------------------------------------
+@ABLUP15
+DRAWLINE
+;PRINTL 奴隸的話術提升了。
+;PRINTL 話術越高，賣淫及接待時越容易成功。
+;CUSTOMDRAWLINE ‥
+;話術はLv10が上限
+IF ABL:15 >= 10
+	PRINTW 已達最高級
+	RETURN 0
+;技巧＋話術は１６以上にならない
+;でも、珠が沢山あるの場合はレベルアップできる。
+ELSEIF ABL:12 + ABL:15 >= 15
+	IF JUEL:7 < ABL:15 * ABL:15 * 1000
+	PRINTFORMW 技巧({ABL:12})＋話術({ABL:15})上限為15
+	RETURN 0
+	ENDIF
+ENDIF
+
+
+;條件別にＯＫかダメかを記録する
+;必要な習得點數
+A = 0
+;必要な調教會話經驗
+B = 0
+;必要な賣淫經驗
+C = 0
+
+;條件別にＯＫかダメかを記録する
+;習得點數による可否（I=0:可、I&1:點數不足、I&2:経験不足）
+I = 0
+
+CALL DECIDE_ABLUP15
+
+PRINTFORM [0] - %PALAMNAME:7%點數×{JUEL:7}/{A} ……
+PRINTV GET_ABLUP_STATE(I)
+PRINTL 
+PRINTFORML       %EXPNAME:73%　{EXP:73}/{B} or
+PRINTFORML       %EXPNAME:74%　{EXP:74}/{C}
+
+PRINTL [100] - 停止
+
+INPUT
+IF (RESULT < 0 || RESULT > 0) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:15 += 1
+
+IF RESULT == 0
+	JUEL:7 -= A
+ENDIF
+
+PRINTFORML %ABLNAME:15%變為LV{ABL:15}。
+
+RETURN 0
+
+
+;-------------------------------------------------
+@CORE_ABLUP15
+;-------------------------------------------------
+ABL:15 ++
+
+IF I == 0
+	JUEL:7 -= A
+ENDIF
+
+
+
+;--------------------------------------------------
+;レベルアップに必要な珠計算、レベルアップ予告処理
+;--------------------------------------------------
+@DECIDE_ABLUP15
+;話術はLv10が上限
+SIF ABL:15 >= 10
+	RETURN 0
+SIF ABL:12 + ABL:15 >= 15
+	RETURN 0
+
+;條件別にＯＫかダメかを記録する
+A = 0
+B = 0
+C = 0
+I = 0
+
+IF ABL:15 == 0
+	A = 1
+	B = 3
+	C = 5
+ELSEIF ABL:15 == 1
+	A = 10
+	B = 10
+	C = 20
+ELSEIF ABL:15 == 2
+	A = 100
+	B = 30
+	C = 50
+ELSEIF ABL:15 == 3
+	A = 1500
+	B = 50
+	C = 100
+ELSEIF ABL:15 == 4
+	A = 3000
+	B = 100
+	C = 150
+ELSEIF ABL:15 == 5
+	A = 4000
+	B = 120
+	C = 180
+ELSEIF ABL:15 == 6
+	A = 5200
+	B = 150
+	C = 250
+ELSEIF ABL:15 == 7
+	A = 7500
+	B = 180
+	C = 320
+ELSEIF ABL:15 == 8
+	A = 9000
+	B = 220
+	C = 350
+ELSEIF ABL:15 == 9
+	A = 13000
+	B = 250
+	C = 400
+ENDIF
+
+;戒備森嚴
+IF TALENT:27
+	IF ABL:15 == 3
+		TIMES A , 1.50
+		TIMES B , 1.25
+		TIMES C , 1.25
+	ELSEIF ABL:15 == 4
+		TIMES A , 2.00
+		TIMES B , 1.50
+		TIMES C , 1.50
+	ELSEIF ABL:15 == 5
+		TIMES A , 2.50
+		TIMES B , 1.75
+		TIMES C , 1.75
+	ELSEIF ABL:15 >= 6
+		TIMES A , 3.00
+		TIMES B , 2.00
+		TIMES C , 2.00
+	ENDIF
+ENDIF
+
+;反抗心
+IF TALENT:11
+	TIMES A , 1.50
+	TIMES B , 1.20
+	TIMES C , 1.20
+ENDIF
+;坦率
+IF TALENT:13
+	TIMES A , 0.90
+	TIMES B , 0.95
+	TIMES C , 0.95
+ENDIF
+;囂張
+IF TALENT:16
+	TIMES A , 1.25
+	TIMES B , 1.15
+	TIMES C , 1.15
+ENDIF
+;高姿態
+IF TALENT:15
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+ENDIF
+;冷漠
+IF TALENT:21
+	TIMES A , 1.50
+	TIMES B , 1.20
+	TIMES C , 1.20
+ENDIF
+;感情淡薄
+IF TALENT:22
+	TIMES A , 1.50
+	TIMES B , 1.20
+	TIMES C , 1.20
+ENDIF
+;好奇心
+IF TALENT:23
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+ENDIF
+
+;樂觀的
+IF TALENT:25
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+;悲觀的
+ELSEIF TALENT:26
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+ENDIF
+
+;愛表現
+IF TALENT:28
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+ENDIF
+
+;壓抑
+IF TALENT:32
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+;開放
+ELSEIF TALENT:33
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+ENDIF
+
+;抵抗
+IF TALENT:34
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+ENDIF
+
+;害羞
+IF TALENT:35
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+;不知羞恥
+ELSEIF TALENT:36
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+ENDIF
+
+;快速學習
+IF TALENT:50
+	TIMES A , 0.80
+	TIMES B , 0.80
+	TIMES C , 0.80
+;學習緩慢
+ELSEIF TALENT:51
+	TIMES A , 1.20
+	TIMES B , 1.10
+	TIMES C , 1.10
+ENDIF
+
+;謎之魅力
+IF TALENT:92
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+ENDIF
+;小惡魔
+IF TALENT:87
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+ENDIF
+;巧言
+IF TALENT:182
+	TIMES A , 0.60
+	TIMES B , 0.80
+	TIMES C , 0.80
+ENDIF
+
+;最低でも1回・1個は必要
+SIF A < 1
+	A = 1
+SIF B < 1
+	B = 1
+SIF C < 1
+	C = 1
+
+;習得點數は足りている？
+SIF JUEL:7 < A
+	I |= 1
+;調教會話經驗か賣淫經驗は足りている？
+SIF EXP:73 < B && EXP:74 < C
+	I |= 2
+
+IF I == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+;
+;
+;

@@ -1,0 +1,704 @@
+﻿@ENDCHECKGODNESS
+;嘉德劇情判定
+;IF CFLAG:GETCHARA(33):1 == 9
+;	IF EX_FLAG:2810 >= 30 && EX_FLAG:2810 <=100
+;		EX_FLAG:2810 = 300
+;		SIF FLAG:1 == GETCHARA(33)
+;			FLAG:1 = -1
+;		SIF FLAG:2 == GETCHARA(33)
+;			G:2 = -1
+
+		;前回の助手・調教対象より前だった場合はフラグを減算
+;		SIF FLAG:1 > GETCHARA(33)
+;			FLAG:1 -= 1
+;		SIF FLAG:2 > GETCHARA(33)
+;			FLAG:2 -= 1
+
+;		TARGET = FLAG:1
+;		ASSI = FLAG:2
+
+;		CALL PARTY_CHAR_DEL, EX_FLAG:2803
+;		DELCHARA GETCHARA(33)
+;		CALL NAME_RESET
+;	ENDIF
+;ENDIF
+
+;通過實驗室愛慕淫亂互換將導致劇情線重置
+IF TALENT:GETCHARA(33):85 == 1 && EX_FLAG:2810 >= 110 && EX_FLAG:2810 <= 200
+	EX_FLAG:2810 = 10
+	;戀慕線起始1
+	CFLAG:GETCHARA(33):515 = 0
+ELSEIF TALENT:GETCHARA(33):76 == 1 && ((EX_FLAG:2810 >= 30 && EX_FLAG:2810 <= 100) || (EX_FLAG:2810 >= 300 && EX_FLAG:2810 <= 310))
+	EX_FLAG:2810 = 110
+	;淫亂線起始11
+	CFLAG:GETCHARA(33):515 = 0
+ENDIF
+
+;IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):2 >= 2000 && EX_FLAG:2810 < 10
+;		EX_FLAG:2810 = 10
+;	ELSEIF EX_FLAG:2810 >= 10 && EX_FLAG:2810 < 20
+;		SIF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):2 >= 5000
+;			EX_FLAG:2810 = 20
+;	ELSEIF EX_FLAG:2810 >= 20 && EX_FLAG:2810 < 30
+;		SIF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):2 >= 10000
+;			EX_FLAG:2810 = 30
+;	ELSEIF EX_FLAG:2810 >= 30 && EX_FLAG:2810 < 40
+;		SIF TALENT:GETCHARA(33):85 == 1 && (ABL:GETCHARA(33):10 + ABL:GETCHARA(33):16) >= 14
+;			EX_FLAG:2810 = 40
+;			CFLAG:GETCHARA(33):515 = 0
+;	ELSEIF EX_FLAG:2810 >= 40 && EX_FLAG:2810 < 50
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 10
+;				EX_FLAG:2810 = 50
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;	ELSEIF EX_FLAG:2810 >= 50 && EX_FLAG:2810 < 60
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 30
+;				EX_FLAG:2810 = 60
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;	ELSEIF EX_FLAG:2810 >= 60 && EX_FLAG:2810 < 70
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 60
+;				EX_FLAG:2810 = 70
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;	ELSEIF EX_FLAG:2810 >= 70 && EX_FLAG:2810 < 80
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 100
+;				EX_FLAG:2810 = 80
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;	ELSEIF EX_FLAG:2810 >= 80 && EX_FLAG:2810 < 90
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 150
+;				EX_FLAG:2810 = 90
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;	ELSEIF EX_FLAG:2810 == 300
+;		IF TALENT:GETCHARA(33):85 == 1 && CFLAG:GETCHARA(33):515 >= 10
+;				EX_FLAG:2810 = 310
+;			ELSE 
+;				CFLAG:GETCHARA(33):515 += 1
+;		ENDIF
+;ENDIF
+
+IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):2 >= 2000 && EX_FLAG:2810 < 10
+		EX_FLAG:2810 = 110
+		CFLAG:GETCHARA(33):515 = 0
+	ELSEIF EX_FLAG:2810 >= 110 && EX_FLAG:2810 < 120
+		SIF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):2 <= 5000 && CFLAG:GETCHARA(33):515 >= 70
+			EX_FLAG:2810 = 120
+		CFLAG:GETCHARA(33):515 += 1
+	ELSEIF EX_FLAG:2810 >= 110 && EX_FLAG:2810 < 130
+		SIF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):2 >= 8000
+			EX_FLAG:2810 = 130
+		CFLAG:GETCHARA(33):515 += 1
+	ELSEIF EX_FLAG:2810 >= 130 && EX_FLAG:2810 < 140
+		SIF TALENT:GETCHARA(33):76 == 1 && (ABL:GETCHARA(33):10 + ABL:GETCHARA(33):16) >= 14
+			EX_FLAG:2810 = 140
+		CFLAG:GETCHARA(33):515 += 1
+	ELSEIF EX_FLAG:2810 >= 140 && EX_FLAG:2810 < 150
+			
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 150
+			SIF DAY:1 >= 350 && GETCHARA(34)
+				EX_FLAG:2810 = 150
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2810 >= 150 && EX_FLAG:2810 < 160
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 180
+			SIF DAY:1 >= 350 && EX_FLAG:2810 == 560
+				EX_FLAG:2810 = 160
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2810 >= 160 && EX_FLAG:2810 < 170
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 200
+			SIF DAY:1 >= 350 && GETCHARA(33)
+				EX_FLAG:2810 = 170
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2810 >= 170 && EX_FLAG:2810 < 180
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 220
+			SIF DAY:1 >= 350 && GETCHARA(33)
+				EX_FLAG:2810 = 180
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2810 >= 180 && EX_FLAG:2810 < 190
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 250
+			SIF DAY:1 >= 350 && GETCHARA(33)
+				EX_FLAG:2810 = 190
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2810 == 300
+		IF TALENT:GETCHARA(33):76 == 1 && CFLAG:GETCHARA(33):515 >= 300
+				EX_FLAG:2810 = 310
+			ELSE 
+				CFLAG:GETCHARA(33):515 += 1
+		ENDIF
+ENDIF
+
+@ENDCHECKGODNESS_SKY_TEMPLE
+	IF EX_FLAG:2810 >= 500 && EX_FLAG:2810 < 510
+	ELSEIF EX_FLAG:2810 >= 520 && EX_FLAG:2810 < 530
+	ELSEIF EX_FLAG:2810 >= 530 && EX_FLAG:2810 < 540
+	ELSEIF EX_FLAG:2810 >= 540 && EX_FLAG:2810 < 550
+		SIF GETCHARA(33) == 0 && FLAG:93 == 3
+			EX_FLAG:2810 = 560
+	ENDIF
+
+@END10_11
+PRINTFORMW	半夢半醒間、你似乎感受到了有人偷偷潛入你的房間、輕手輕腳的爬到你的床上、
+PRINTFORMW	（  緩緩的脫下你的褲頭）←如果穿衣服的話
+PRINTFORMW	驚醒的你睜開雙眼、入眼便是嘉德如花的笑靨。
+PRINTFORMW	「吶。魔王大人~早上好~」
+PRINTFORMW	嘉德的小手套弄著你的肉棒、手指不斷的劃過肉棒上最敏感的部位、一陣陣快感讓你的肉棒如同吹氣般不斷漲大
+PRINTFORMW	「啊啦~魔王大人~看來你睡了一整夜~積攢下了少的慾望呢~」
+PRINTFORMW	嘉德的臉上露出小惡魔般的表情,一字一頓的說道
+PRINTFORMW	「要~不~要~本~宮~幫~你~弄~出~來~啊~」
+PRINTFORMW	雖是這麼說道、卻又不等你的回答便一口把肉棒含入口中。輕輕的吮吸著
+PRINTFORMW	你把手放到嘉德美麗的粉紅色長髮上、輕輕地撫摸著
+PRINTFORMW	你不由得回想起初次調教嘉德時候那高貴的身影與堅決的反抗
+PRINTFORMW	如今的她。怕是已經徹底淪陷了吧。如此想著的你、慾望不由得高漲了起來
+PRINTFORMW	你雙手按住嘉德的頭。把她的小嘴當做口穴、開始猛烈的抽插起來
+PRINTFORMW	而且嘉德小心翼翼的張開嘴巴、努力的不讓牙齒碰到你的肉棒而是用舌頭去承受你的聳動。
+PRINTFORMW	「唔」隨著你的一聲輕哼、精液從肉棒中噴涌而出、在嘉德口中爆裂開來、讓她發出了輕微唔唔聲
+PRINTFORMW	當你射出完畢從嘉德口中拔出肉棒后
+PRINTFORMW	嘉德帶著一臉媚笑。向你張開嘴巴展示著口中的白濁液
+PRINTFORMW	然後閉上小嘴、將之全部吞嚥下去、甚至還伸出舌頭舔去了嘴角溢出來的部分。
+PRINTFORMW	看著嘉德這幅淫蕩的樣子。你的肉棒又一次恢復了元氣
+PRINTFORMW	「吶吶、魔王大人~還沒有滿足么？」
+PRINTFORMW	嘉德張開雙腿、扒開美麗的小穴用充滿魅惑的聲音說
+PRINTFORMW	「接下來。用這裡也是沒有關係的哦~」
+PRINTFORMW	你猛的撲了上去。將嘉德壓在身下。肉棒粗暴的刺入嘉德嬌嫩的小穴、不斷的衝刺著
+PRINTFORMW	「啊~啊~魔王大人真是的~那麼心急幹什麼呢~本宮可是~會幫你一滴不剩的都榨出來哦~爲了~不讓你去禍害其他人呢~」
+EX_FLAG:2810 += 1
+
+@END10_12
+PRINTFORMW	「哈~哈~肉棒！！唔~肉棒~」
+PRINTFORMW	當你路過嘉德房間的時候、意外的聽到裡面傳來嘉德快樂的呻吟
+PRINTFORMW	帶著一絲好奇、你悄悄的推開了嘉德的房門
+PRINTFORMW	入眼是嘉德一絲不掛的身影、在她的身邊、則是6個強壯的獸人
+PRINTFORMW	嘉德的雙手各握住一根肉棒、用小手套弄著、隨後將之送到自己嘴邊、用小嘴輪流的侍奉著、下流的舌頭不斷的舔著獸人的肉棒
+PRINTFORMW	飽滿的胸部則是被獸人用雙手狠狠的揉搓著、不斷的變化成各種形狀、獸人將肉棒插入雙峰之間、用雙手按弄著胸部 然後不斷的抽動著。而嘉德也時不時放下手中的肉棒、舔弄著雙峰之間的兇器。
+PRINTFORMW	在嘉德的身下、則是平躺著另一個獸人
+PRINTFORMW	他的肉棒早已從菊門狠狠的刺入嘉德體內。隨著嘉德的扭動慢慢的抽插著。
+PRINTFORMW	而且邊上的另2個獸人也沒有閑著、他們一人抓過嘉德的一隻小腳。將之按在自己的肉棒上。慢慢的摩擦著。
+PRINTFORMW	「哈~肉棒！~肉棒最喜歡了~」
+PRINTFORMW	嘉德宛若被慾望支配的淫獸、用自己美妙的身體、侍奉著6個獸人、
+PRINTFORMW	「啊~更多~我要更多肉棒~」
+PRINTFORMW	曾經高貴的天使、已然不再純潔、被淫慾佔領的她、怕是早已忘記了、曾是多麼的對獸人、對魔族、不屑一顧。
+PRINTFORMW	「啊~這裡~這裡也要~這裡也要肉棒~~~」
+PRINTFORMW	她放下手中的肉棒、雙手扒開小穴、絲絲銀絲連線在壁肉之間。
+PRINTFORMW	她的雙眼早已沒了往日的深邃、只剩下對情慾的渴望
+PRINTFORMW	「吶~插進來~大肉棒~快插進來啊！」
+PRINTFORMW	她用手指不斷的刺激著自己的陰蒂、淫聲浪語不斷的從口中傳出、現在的她的早已不滿足簡單的侍奉
+PRINTFORMW	她想要更多、想要更多的肉棒、想要肉棒們狠狠的刺入她的身體、在身體內不斷的搗弄
+PRINTFORMW	[1] 「想要肉棒是嗎 」 [2]呵呵、有趣
+INPUT
+$INPUT_LOOP
+IF RESULT == 1
+PRINTFORMW	就在獸人將肉棒拔出雙峰之間、打算從正面狠狠的刺入嘉德的小穴時。
+PRINTFORMW	你推開了房門走了進來。
+PRINTFORMW	獸人與嘉德的動作頓時停住了。
+PRINTFORMW	「退下」
+PRINTFORMW	在你的命令下。獸人們離開了嘉德的房間、你看著地上的嘉德、嘴角帶著一絲冷笑。
+PRINTFORMW	「你、想要這個是吧」
+PRINTFORMW	你走到嘉德面前、掏出自己的肉棒。
+PRINTFORMW	「想要？你倒是說啊。」
+PRINTFORMW	一瞬間、你彷彿看到了嘉德瞳中的情慾之火噴涌而出。燒卻了她最後一絲理智
+PRINTFORMW	「嗯~想要~想要大肉棒~不管是誰~只要是大肉棒~本宮都想要~超想要~~~」
+PRINTFORMW	嘉德緩慢的站起身。絲絲白濁液從她的菊穴滴落至地、
+PRINTFORMW	她用小手抓著你的肉棒、想要將之引導到自己的小穴內
+PRINTFORMW	然而你卻阻止了她。
+PRINTFORMW	「誰讓你站起來了！」
+PRINTFORMW	你毫不留情的呵斥著她、
+PRINTFORMW	「想要、就給我好好趴著！！！」
+PRINTFORMW	在你示意下。嘉德屈辱的跪趴在地上、就彷彿一隻母狗
+PRINTFORMW	你走到嘉德背後。扶起她的翹臀。將肉棒對準她早已洪水氾濫的小穴、微笑著說
+PRINTFORMW	「準備好~你最喜歡的肉棒~就要來了！」
+PRINTFORMW	話音剛落、你的肉棒猛然刺入嘉德嬌嫩的小穴、瘋狂的一插到底、然後不斷的抽插
+PRINTFORMW	「啊~肉棒！魔王大人的肉棒~進來了~進來了啊！！！！」
+PRINTFORMW	嘉德的尖叫響徹了整個樓層、隨後又轉化為快樂的呻吟
+PRINTFORMW	「肉棒~肉棒好棒~好舒服~好舒服！！！」
+PRINTFORMW	你看著胯下如同母狗般的嘉德、猛的在她的翹臀上拍了一巴掌、驚起一波臀浪、
+PRINTFORMW	「你看看你。哪裡還有當初高貴聖潔的樣子、現在完全就是一隻母狗、喜歡肉棒、只要被幹就能滿足的母狗！」
+PRINTFORMW	「啊！~沒錯。本宮就是母狗~什麼下屆天神。什麼守護天界、都不重要~現在的本宮只想要肉棒。也只需要肉棒就夠了！！！」
+PRINTFORMW	嘉德一邊被你抽插著、一邊不斷的扭動著身體尋求更多的快感。
+PRINTFORMW	「肉棒~還想要更多的肉棒！！！」
+PRINTFORMW	你覆在嘉德的身上、輕咬著她的耳垂、
+PRINTFORMW	「你還想要更多？可以哦~不要抗拒~我就給你更多的肉棒！」
+PRINTFORMW	因為現在的嘉德已滿腦子只剩下了肉棒~所以你輕易的調動了嘉德體內龐大的魔力。
+PRINTFORMW	並且藉助這些魔力與自身的魔力施展了一個你構思很久的上古魔法--分身
+PRINTFORMW	只見一股煙幕過後、你的身影化爲了6個一模一樣的你。
+PRINTFORMW	「啊！魔王大人~6個魔王大人~6根魔王大人的肉棒！！！」
+PRINTFORMW	嘉德完全沒有察覺到自己體內的魔力被他人呼叫了。滿腦子只有眼中6個魔王的肉棒
+PRINTFORMW	你低下身。雙手穿過嘉德的大腿內側、將嘉德以M字開腿的姿勢抱了起來。
+PRINTFORMW	你的肉棒滑出了嘉德的小穴。但是這並沒有什麼關係。因為你的肉棒來到了另一個更好的位置
+PRINTFORMW	你挺身而上。肉棒刺破了嘉德的菊門。刺入了殘留著部分獸人精液的溫潤菊穴。
+PRINTFORMW	正對面的你露出一絲心領神會的表情、掏出早已勃起的肉棒、從正面刺入了嘉德的小穴
+PRINTFORMW	「啊~肉棒~肉棒真棒~」
+PRINTFORMW	嘉德發出動人的呻吟。
+PRINTFORMW	雙手握住左右2邊另外2根肉棒、用小手套弄著、小嘴則是和正對面的你不斷的舌吻著。
+PRINTFORMW	然而你分身出來的可是6個人。
+PRINTFORMW	並沒有搶佔到先機的另外2個分身。
+PRINTFORMW	看著你和其他分身徹底佔有了嘉德的小穴菊花小嘴和雙手、沒來得及的他們、只能輕嘆一聲抓起了嘉德僅剩的2只小腳。
+PRINTFORMW	或舔弄、或搓動。又或者是放在肉棒上摩擦。
+PRINTFORMW	就這樣子、你和你的分身足足6個人。
+PRINTFORMW	不斷的在嘉德身上發泄著你們的慾望、待到你們滿足的離開時、嘉德身上早已覆蓋了一層濃厚的精液。
+PRINTFORMW	··················
+PRINTFORMW	············
+PRINTFORMW	······
+ELSEIF RESULT == 2
+PRINTFORMW	在獸人將肉棒拔出雙峰之間、打算從正面狠狠的刺入嘉德的小穴時
+PRINTFORMW	你經過短暫的思考後決定繼續看戲
+PRINTFORMW	你看著獸人將嘉德推倒在了另一個平躺著的獸人身上、
+PRINTFORMW	獸人的肉棒毫不留情的從正面刺入了嘉德嬌嫩的小穴
+PRINTFORMW	嘉德的口中發出滿足的呻吟
+PRINTFORMW	「啊~肉棒~肉棒進來了~」
+PRINTFORMW	嘉德再次握住眼前的2根肉棒、引導到自己的嘴巴、用小嘴含住一根、用舌頭舔弄著。另一根肉棒則是用小手套弄著。
+PRINTFORMW	正面的獸人壓在嘉德身上、雙手繼續不斷的揉弄著嘉德的胸部、肉棒則是不斷的衝刺著嘉德的小穴、愛液從2人的交合處不斷滴落。
+PRINTFORMW	嘉德的小腳或是已經讓另外2獸人有了一絲嫌棄、他們放開了嘉德的小腳、將肉棒移動到了嘉德的膝蓋內、隨後將嘉德的大腿和小腿合併起來、在大腿和小腿間開始了抽插。
+PRINTFORMW	嘉德就在這種情況下、被獸人們瘋狂的玩弄著。
+PRINTFORMW	「唔。」
+PRINTFORMW	隨著正面的獸人的一聲輕哼、他的肉棒在嘉德緊湊的小穴中達到了高潮。大量的精液瘋狂的噴涌而出。
+PRINTFORMW	被獸人精液大量射入子宮的快感、也在一瞬間讓嘉德達到了高潮、她的小穴和菊穴下意識的瘋狂縮緊、雙手和雙腳也在無意識的情況下開始併攏、
+PRINTFORMW	被嘉德無意識反應帶了意外的快感的獸人們、也在那一個瞬間高潮了、大量的精液噴涌而出、糊在了嘉德白皙的肌膚上。
+PRINTFORMW	當獸人們的肉棒離開嘉德的身體時、大量的精液從嘉德的小穴和菊穴慢慢涌出、
+PRINTFORMW	淫靡的氣息瀰漫在整個房間之內
+PRINTFORMW	嘉德吞盡口中的精液后、又一次扒開小穴、用淫媚笑容說
+PRINTFORMW	「本宮可還沒有滿足呢~」
+PRINTFORMW	獸人們稍微交換了一下位置后、又一次撲了上去、用肉棒狠狠的肏弄著嘉德白皙的嬌軀、
+PRINTFORMW	淫亂的群交派對持續了很久很久~
+PRINTFORMW	當獸人們離開房間時、嘉德的身上和地上。都覆蓋著一層厚厚的精液。
+PRINTFORMW	··················
+PRINTFORMW	············
+PRINTFORMW	······
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+IF RESULT == 1 && CFLAG:GETCHARA(33):2 >= 3000 && CFLAG:GETCHARA(33):2 < 5000
+	CALL END10_12_2
+ELSEIF RESULT == 1 && CFLAG:GETCHARA(33):2 >= 2500 && CFLAG:GETCHARA(33):2 < 4000
+	CALL END10_12_1
+ELSEIF RESULT == 2
+	CALL END10_12_1
+ENDIF
+
+@END10_12_1
+PRINTFORMW	在你不注意的時候、慾求不滿的嘉德又一次引誘了你的部下們。
+PRINTFORMW	在你不知道的地方展開了一次新的亂交派對。
+PRINTFORMW	嘉德作為派對中的主角被大量的部下輪姦著、享用著。
+PRINTFORMW	當大家離開派對的時候、只剩下被玩到失神的嘉德留在原地、身上和地上。
+PRINTFORMW	都覆蓋著一層厚厚的精液。
+PRINTFORMW	而後你看著你無所不知的水晶球、不禁產生了一個念頭。
+PRINTFORMW	「或許該偶爾滿足下嘉德？」
+EX_FLAG:2810 += 1
+
+@END10_12_2
+PRINTFORMW	在你不注意的時候、慾求不滿的嘉德又一次引誘了你的部下們。
+PRINTFORMW	但是除你之外的肉棒顯然已經沒法讓她得到滿足了
+PRINTFORMW	她選擇了吸引你的女性部下、在你不知道的地方、用道具展開了一次全新的亂交派對
+PRINTFORMW	嘉德作為派對中的主角、不僅被大量女性部下用假陽具輪姦著、玩弄著、還自己帶上了假陽具肏弄了其他人
+PRINTFORMW	當大家離開派對的時候、只剩下被玩到失神的嘉德留在原地、身上和地上。都滿是愛液。
+EX_FLAG:2810 += 2
+
+@END10_13
+PRINTFORMW	當你結束調教的回到房間時。
+PRINTFORMW	意外的發現你的被子微微隆起著、似乎裡面有什麼東西。
+PRINTFORMW	你放輕了腳步、悄悄走到床邊、然後突然就掀開了被子、發現其中的居然是嘉德！
+PRINTFORMW	赤裸的嘉德側躺在你的床上、左手抱著你的枕頭、螓首埋入枕中、右手夾在雙腿之間、手指似乎在小穴上不斷的勾弄。
+PRINTFORMW	當你掀開被子的時候、嘉德似乎也在同時達到了高潮。
+PRINTFORMW	隨著一聲輕吟、嘉德渾身一顫、愛液從小穴中滴落到了床上。
+PRINTFORMW	雖然你很想問嘉德在幹什麼。但是眼前的情況、顯然是一清二楚的。
+PRINTFORMW	這個淫蕩的天使、居然趁你不在偷偷跑到你床上聞著你的味道自慰什麼的。
+PRINTFORMW	你的肉棒突然就硬了起來。
+PRINTFORMW	看到你猙獰的肉棒猛的立了起來、嘉德的眼神從驚慌變成了渴望。
+PRINTFORMW	「魔王大人~」
+PRINTFORMW	嘉德從側臥轉為正躺、大腿呈M狀展開、左手依舊緊抱著你的枕頭、右手則用食指和中指分開了濕潤的小穴。
+PRINTFORMW	「吶~吶~魔王大人~進來~本宮想要~本宮想要魔王大人的肉棒~」
+PRINTFORMW	你爬到床上、將嘉德的雙腿分到腰的兩側、然後把肉棒對準嘉德小穴的入口。
+PRINTFORMW	然後挺身直刺、碩大的肉棒一口氣便整個插入了嘉德的小穴、
+PRINTFORMW	「啊~肉棒~魔王大人的肉棒~進來了~肉棒 進來了~好舒服~好舒服！！！~」
+PRINTFORMW	嘉德發出動人的嬌吟、神色中露出極大的滿足
+PRINTFORMW	你抽出嘉德懷中的枕頭、扔到一旁、然後將雙手按在嘉德的胸部、慢慢的揉搓起來。
+PRINTFORMW	「啊啊~胸部、胸部好舒服~」
+PRINTFORMW	嘉德陶醉地閉上雙眼、誇張地昂首挺胸、胸部不斷起伏配合著你的手、發出了讓人血脈僨張的可愛呻吟。
+PRINTFORMW	過足了手癮之後、你放開嘉德的胸部。將嘉德的雙腿扛到了肩膀上、隨手將身體漸漸的壓下去
+PRINTFORMW	嘉德的翹臀漸漸離開床面。你將枕頭墊到嘉德腰下、讓她的姿勢稍微舒適一點。
+PRINTFORMW	然後吻住了嘉德的小嘴、舌頭伸入嘉德的口中、不斷的舔弄著。
+PRINTFORMW	「嗯~唔~唔唔~喔～呼呼～」
+PRINTFORMW	嘉德的小嘴被你徹底堵住、只能流露出一些可愛的輕哼。
+PRINTFORMW	你將自己的姿勢稍作調整后、肉棒突然就加快了動作。猛烈的衝刺了起來。
+PRINTFORMW	你突然間加速帶給了嘉德強烈的快感。腳趾猛的一縮、雙手緊抱住你了身體、呼吸也變得急促起來
+PRINTFORMW	「要來了哦~」
+PRINTFORMW	你放開嘉德小嘴后、帶著微笑做出了射精預告。
+PRINTFORMW	「來~射進來~魔王大人的精液~請在本宮的小穴裡面射出來、把本宮的子宮、灌的滿滿的！！！」
+PRINTFORMW	你聽著嘉德的淫聲浪語。猛地又抽插了十幾下。然後隨著一聲悶哼。
+PRINTFORMW	大量的精液射入了嘉德的小穴、從子宮口灌了進去、澆溉在子宮壁上。
+PRINTFORMW	子宮壁被射入精液的快感、也讓嘉德在同時達到了高潮、小穴猛烈的收縮著、彷彿要榨乾凈每一滴精液。
+PRINTFORMW	「哈~哈~」
+PRINTFORMW	嘉德喘著粗氣、臉上滿是滿足的神色。
+PRINTFORMW	「魔王大人的精液~」
+PRINTFORMW	嘉德用小手撫摸著自己的肚子。
+EX_FLAG:2810 += 1
+
+@END10_14
+PRINTFORMW	當一天的調教結束時。就算是你、也是有點累了
+PRINTFORMW	你回到自己的房間、打算休息。
+PRINTFORMW	但是就當你關門的時候、一具嬌嫩的身軀貼到了你的背上、
+PRINTFORMW	「吶~魔王大人~」
+PRINTFORMW	嘉德將螓首靠在你的肩上、小嘴往你耳邊吹了口氣、輕輕的說道
+PRINTFORMW	「本宮,似乎已經離不開魔王大人了呢~」
+PRINTFORMW	嘉德的小手劃過你的腹部、來到你的檔部、隔著褲子、輕輕的撫摸著你的肉棒
+PRINTFORMW	「這個壞東西~一直狠狠的在欺負本宮~結果現在~本宮已經離不開它了~」
+PRINTFORMW	「一天不被欺負~渾身都飢渴難耐~對此~魔王大人你可要好好的負起責任來哦~」
+PRINTFORMW	「用這個壞東西~好好的欺負本宮~不要停呢~」
+PRINTFORMW	嘉德將你的身體扳到正面。
+PRINTFORMW	半跪下來、雙手褪去你的褲頭。然後輕輕握住你的肉棒、慢慢的開始挊起來
+PRINTFORMW	「阿拉~真是精神呢~看來那些奴隸們並沒有讓你很滿足呢~」
+PRINTFORMW	嘉德左手扶住肉棒、右手開始搓弄睪丸。
+PRINTFORMW	「看來~還是要本宮來滿足你呢~」
+PRINTFORMW	說完。嘉德低下螓首、伸出舌頭繞著肉棒的冠狀溝舔了一圈。隨後將整個肉棒吞入了口中
+PRINTFORMW	「唔」
+PRINTFORMW	當肉棒進入溫暖的口穴的時候、你發出一聲輕哼
+PRINTFORMW	嘉德微微抬起頭看了你一眼。看到你舒坦的神色時、臉上露出一絲微笑
+PRINTFORMW	然後猛吸一口氣、口腔中的空氣隨著吸氣進入了肺部.
+PRINTFORMW	口壁緊貼你的肉棒、帶來了如同小穴收縮時的快感。
+PRINTFORMW	隨後進一步吞入你的肉棒、將肉棒慢慢的引向喉嚨深處、
+PRINTFORMW	而被異物入侵的喉嚨。、開始下意識的進行吞嚥。
+PRINTFORMW	喉嚨吸吮的動作、給你帶來了強烈的快感。
+PRINTFORMW	突然間、一股快感從脊柱骨末端涌出、一瞬間就充斥了你的全身。
+PRINTFORMW	大量的精液從你肉棒中噴涌而出、毫不留情的灌入嘉德的喉嚨
+PRINTFORMW	嘉德被你的突然襲擊嚇了一跳。下意識的想要放開你的肉棒。
+PRINTFORMW	然而這只是徒勞。你緊摁住嘉德的螓首、不管她的反抗。將大量精液射入嘉德口中。
+PRINTFORMW	當你射完之後將肉棒拔出后、嘉德猛的低下頭開始咳嗽。
+PRINTFORMW	粘稠的白濁液隨著她的咳嗽滴落在她的手中。
+PRINTFORMW	當嘉德緩過了一會兒后、她媚笑著說
+PRINTFORMW	「魔王大人的精液~可不能浪費呢」
+PRINTFORMW	說著、她伸出了舌頭、舔食著之前滴落在手中的精液、隨後又用舌頭舔去了嘴角溢出來的白濁。
+PRINTFORMW	然後張開小口、將乾淨但依然殘留著精液味道的口腔展現給你、說
+PRINTFORMW	「看~魔王大人~本宮可有好好的嚥下去呢~」
+PRINTFORMW	你摸了摸嘉德的頭。半蹲下身體。猛的把嘉德橫抱起來、帶到了床上
+PRINTFORMW	夜晚。才剛剛開始~不是么。
+EX_FLAG:2810 += 1
+
+@END10_15
+#DIM MONSTER
+#DIM CHARA
+#DIM LOSTMONEY
+PRINTFORMW	「吶、魔王大人~」
+PRINTFORMW	當你步入嘉德房間時、她少有的倚在墻邊、少許魔力形成的火焰在她指頭躍動。
+PRINTFORMW	「那個老頭子、死了喲」
+PRINTFORMW	面對你好奇的眼神、她笑了笑說。
+PRINTFORMW	「就是那個以天神自稱的老不死啊」
+PRINTFORMW	這麼一說。你倒是明白了。嘉德所說的、怕是那個將嘉德獻給你的天界之主。
+PRINTFORMW	「天神死了？這倒是個好訊息啊」你笑著說「不過。和我們有什麼關係」
+PRINTFORMW	「當然有啊」
+PRINTFORMW	嘉德略帶驚奇的看過來
+PRINTFORMW	「老不死死了、就代表著天界之主需要換屆了、而本宮可是天神的候選人啊」
+PRINTFORMW	「喂喂、你不是想。。」
+PRINTFORMW	你心中有了不好的預感
+PRINTFORMW	「沒錯。本宮就是想回去當個天神玩玩！」
+PRINTFORMW	喂喂。這可不是開玩笑啊、你如此想著、
+PRINTFORMW	「回去什麼的。我可是不會允許的啊。。」
+PRINTFORMW	「魔王大人。。」
+PRINTFORMW	嘉德立起身來。指尖躍動的火焰被嘉德握入手心捏滅。
+PRINTFORMW	「你以為。。」
+PRINTFORMW	嘉德全身龐大的魔力鼓動起來、一股強烈的衝擊波隨著外散的魔力想你衝來。
+PRINTFORMW	「你擋得住本宮么！！！」
+PRINTFORMW	當你發現不妙的時候、卻是已經遲了。
+PRINTFORMW	強烈的衝擊波將你從門口推開。而嘉德則趁著這個機會飛快的向外掠去、
+PRINTFORMW	儘管你及時派出部下去阻攔、卻依舊沒攔下嘉德、
+PRINTFORMW	反而對你造成了相當大的損失。
+EX_FLAG:2810 = 540
+EX_FLAG:99 -= 50
+FOR MONSTER, 100, 200
+	ITEM:MONSTER /= 2
+	SIF ITEM:MONSTER <= 30 && MONSTER < 190
+		ITEM:MONSTER = 30
+NEXT
+FOR CHARA, 1, CHARANUM
+	BASE:CHARA:0 -= 800
+	BASE:CHARA:1 -= 1000
+NEXT
+LOSTMONEY = MONEY
+TIMES MONEY, 0.80
+LOSTMONEY -= MONEY
+EX_FLAG:4444 -= LOSTMONEY
+CALL EVENT_CHARA_LEAVE(85, GETCHARA(33))
+PRINTFORMW 魔物損失近半、金庫也在混亂中被毀去了一角、奴隸們或多或少都收了些傷。
+
+@END10_54
+REDRAW 0
+ALIGNMENT CENTER
+PRINTFORMW	當嘉德踏入天界宮的時候、迎接她的並非鮮花與掌聲、而且士兵的槍尖、
+PRINTFORMW	「哦豁、你們這是什麼意思」
+PRINTFORMW	嘉德站在天神宮門前的大廣場、看著周圍包圍著她的士兵、嘴角帶著一絲譏笑
+PRINTFORMW	「本宮可是千辛萬苦從魔王的地下城中逃脫而出前來繼承天神之位的、你們、就是這般來迎接本宮的？！」
+PRINTFORMW	「被魔王洗腦成為魔王奴僕的你、有什麼資格繼承天神之位成為天界之主、若真讓你成爲了天界之主、那才是我們天使一族的恥辱！」
+PRINTFORMW	一個身穿白色神官服的男性穿過士兵的間隙來到嘉德面前、白色的帽兜掩住了他臉上的表情
+PRINTFORMW	「評議員么、呵」
+PRINTFORMW	嘉德將髮絲理到耳後、
+PRINTFORMW	「先不說本宮並沒有受到魔王的洗腦、當初、把本宮這個天神候選人送給魔王的。不就是你們評議會么。」
+PRINTFORMW	「多說無益。」
+PRINTFORMW	評議員一聲冷喝
+PRINTFORMW	「既然你這個魔王的僕從來了這裡、便死在這裡吧、天界會在新的天神帶領下！繼續反抗魔王的！」
+PRINTFORMW	評議員一揮手、所有士兵都向前一步、槍尖指向嘉德
+PRINTFORMW	「呵呵、你不會是以為、這些士兵能擋得住本宮的腳步？」
+PRINTFORMW	「自然不行」
+PRINTFORMW	評議員笑道
+PRINTFORMW	「不過、還有他們不是么」
+PRINTFORMW	十二個高大的身影隨著評議員的話語出現在嘉德眼前
+PRINTFORMW	「該死、十二審判者。。。你們還真是看得起本宮啊」
+PRINTFORMW	「那是自然、誰讓你是天界有史以來魔力最強的天神候選人呢！若不能毀在這裡、有些人怕是會寢食不安吧！！！！」
+PRINTFORMW	隨著評議員話音的落下、十二個審判者圍向嘉德、長劍出鞘、直指嘉德各處要害。
+REDRAW 0
+PRINTFORMW	-------------嘉德正在被圍攻------------	
+PRINTFORMW	-------------與此同時------------	
+REDRAW 0
+ALIGNMENT LEFT
+PRINTFORMW	你徹底整合好了自己的所有部隊
+PRINTFORMW	深邃的眼中沉積著大量的怒火
+PRINTFORMW	「你等著、嘉德」
+PRINTFORMW	「讓我抓到你、我非要把你弄到死去活來不可！！！」
+PRINTFORMW	「全軍！出擊！目標、天神宮！！！」
+DRAWLINE
+PRINTFORMW	天神宮可以侵略了。
+EX_FLAG:2810 += 1
+
+@END10_55
+DRAWLINE
+PRINTFORMW	當你突破層層包圍、攻入天界宮廣場時、首先看到的卻是嘉德被六個人包圍在其中的身影
+PRINTFORMW	你大手一揮、大量魔物一擁而上、與廣場中的天界十字軍戰到了一起。
+PRINTFORMW	而你則突入了六個審判者的包圍圈
+PRINTFORMW	當你靠近了嘉德、你才發現、嘉德早已遍體鱗傷。身上不知道散佈著多少傷口、絲絲鮮血早已染紅了嘉德破碎的衣服、
+PRINTFORMW	「呵。。呵呵。。本。。本宮居然。。居然被同胞刀劍相向。。然。。然後被魔王所救什麼的。。真。。真是狼狽啊。。」
+PRINTFORMW	嘉德不停地喘息著。鮮血隨著嘉德垂著的指尖滴落。
+PRINTFORMW	而且則是輕哼一聲、從腰間拔出魔劍指向周圍僅剩的六個審判者
+PRINTFORMW	戰鬥、一觸即發。
+EX_FLAG:2810 += 5
+
+@END10_16
+PRINTFORMW	將天界交給嘉德處理已經過了一段時間了、
+PRINTFORMW	帶著一絲巡查工作的想法、你來到了嘉德辦公的地方
+PRINTFORMW	當你推開大門進去時、嘉德正低著頭、在辦公桌上寫著什麼。她的身邊、則有另一位天使族的少女作為助手替她整理著檔案。
+PRINTFORMW	你推開大門的聲音顯然是驚動了她們、兩人抬起頭來望向你這邊。
+PRINTFORMW	助手的眼中帶著一絲驚慌與恐懼、而嘉德則滿是驚訝與歡喜。
+PRINTFORMW	「魔王大人~」
+PRINTFORMW	嘉德從辦公桌後面站起身來、聲音中流露出掩不住的歡喜
+PRINTFORMW	「你怎麼有空過來看本宮了~」
+PRINTFORMW	你笑著說「閑著沒事、過來看看你幹的怎麼樣~」
+PRINTFORMW	嘉德揮揮手讓助手退出房間。
+PRINTFORMW	然後拉著你走到辦公桌旁邊。
+PRINTFORMW	「魔王大人~請稍微等一下下呢~等本宮批完剩下的這點檔案~到時候一起。。。」
+PRINTFORMW	嘉德帶著意味深長的笑容、坐回了椅子上、開始逐漸批閱起剩下的檔案。
+PRINTFORMW	你微微看了一眼。檔案中儘是天界的繁瑣事務。
+PRINTFORMW	然而面對這些繁瑣的東西。曾經只惦記著肉棒的淫蕩天使。也是能快速而準確的處理了呢。不知不覺、也有了身為（天界之主）的氣質。
+PRINTFORMW	不過正是因為如此、也顯得更加誘人了呢。
+PRINTFORMW	這麼想著的你、雙手不由得從後面繞過嘉德的雙臂、撫上了嘉德的胸部、開始輕輕的揉搓著。
+PRINTFORMW	嘉德對你的突然襲擊顯然並沒有感到意外、只是嬌嗔著打了一下你的手、便隨著你揉弄了。
+PRINTFORMW	你玩弄了一會兒嘉德豐滿的胸部后、顯然是有點不滿足了。
+PRINTFORMW	你讓嘉德站起來、然後自己坐到了椅子上、然後讓嘉德坐在了自己身上。
+PRINTFORMW	嘉德自然是明白了你的意思、帶著一絲微笑坐到了你的腿上、然後用翹臀輕輕的磨蹭了一下你已經開始發硬的肉棒、
+PRINTFORMW	看來即使已經變得知書達理、嘉德的骨子裡、還是原來的那個淫亂的天使啊
+PRINTFORMW	這麼想著、你解開嘉德的衣襟、左手開始更加放肆的揉搓著嘉德的胸部、而右手則穿過嘉德的內褲探索著那條通往桃源鄉的幽徑。
+PRINTFORMW	在你這般逗弄下、嘉德自然是無法專心處理檔案了、所以她乾脆放下了手中的羽毛筆、然後嬌嗔著又打了你的手一下
+PRINTFORMW	「魔王大人你真是的~明明本宮就剩下那麼一點點工作了~弄完了可以去房間讓魔王大人好好欺負個爽的說~魔王大人你就那麼急么~那麼~想要本宮么~」
+PRINTFORMW	你並沒有回答嘉德的話。
+PRINTFORMW	只是用左手搓弄著嘉德的乳頭、以及用右手逗弄著嘉德的陰蒂。
+PRINTFORMW	「啊~嗯~那裡~那裡~好舒服~哈~」
+PRINTFORMW	嘉德在你靈活的手指熟練的愛撫下、很快就迎來了高潮
+PRINTFORMW	「啊~去了~要去了！！！~」
+PRINTFORMW	嘉德的嬌軀猛的一顫。全身都徹底繃緊了、然後又猛的鬆軟下來、彷彿全身都沒了力氣、你的手指從她的小穴中感受到了大量的蜜汁的涌出。
+PRINTFORMW	你把右手從嘉德內褲中抽出、彷彿惡意一般放到嘉德面前、讓她看掛在你指間的一條條銀絲。
+PRINTFORMW	隨後、你托起嘉德的身體、將她放到了辦公桌上、慢慢的褪下了她被愛液沾濕的內褲。
+PRINTFORMW	「哎？！魔王大人~這是。。這裡可是辦公的地方啊！」
+PRINTFORMW	「沒事」你這麼說著、手上的動作並沒有停止「正是因為辦公的地方~才顯得更好~」
+PRINTFORMW	你把肉棒對準嘉德的小穴、在小穴口磨蹭了幾下后、用沾滿了愛液的肉棒把嘉德的小穴用背後位刺穿了。
+PRINTFORMW	「啊~進來了~魔王大人~魔王大人的肉棒~久違的肉棒~~~~」
+PRINTFORMW	你輕輕的拍擊了一下嘉德的翹臀。然後左手再度撫上嘉德的胸部、肉棒開始衝刺起來
+PRINTFORMW	「啊~明明~明明是辦公的地方~明明不能這樣子的~」
+PRINTFORMW	嘉德低聲嬌喘著、身體隨著你的抽插扭動著
+PRINTFORMW	「但是~但是~本宮為什麼會那麼舒服呢~被魔王大人的肉棒頂著~好舒服~好舒服~~~」
+PRINTFORMW	嘉德的聲音逐漸高亢起來、腔肉也隨著呻吟開始收縮、
+PRINTFORMW	「嗯~啊~要去了~要去了~~本宮要在自己的辦公桌上去了~」
+PRINTFORMW	你隨著嘉德的呻吟用右手拍擊了一下嘉德的翹臀、然後肉棒大力的往前一頂、猛的突破了嘉德的子宮口、深深的刺入子宮之內。
+PRINTFORMW	「嗯啊~去了~去了啊~~~」
+PRINTFORMW	嘉德渾身顫抖著、子宮口猛的收縮、箍住了你的肉棒、腔肉劇烈的收縮著、帶給你肉棒強烈的快感、緊接著就是一股熱流澆在你的龜頭上、在這些強烈的刺激下、你也是渾身一顫、隨後一股熱流從馬眼中涌出、大量的精液注入了嘉德的子宮內、澆灌在子宮壁上。
+PRINTFORMW	稍作休息后、你抱起嘉德、保持著插入坐到了椅子上、以背面座位的姿勢讓嘉德自己動
+PRINTFORMW	「怎麼了」
+PRINTFORMW	你突然感受到了嘉德的一絲停頓、不由得出聲問道
+PRINTFORMW	「沒什麼~只是看到了一個壞孩子罷了~」
+PRINTFORMW	嘉德媚笑道
+PRINTFORMW	「比起那些~顯然是讓魔王大人更舒服~更重要~」
+PRINTFORMW	如此說著。你和嘉德又一次在辦公室內開始了白日宣淫。
+EX_FLAG:2810 += 1
+
+@END10_17
+PRINTFORMW	不知道時候來到地下城的嘉德突然從後面蒙上了你的眼睛。
+PRINTFORMW	「猜猜~本宮是誰~」
+PRINTFORMW	這麼有特色的自稱又怎麼會猜錯呢？或者嘉德其實根本就沒打算讓你猜吧~
+PRINTFORMW	你將嘉德摟入懷中、雙手不自覺的在她身上游走
+PRINTFORMW	「魔王大人真是的~依然那麼H呢~」
+PRINTFORMW	嘉德順從的靠在你的懷裡
+PRINTFORMW	「回想起來~本宮和魔王大人相識也經過了好長好長一段時間了呢！~」
+PRINTFORMW	「必須得做點什麼來回報魔王大人這麼多日子以來的~各~種~照~顧~呢~」
+PRINTFORMW	「嗯！決定了」
+PRINTFORMW	嘉德突然從你懷中站起來、看似是下了什麼決定、轉過身來面對著你
+PRINTFORMW	「等本宮和魔王大人相戀一週年的時候~本宮送魔王大人一個禮物！」
+PRINTFORMW	在你出聲詢問的時候、嘉德然而笑著說
+PRINTFORMW	「嘛~是什麼呢~這可是~秘~密~哦~」
+PRINTFORMW	「不過比起這些~現在要做的應該是~」
+PRINTFORMW	嘉德跨坐到你身上、把你推倒在床上
+PRINTFORMW	「更舒服的事情哦~」
+EX_FLAG:2810 += 1
+
+@END10_18
+PRINTFORMW	天界的某個的房間
+PRINTFORMW	一個渾身赤裸的天使族少女跪坐在床上、雙手掩蓋自己的胸部和私處。
+PRINTFORMW	嘉德站在床邊、顯然是在打量著床上的少女
+PRINTFORMW	「安吉爾」
+PRINTFORMW	嘉德坐到床沿雙手拂過安吉爾的臉龐
+PRINTFORMW	「真是漂亮的臉蛋呢~~」
+PRINTFORMW	嘉德雙手又劃過安吉爾的脖頸、胸部和小腹
+PRINTFORMW	「真是美麗的身體呢~」
+PRINTFORMW	嘉德的眼神彷彿在打量一個完美的藝術品、雙手遊走在安吉爾的身體上
+PRINTFORMW	「那麼棒的身材、那麼漂亮的樣子~就連本宮都有點心動了呢~」
+PRINTFORMW	嘉德的舌尖劃過上嘴唇、眼神不知不覺從打量變成了看向獵物的眼神。嘉德突然抓住了安吉爾掩蓋著胸部的右手、
+PRINTFORMW	「嘉。。嘉德大人？！」
+PRINTFORMW	「啊啦~沒關係的哦~」
+PRINTFORMW	嘉德慢慢拉開安吉爾的右手、眼光打量逐漸暴露在空氣中的安吉爾豐滿的胸部
+PRINTFORMW	「不會痛的哦~反而~會很舒服呢~」
+PRINTFORMW	當左手拿開到一定程度后、嘉德猛的一用力、將安吉爾推倒到床上、安吉爾的胸部隨著這猛烈的動作搖晃出了驚人的乳搖。
+PRINTFORMW	嘉德左手抓著安吉爾的右手摁在頭頂上方。讓她無法遮掩胸部、雙腳也壓著安吉爾的雙腿讓讓她動彈不得。
+PRINTFORMW	「嘉。。嘉德大人。為什麼。。為什麼」
+PRINTFORMW	「撒、為什麼呢~你這個壞孩子~」
+PRINTFORMW	嘉德用空出的右手撫上安吉爾的美乳、
+PRINTFORMW	「真是漂亮的胸部呢~比本宮還大什麼的~真是讓本宮有點嫉妒呢~」
+PRINTFORMW	嘉德低下頭、突然含住了安吉爾的胸部、右手彷彿惡意一般輕掐了一下安吉爾的乳首
+PRINTFORMW	「嘉。。嘉德大人。。那裡。。那裡不行。。。」
+PRINTFORMW	嘉德並沒有迴應、只是自顧自的舔弄著安吉爾的巨乳
+PRINTFORMW	而安吉爾所能做的、也僅僅是轉過頭不去看眼前羞人的場景。因為趴在她身上的是天界的主人、她沒資格也沒能力去反抗。只能靜靜的祈禱著早點結束。
+PRINTFORMW	嘉德玩弄了一會兒安吉爾的胸部后、抬起頭看著安吉爾、
+PRINTFORMW	「那天~你在門外都看到了是吧~」
+PRINTFORMW	「啊！那個。。。那個。。。」安吉爾驚呼出聲、顯得十分慌亂
+PRINTFORMW	趁著這個機會、嘉德突然抓住安吉爾掩著私處的左手、然後抬到和左手同一個位置、用自己左手將雙手一起摁住
+PRINTFORMW	「果然是你吧~壞~孩~子~~壞孩子必須要懲罰才行呢~讓本宮想想~怎麼懲罰才好呢~」
+PRINTFORMW	嘉德的眼光掃視著安吉爾已經一覽無餘的嬌軀、隨後落在在了安吉爾寸草不生的私處。
+PRINTFORMW	「啊啦~」嘉德的右手劃過安吉爾白凈的私處、「沒想到安吉爾你~居然是白虎呢~」
+PRINTFORMW	「雖然很想好好看看天然的白虎到底是怎麼樣的~不過如果本宮一放手怕是你會跑掉吧~」
+PRINTFORMW	這麼說著。嘉德的右手掩上安吉爾的小穴、隨著話語用手指在安吉爾的小穴口撫摸起來
+PRINTFORMW	「懲罰的話~就讓你在本宮的撫摸下、不知羞恥的高潮吧~」
+PRINTFORMW	聽到這句話的安吉爾、下意識的開始猛烈掙扎起來、這反而引起了嘉德的不滿
+PRINTFORMW	「別動！」嘉德低聲呵道
+PRINTFORMW	一股強烈的威壓感迎面而來、壓的安吉爾不敢動彈。
+PRINTFORMW	雖然隨著嘉德換回微笑著的表情后、威壓感也隨即撤去、但是此時的安吉爾已經徹底失去了反抗的心。只能祈禱著快點結束
+PRINTFORMW	嘉德一邊挑逗著安吉爾的陰蒂。一邊突然問道
+PRINTFORMW	「吶、安吉爾~你~自慰過么」
+PRINTFORMW	「沒。。沒有」
+PRINTFORMW	「啊咧？沒有么？好孩子可不能說謊哦~」嘉德臉上帶著迷人的微笑、手上卻是悄悄的磨搓了一下安吉爾陰蒂「吶、安吉爾~你~自慰過么~」
+PRINTFORMW	「嗯。。」安吉爾雙目含淚的做出了肯定的回答
+PRINTFORMW	「舒服么~」嘉德不斷的用語言挑逗著安吉爾
+PRINTFORMW	「舒。。服」
+PRINTFORMW	「和本宮的技術比~哪邊舒服~」嘉德壓到了安吉爾的身體上、面對面的問道
+PRINTFORMW	「嘉。。嘉德大人弄的更舒服。。」
+PRINTFORMW	「是嘛~」嘉德在安吉爾耳邊吹了口氣說道「看來你還沒進去過呢~就讓本宮帶你~進入更舒服的地方吧~」
+PRINTFORMW	嘉德的手指突然就突入了安吉爾未經開發的陰道口
+PRINTFORMW	「啊！」安吉爾一聲驚呼「那裡。。那裡不行的！！！」
+PRINTFORMW	「已經、進去哦~」嘉德舔著安吉爾的耳垂、手指在安吉爾陰道內慢慢的摸索著「不過只能進去一隻手指什麼的~真的是從來都沒開發過呢。」
+PRINTFORMW	嘉德慢慢的探索著安吉爾的陰道、胸部與安吉爾的胸部互相摩擦著、語言的挑逗也不曾停下、
+PRINTFORMW	稍微過了一會兒后、在嘉德探索到某個小巧的突起的時候、安吉爾突然渾身一顫就迎來了高潮
+PRINTFORMW	「啊啦啊啦~」嘉德抽出手將雙指間連線著的銀絲展現到高潮后渾身無力的安吉爾面前、「真是淫蕩的孩子呢~」
+PRINTFORMW	「嘉。。嘉德大人。。已經。。已經可以了吧。。」
+PRINTFORMW	「啊啦？你說什麼呢~這才是剛剛開始呢~」
+PRINTFORMW	嘉德帶著迷人的微笑、又開始了新一輪的玩弄。
+EX_FLAG:2810 += 1
+
+@END10_19
+PRINTFORMW	不知不覺、已經到了與嘉德約定的日子、帶著一絲絲期待、你回到了自己的房間
+PRINTFORMW	果然、房間內嘉德已經在等著你了
+PRINTFORMW	今天的嘉德並非穿著往常的神官服、而是身著一身輕紗、豐滿的胸部和芳草萋萋的私處都隱約可見。
+PRINTFORMW	「今天的禮物是眼前這個完美的女孩么~嘉德~」你調笑著說道
+PRINTFORMW	「雖然魔王大人這麼說本宮很高興~但是不是的哦~」嘉德嬌笑著從乳溝中拿出一把小巧的金鑰匙塞入你的手中
+PRINTFORMW	「哦？那麼是這個鑰匙么~」
+PRINTFORMW	「不是哦~這只是禮物的一部分罷了~真正的禮物~就讓本宮帶著魔王大人去看看吧~」
+PRINTFORMW	在嘉德的帶領下、你來到了嘉德在地下城的房間門口
+PRINTFORMW	隨著嘉德推門而入。她口中的禮物也映入你的眼簾
+PRINTFORMW	那是一個不亞於的嘉德的女孩、一頭金髮披散著、俏臉微低著、雖然看不清具體表情但卻能看見白皙肌膚上的淡淡紅暈。
+PRINTFORMW	她的身上也是和嘉德一樣輕紗覆體、卻掩不住她驚人的巨乳、以及下體那。。。貞操帶？
+PRINTFORMW	突然你就明白了那鑰匙是幹什麼的。
+PRINTFORMW	「吶~魔王大人~」嘉德走到女孩身後、「你還記得這個孩子么~」
+PRINTFORMW	隨著嘉德的動作、女孩的俏臉出現在你的視野中、你自然也記起了她便是嘉德身邊的助手
+PRINTFORMW	「安吉爾她啊~可是壞孩子呢~」嘉德的雙手開始熟練的在女孩的身上摸索「那天我們在辦公室的事情~安吉爾可是在外面偷偷看著然後自慰呢 ~」
+PRINTFORMW	安吉爾啊。是這個孩子的名字么。。你這麼想到。。話說那天的事情居然有人在外面偷看啊！不過想想意外的有點興奮呢~
+PRINTFORMW	「後來本宮可是好好的懲罰過這孩子了呢~但是沒想到~這孩子居然迷上了這種感覺~」
+PRINTFORMW	嘉德把手指伸入安吉爾口中、逗弄著她的舌頭
+PRINTFORMW	「不知不覺的~安吉爾就變成了一個淫蕩的孩子了呢~」
+PRINTFORMW	嘉德把手指抽了出來、把連線在指間的銀絲展現給安吉爾看、隨後又命令安吉爾吮吸乾凈。
+PRINTFORMW	「這麼淫蕩的孩子~魔王大人~你肯定會喜歡的吧~」
+PRINTFORMW	「是啊~」
+PRINTFORMW	你走上前去、托起女孩的臉蛋。彷彿宣告一般的說
+PRINTFORMW	「所以從今天開始~你就是我的東西了~」
+PRINTFORMW	從嘉德手中接過女孩后、將她推倒到了床上、充盈著魔力的手指劃過她 的身體、所到之處、輕紗應聲而裂、流露出動人的春光、
+PRINTFORMW	你迫不及待的把雙手按到安吉爾豐滿的乳房上、滿足的揉搓起來。
+PRINTFORMW	嘉德走到你的背後、雙乳貼上你的後背。螓首靠到你的肩上。也是伸出雙手撫上安吉爾的雙乳
+PRINTFORMW	「吶、魔王大人~安吉爾的胸部~果然很棒吧~」
+PRINTFORMW	嘉德在你耳邊吹了口氣、又舔了舔你的耳垂
+PRINTFORMW	「當初剛看到的時候、連本宮都有點小嫉妒呢~」
+PRINTFORMW	你輕應了一聲。然後把臉埋入安吉爾的胸部、淡淡的乳香充斥著你的鼻腔。
+PRINTFORMW	你稍微舔了舔安吉爾的乳溝后、微微抬起頭含住了安吉爾一隻美乳、細細的品嚐起來。右手則輕揉著另一隻美乳、
+PRINTFORMW	在細細的品味過安吉爾的美乳后、你拿出了嘉德交給你的金色鑰匙、
+PRINTFORMW	在你背後的嘉德淫媚的一笑、悄悄的來到了安吉爾背後、趁她不注意抓住了安吉爾的雙腿、半強行的扒了開來、把安吉爾擺成M開腿的姿勢、羞的安吉爾摀住了臉。
+PRINTFORMW	你用鑰匙打開了安吉爾的貞操帶、將之扔到一旁
+PRINTFORMW	「吶~安吉爾~打開來讓魔王大人看看啊~」
+PRINTFORMW	安吉爾聽到嘉德的命令后、哪怕是萬分害羞、也依然用雙手慢慢的扒開了自己的小穴
+PRINTFORMW	隨著安吉爾的動作、她的小穴在你眼前不斷敞開、絲絲銀絲、粉嫩壁肉、以及隱約可見的處女膜。都在你面前一覽無餘。
+PRINTFORMW	隨著心中的衝動、你把頭埋入安吉爾胯間、嘴唇覆蓋上了安吉爾的小穴、舌頭伸入她的小穴內、開始慢慢探索著。
+PRINTFORMW	「啊。。。」
+PRINTFORMW	隨著你舌頭的蠻橫侵入、安吉爾發出動人的嬌吟。
+PRINTFORMW	「吶吶~魔王大人~爲了保護安吉爾的處女之身~本宮可有每天都好好的給她戴上貞操帶哦~」
+PRINTFORMW	過了一會兒~
+PRINTFORMW	你從安吉爾胯間抬起頭、掏出自己的肉棒、開始在安吉爾早已氾濫成災的小穴口慢慢的摩擦起來、
+PRINTFORMW	「要進來哦~」彷彿惡意一般、你一邊宣告著一般把肉棒對準安吉爾嬌小的穴口
+PRINTFORMW	在安吉爾紅著臉微微點頭后、你猛的挺身而入。刺穿了安吉爾的處女膜、點點落紅從交合處涌出、滴落在床單上。
+PRINTFORMW	「啊！！」
+PRINTFORMW	破處的痛楚讓安吉爾全身都徹底繃緊了、小穴也不斷收縮著。
+PRINTFORMW	你低下頭輕輕吻著安吉爾的嘴唇、雙手揉搓著安吉爾的雙乳、儘可能的減緩著安吉爾的痛楚、
+PRINTFORMW	「魔。。魔王大人。。沒事了~」
+PRINTFORMW	你看了看安吉爾的神色、的確是平靜了許多、感覺身體也放鬆了不少、
+PRINTFORMW	你輕輕一點頭后開始輕輕的抽弄、
+PRINTFORMW	「唔。。嗯。。啊。。啊。。」
+PRINTFORMW	隨著你的抽動、安吉爾開始發出絲絲帶著略微痛苦的呻吟、但是比起一開始、的確是好的多了。
+PRINTFORMW	你慢慢的開始加快動作、安吉爾的聲音也開始越來越大、
+PRINTFORMW	不知什麼時候、嘉德已經放開了安吉爾的身體、正坐在一旁、用小手自慰著、輕聲呼喚著你的名字
+PRINTFORMW	「魔。。魔王大人。。本宮~本宮也想要了呢」
+PRINTFORMW	注意到你視線后、嘉德低聲請求著、小手扒開自己的小穴、把早已濕潤的小穴展現給你看、
+PRINTFORMW	你保持著插入、讓嘉德伏到安吉爾身上、讓嘉德的小穴和安吉爾的貼到了一起。
+PRINTFORMW	明白了你的意思的嘉德、輕笑著說
+PRINTFORMW	「魔王大人還真是貪心呢~居然讓本宮和別人一起服侍你什麼的~不過~這樣子的魔王大人~本宮也不討厭呢~」
+PRINTFORMW	你笑著在嘉德的翹臀上輕拍了一下、驚起一波臀浪。
+PRINTFORMW	然後抽出安吉爾小穴中的肉棒、刺入了嘉德的小穴
+PRINTFORMW	「啊~好棒~魔王大人的肉棒~」
+PRINTFORMW	嘉德的腔肉熟練的收縮著、帶給你與安吉爾處女小穴不同的另一種強烈刺激
+PRINTFORMW	你猛烈的抽插了幾下后、又將肉棒插回了安吉爾的小穴
+PRINTFORMW	你一邊玩弄著安吉爾和嘉德的肉體、一邊輪流的在她們的小穴中抽插。
+PRINTFORMW	「啊。。魔王大人。。魔王大人~~~本宮~本宮好像要來了~~」
+PRINTFORMW	「魔。。魔王大人。。我。。我也要。。」
+PRINTFORMW	就在此時、你猛的往嘉德小穴內一刺、同時用手在嘉德翹臀上重拍一下、然後快速抽的肉棒、一改之前的溫柔、用粗暴的動作刺入安吉爾的小穴、直抵花心、
+PRINTFORMW	「啊~~啊~~啊~~去了~~被魔王大人的肉棒插到去了~」
+PRINTFORMW	「唔~嗯~~~啊~~~~好舒服~~好舒服啊~~~」
+PRINTFORMW	在你突然的動作帶來的刺激下、嘉德與安吉爾同時達到了高潮。身體隨著高潮不斷的顫抖著、
+PRINTFORMW	而你也在安吉爾高潮的同時、在安吉爾小穴的刺激下將大量的精液射入了她的子宮。
+PRINTFORMW	你們三人擁在一起、細細的品味著高潮的餘韻
+PRINTFORMW	不過這白天、還漫長著不是么。
+PRINTFORMW	稍作歇息的你、又一次開始玩弄起床上的嘉德和安吉爾。
+PRINTFORMW	---------------------嘉德淫亂Ending---------------------
+PRINTFORMW ～嘉德 淫亂天神 Ending～
+EX_FLAG:2810 += 1
+EX_FLAG:2801 = 99

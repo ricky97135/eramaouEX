@@ -1,0 +1,206 @@
+﻿;技巧のLvUP処理とその可否判定
+;eratohoA ver1,204のスクリプトをベースに処理を簡略化
+;eraIM@Sから導入しました(eramaou)
+
+;-------------------------------------------------
+;技巧のLvUP
+;-------------------------------------------------
+@ABLUP12
+DRAWLINE
+;PRINTL 奴隸的技巧提升了。
+;PRINTL 技巧越高，性愛及侍奉時越容易滿足對方。
+;CUSTOMDRAWLINE ‥
+;技巧はLv10が上限
+IF ABL:12 >= 10
+	PRINTW 已達最高級
+	RETURN 0
+;技巧＋話術は１６以上にならない
+;でも、珠が沢山あるの場合はレベルアップできる。
+ELSEIF ABL:12 + ABL:15 >= 15
+	IF JUEL:7 < ABL:12 * ABL:12 * 1000
+	PRINTFORMW 技巧({ABL:12})＋話術({ABL:15})上限為15
+	RETURN 0
+	ENDIF
+ENDIF
+
+;必要な習得點數
+A = 0
+
+;條件別にＯＫかダメかを記録する
+;習得點數による可否（I=0:可、I&1:點數不足、I&2:経験不足）
+I = 0
+
+CALL DECIDE_ABLUP12
+SIF NO:TARGET == 0
+    PRINTL 魔王通過這種方式提升技巧仍然需要金錢5000點
+PRINTFORM [0] - %PALAMNAME:7%點數×{JUEL:7}/{A} ……
+
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 點數不足 
+	SIF I & 2
+		PRINT 經驗不足
+	SIF I & 4
+		PRINT 金錢不足	
+ENDIF
+PRINTL 
+
+PRINTL [100] - 停止
+
+INPUT
+IF (RESULT < 0 || RESULT > 0) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:12 += 1
+IF NO:TARGET == 0
+    MONEY -= 5000
+	EX_FLAG:4444 -= 5000
+	PRINTL 花費金錢5000點。
+ENDIF	
+
+IF RESULT == 0
+	JUEL:7 -= A
+ENDIF
+
+PRINTFORML %ABLNAME:12%變為LV{ABL:12}。
+
+RETURN 0
+
+
+;-------------------------------------------------
+@CORE_ABLUP12
+;-------------------------------------------------
+ABL:12 ++
+
+IF I == 0
+	JUEL:7 -= A
+ENDIF
+
+
+;-------------------------------------------------
+;技巧のLvUP可否判定
+;-------------------------------------------------
+@DECIDE_ABLUP12
+;技巧はLv10が上限
+SIF ABL:12 >= 10
+	RETURN 0
+;技巧＋話術は１６以上にならない
+SIF ABL:12 + ABL:15 >= 15
+	RETURN 0
+
+;判定変數を空に
+A = 0
+I = 0
+
+IF ABL:12 == 0
+	A = 1
+ELSEIF ABL:12 == 1
+	A = 25
+ELSEIF ABL:12 == 2
+	A = 200
+ELSEIF ABL:12 == 3
+	A = 3000
+ELSEIF ABL:12 == 4
+	A = 8000
+ELSEIF ABL:12 == 5
+	A = 12000
+ELSEIF ABL:12 == 6
+	A = 16000
+ELSEIF ABL:12 == 7
+	A = 22000
+ELSEIF ABL:12 == 8
+	A = 28000
+ELSEIF ABL:12 == 9
+	A = 35000
+ENDIF
+
+;戒備森嚴
+IF TALENT:27
+	SIF ABL:12 == 3
+		TIMES A , 1.50
+	SIF ABL:12 == 4
+		TIMES A , 2.00
+	SIF ABL:12 == 5
+		TIMES A , 2.50
+	SIF ABL:12 >= 6
+		TIMES A , 3.00
+ENDIF
+
+;坦率
+SIF TALENT:13
+	TIMES A , 0.95
+;冷漠
+SIF TALENT:21
+	TIMES A , 1.05
+;好奇心
+SIF TALENT:23
+	TIMES A , 0.95
+;保守的
+SIF TALENT:24
+	TIMES A , 1.10
+
+;壓抑
+IF TALENT:32
+	TIMES A , 1.10
+;開放
+ELSEIF TALENT:33
+	TIMES A , 0.90
+ENDIF
+
+;抵抗
+SIF TALENT:34
+	TIMES A , 1.20
+
+;害羞
+IF TALENT:35
+	TIMES A , 1.05
+;不知羞恥
+ELSEIF TALENT:36
+	TIMES A , 0.95
+ENDIF
+
+;快速學習
+IF TALENT:50
+	TIMES A , 0.80
+;學習緩慢
+ELSEIF TALENT:51
+	TIMES A , 1.50
+ENDIF
+
+;擅用舌頭
+SIF TALENT:52
+	TIMES A , 0.95
+;獻身的
+SIF TALENT:63
+	TIMES A , 0.95
+;不怕臟
+SIF TALENT:64
+	TIMES A , 0.95
+
+;最低でも1個は必要
+SIF A < 1
+	A = 1
+
+;習得點數は足りている？
+SIF JUEL:7 < A
+	I |= 1
+SIF NO:TARGET == 0 && MONEY < 5000
+    I |= 4
+SIF NO:TARGET == 0 && ABL:MASTER:12 > FLAG:30 + 1
+	I |= 2
+IF I == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+;
+;
+;

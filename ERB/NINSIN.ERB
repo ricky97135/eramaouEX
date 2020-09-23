@@ -1,0 +1,1062 @@
+﻿;--------------------------------------------------
+;
+;	CFLAG:1			角色狀態：0=調教中 2=侵攻中 3=迎撃中
+;						7=苗床 8=曬し臺 9=NTR中 10=育児室
+;	CFLAG:102		誰的精液導致懷孕：
+;						主人 = 1, 助手 = 2, 奴隷 = 3, 
+;						客 = 4, 犬 = 5 怪物/觸手 = 6 狂王 = 7
+;	CFLAG:110		預計出產日
+;	CFLAG:111		孩子父親（NID+1）；（參考CHARA_NAME.ERB）
+;						0=主人 -1=娼館客 -2=良犬 -3=魔物 -4=狂王
+;==================================================
+
+;--------------------------------------------------
+;   懷孕:主処理
+;--------------------------------------------------
+@NINSIN_MAIN
+#DIM L_I
+#DIM L_出產日
+
+FOR L_I, 0, CHARANUM
+	;發覺懷孕
+	CALL NINSIN_AWARE(L_I)
+	SIF RESULT == 1
+		CONTINUE
+	
+	;懷孕中或育兒中
+	SIF !(TALENT:L_I:妊娠 || TALENT:L_I:育兒中)
+		CONTINUE
+	
+	L_出產日 = CFLAG:L_I:110
+	
+	;出產日3天前進入臨月（移動到育兒室）
+	IF (L_出產日 - 3) == DAY
+		DRAWLINE
+		CALL NINSIN_REACH_TERM(L_I)
+		
+	;出產日
+	ELSEIF L_出產日 == DAY
+		DRAWLINE
+		CALL NINSIN_REACH_DAY(L_I)
+		
+	;臨近出產日
+	ELSEIF INRANGE(L_出產日 - DAY, 0, 3) 
+		;檢查迎擊返回的奴隸，移動到育兒室
+		IF !GETBIT(FLAG:5,10) && CFLAG:L_I:1 == 0 
+			CFLAG:L_I:1 = 10 
+			DRAWLINE
+			PRINTFORML %SAVESTR:L_I%被移動到了育兒室中……
+			DRAWLINE
+		ENDIF
+	
+	;出產日5天后，離開育兒室
+	ELSEIF (L_出產日 + 5) == DAY
+		DRAWLINE
+		CALL CHILD_CARE_DEPART(L_I)
+		
+	ELSEIF TALENT:L_I:育兒中
+		DRAWLINE
+		PRINTFORML %SAVESTR:L_I%在育兒室照顧孩子……
+		DRAWLINE
+	ENDIF
+	
+NEXT
+
+;-------------------------------------------------
+;   懷孕:檢查是否意識到懷孕，並處理
+;-------------------------------------------------
+@NINSIN_AWARE(ARG)
+#DIM L_精源
+#DIM L_出產日
+
+;既に妊娠中・育兒中ならそのまま戻る
+SIF TALENT:ARG:妊娠 || TALENT:ARG:育兒中 || TALENT:ARG:341 || TALENT:ARG:342
+	RETURN 0
+
+;妊娠出産機能オフ時
+SIF GETBIT(FLAG:5,2) == 0
+	RETURN 0
+	
+;年齡小於9歲不能懷孕
+IF GETBIT(FLAG:5,12) && CFLAG:ARG:451 <= 9
+	CALL N_FLAG_CLEAR(ARG)
+	RETURN 0
+ENDIF
+
+;乳內妊娠で異常妊娠體質でない
+SIF CFLAG:ARG:113 == 1 && TALENT:ARG:340 == 0
+	RETURN 0
+;精巣妊娠で異常妊娠體質でない
+SIF CFLAG:ARG:113 == 2 && TALENT:ARG:340 == 0
+	RETURN 0
+;精巣妊娠でオトコでもふたなりでもない
+SIF CFLAG:ARG:113 == 2 && TALENT:ARG:121 == 0 && TALENT:ARG:122 == 0
+	RETURN 0
+;14歳以下のキャラ、とりあえずランダムで
+IF CFLAG:ARG:451 <= 14 && RAND:5 > 1
+	CALL N_FLAG_CLEAR(ARG)
+	RETURN 0
+ENDIF
+
+L_精源 = CFLAG:ARG:102
+L_出產日 = CFLAG:ARG:110
+
+
+;主人の精液で妊娠発覚時の処理
+IF  L_精源 == 1 && L_出產日 <= DAY+54
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了%CALLNAME:MASTER%的孩子，
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	CALL N_CHANGE_STATUS, ARG
+;助手の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 2 && L_出產日 <= DAY+54
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了%CSTR:ARG:2%的孩子，
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	CALL N_CHANGE_STATUS, ARG
+;奴隷の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 3 && L_出產日 <= DAY+54
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了%CSTR:ARG:2%的孩子，
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	CALL N_CHANGE_STATUS, ARG
+;客の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 4 && L_出產日 <= DAY+54
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了連名字都不知道的男人的孩子，
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	CALL N_CHANGE_STATUS, ARG
+;犬の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 5 && L_出產日 <= DAY+24
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了野狗的孩子。
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	PRINTFORML 異種妊娠經驗+1
+	EXP:ARG:62 += 1
+	WAIT
+	TALENT:ARG:妊娠 = 1
+	CALL N_CHANGE_STATUS, ARG
+;怪物の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 6 && L_出產日 <= DAY+24
+	
+	IF CFLAG:ARG:112 > 0 && RAND:3 == 0
+		LOCALS = %ITEMNAME:(CFLAG:ARG:112)%
+	ELSE
+		LOCALS = 怪物
+		CFLAG:ARG:112 = 0
+	ENDIF
+	
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了%LOCALS%的孩子。
+	CALL PREG_TALENT_GET, ARG
+	PRINTFORML 異種妊娠經驗+1
+	EXP:ARG:62 += 1
+	WAIT
+	TALENT:ARG:妊娠 = 1
+	CALL N_CHANGE_STATUS, ARG
+;狂王の精液で妊娠発覚時の処理
+ELSEIF L_精源 == 7 && L_出產日 <= DAY+24
+	PRINTFORML %SAVESTR:ARG%的樣子有點奇怪……
+	PRINTFORML %SAVESTR:ARG%好像有了狂王的孩子，
+	PRINTL 
+	CALL PREG_TALENT_GET, ARG
+	CALL N_CHANGE_STATUS, ARG
+ELSE
+	RETURN 0
+ENDIF
+
+RETURN 1
+
+;--------------------------------------------------
+;   懷孕:妊娠素質取得
+;--------------------------------------------------
+@PREG_TALENT_GET, ARG
+;妊娠素質を得る
+;ここでCFLAG:113を初期化する
+IF CFLAG:ARG:113 == 1
+	PRINTL 于乳房懷孕了
+ELSEIF CFLAG:ARG:113 == 2
+	PRINTL 于精巢懷孕了
+ELSEIF CFLAG:ARG:113 == 0
+	PRINTL 于子宮懷孕了
+ENDIF
+PRINTL 
+PRINTFORML %SAVESTR:ARG%獲得了【%TALENTNAME:153%】
+IF CFLAG:ARG:113 == 1
+	PRINTFORML %SAVESTR:ARG%獲得了【%TALENTNAME:341%】
+	TALENT:ARG:341 = 1
+ELSEIF CFLAG:ARG:113 == 2
+	PRINTFORML %SAVESTR:ARG%獲得了【%TALENTNAME:342%】
+	TALENT:ARG:342 = 1
+ENDIF
+WAIT
+TALENT:ARG:153 = 1
+CFLAG:ARG:113 = 0
+RETURN 1
+
+;--------------------------------------------------
+;   懷孕:臨月的處理
+;--------------------------------------------------
+@NINSIN_REACH_TERM(ARG)
+
+PRINTFORML %SAVESTR:ARG%快要臨盤了……
+
+; NTR中
+IF CFLAG:ARG:1 == 9
+	PRINTFORML 爲了準備生產，%SAVESTR:ARG%被移動到了狂王的育兒室。
+	WAIT
+	DRAWLINE
+	RETURN
+ELSE
+		;3=迎撃中 7=苗床 8=曬し臺
+	
+	;不在迎撃中/苗床/曬し臺的奴隸移動到育兒室
+	IF CFLAG:ARG:1 != 3 && CFLAG:ARG:1 != 7 && CFLAG:ARG:1 != 8
+		PRINTFORMW 爲了準備生產，%SAVESTR:ARG%被移動到了育兒室。
+		CFLAG:ARG:1 = 10 
+	ENDIF
+	;育児室へ
+	;臨月時調教可、育児室には行かない。
+	IF GETBIT(FLAG:5,10)
+		SIF FLAG:1 == ARG
+			FLAG:1 = -1
+		SIF FLAG:2 == ARG
+			FLAG:2 = -1
+	;臨月到達したので調教・助手不可
+	;調教中と迎撃中なら育児室へ。
+	ELSE
+		;迎擊中的開始返回
+		IF CFLAG:ARG:1 == 3
+			PRINTFORMW 爲了準備生產，迎擊中的%SAVESTR:ARG%開始了返回。
+			CFLAG:ARG:507 = 0
+		ENDIF
+		SIF CFLAG:ARG:1 == 0 || CFLAG:ARG:1 == 3
+			CFLAG:ARG:1 = 10
+		SIF FLAG:1 == ARG
+			FLAG:1 = -1
+		SIF FLAG:2 == ARG
+			FLAG:2 = -1
+	ENDIF
+ENDIF
+
+;迎擊中的開始返回
+IF CFLAG:ARG:1 == 3
+	PRINTFORMW 爲了準備生產，迎擊中的%SAVESTR:ARG%開始了返回。
+	IF RAND:9 > 0
+		PRINTFORMW %SAVESTR:ARG%希望被傳送召回
+		CALL CHARA_INFO_CALLBACK,ARG
+	ELSE
+		CFLAG:ARG:507 = 0
+	ENDIF
+ENDIF
+
+DRAWLINE
+
+;--------------------------------------------------
+;   懷孕:臨盆的處理
+;--------------------------------------------------
+@NINSIN_REACH_DAY(ARG)
+#DIM L_父親
+#DIMS L_孩子的描述
+
+L_父親 = CFLAG:ARG:111
+
+EXP:ARG:私處擴張經驗 += 1
+EXP:ARG:生育經驗 += 1
+
+	
+IF L_父親 == 0
+	L_父親 = MASTER
+	
+	L_孩子的描述 = %CALLNAME:MASTER%的孩子
+ELSEIF L_父親 > 0
+
+	L_父親 = NID_R(L_父親-1)
+	
+	SIF L_父親 >= 0
+		CSTR:ARG:2 '= SAVESTR:L_父親
+	
+	L_孩子的描述 = %CSTR:ARG:2%的孩子
+ELSEIF L_父親 == -1
+	L_孩子的描述 = 不知道是誰的孩子
+ELSEIF L_父親 == -2
+	L_孩子的描述 = 野狗的孩子
+ELSEIF L_父親 == -3
+	L_孩子的描述 = 怪物的孩子
+ELSEIF L_父親 == -4
+	L_孩子的描述 = 狂王的孩子
+ELSE
+	L_孩子的描述 = 沒有父親的孩子
+ENDIF
+
+; 0=調教中 2=侵攻中 3=迎撃中　
+; 7=苗床 8=曬し臺 9=NTR中 10=育児室
+
+;迎擊中及侵攻中：流產
+IF CFLAG:ARG:1 == 3 || CFLAG:ARG:1 == 2
+	PRINTFORMW 在地下城內的%SAVESTR:ARG%突然感到一陣劇痛，暈了過去………
+	
+	;若生下來的是怪物 => 不流產
+	IF L_父親 == -2 || L_父親 == -3
+		PRINTFORML 從血泊中醒來的%SAVESTR:ARG%發現自己在昏迷時
+		CALL CHILD_BIRTH_PLACE
+		PRINT 生下了孩子……
+		CALL NINSIN_GIVE_BIRTH(ARG)
+		BASE:ARG:0 /= 2 + 1
+		BASE:ARG:1 /= 2 + 1
+	ELSE
+		PRINTFORMW 從血泊中醒來的%SAVESTR:ARG%發現自己流產了………
+		MAXBASE:ARG:0 /= 2 + 1
+		BASE:ARG:0 /= 5 + 1
+		BASE:ARG:1 /= 5+ 1
+	ENDIF
+	
+	CALL N_RESET_STATUS, ARG
+	
+;NTR中：孩子不知所蹤
+ELSEIF CFLAG:ARG:1 == 9
+
+	;NTR時的口上
+	TARGET = ARG
+	TFLAG:13 = 12
+	CALL NTR_CHILD_BIRTH
+	
+	CALL N_RESET_STATUS, ARG
+	
+;育児室內：調教中/育兒室
+;育兒室外：苗床、曬し臺
+ELSE
+	PRINTFORM %SAVESTR:ARG%平安的
+	CALL CHILD_BIRTH_PLACE
+	PRINTFORMW 生下了%L_孩子的描述%。
+	
+	;通常時的口上
+	TARGET = ARG
+	TFLAG:13 = 12
+	CALL SELF_KOJO
+
+	
+	;若生下來的是怪物 => 不需要育兒
+	IF L_父親 == -2 || L_父親 == -3
+		CFLAG:ARG:1 = 0
+			
+		CALL NINSIN_GIVE_BIRTH(ARG)
+		
+		CALL N_RESET_STATUS, ARG
+	ELSE
+		
+		;【愛】持ちの奴隷に産ませた子供が3人以上でマスターに【父性】が付く
+		SIF TALENT:ARG:愛慕 && L_父親 == NO:MASTER
+			FLAG:32 += 1
+		
+		IF FLAG:32 >= 3 && TALENT:MASTER:156 == 0 && TALENT:MASTER:122
+			PRINTFORML %CALLNAME:MASTER%的【%TALENTNAME:156%】覺醒了。
+			WAIT
+			TALENT:MASTER:156 = 1
+		ENDIF
+	;失去妊娠素質
+	TALENT:ARG:妊娠 = 0
+
+	;失去再生處女
+	;乳內・精巣妊娠はその限りではない
+	IF TALENT:ARG:0 == 1 && TALENT:ARG:341 == 0 && TALENT:ARG:342 == 0
+			PRINTFORML %SAVESTR:ARG%再生的處女膜因為生產而破損了………
+			TALENT:ARG:0 = 0
+	ENDIF
+	;乳內妊娠・精巣妊娠も失う
+	TALENT:ARG:341 = 0
+	TALENT:ARG:342 = 0
+		;開始在育兒室照顧孩子		
+		CALL CHILD_CARE_BEGIN(ARG)
+		
+	ENDIF
+ENDIF
+
+
+;--------------------------------------------------
+;	懷孕:生下孩子的處理
+;--------------------------------------------------
+@NINSIN_GIVE_BIRTH(L_母親)
+#DIM L_母親
+#DIM L_父親	;0 主人；-1 娼館の客；-2 良犬；-3 怪物；-4 狂王
+
+; 魔王 + ？ => 近衛兵
+; 奴隸 + 魔王 => 近衛兵
+; 奴隸 + 良犬/怪物 => 魔物
+; 奴隸 + 奴隸 => 奴隸
+; 奴隸 + 狂王 => 勇者
+
+L_父親 = CFLAG:L_母親:111
+
+IF L_父親 == 0
+	L_父親 = MASTER
+ELSEIF L_父親 > 0
+	L_父親 = NID_R(L_父親-1)
+ENDIF
+
+IF CHARANUM >= MAX_CHARANUM 
+	PRINTFORMW （目前登錄角色數量超出最大數量{MAX_CHARANUM}）
+	IF L_母親 == MASTER
+		CALL SUMMON_MONSTER_MASTER()
+	ELSE
+		CALL SUMMON_MONSTER(L_母親)
+	ENDIF
+	RETURN -1
+ENDIF
+
+; 魔王 + ？ => 近衛兵
+; 奴隸 + 魔王 => 近衛兵
+IF L_母親 == MASTER || L_父親 == MASTER
+	CALL GB_ADD_GUARD(L_母親, L_父親)
+		
+; ？ + 良犬/怪物 => 魔物
+ELSEIF L_父親 == -2 || L_父親 == -3
+	CALL SUMMON_MONSTER(L_母親)
+	RETURN -1
+
+; 奴隸 + 奴隸 => 奴隸
+; 奴隸 + 狂王 => 勇者
+ELSE
+	CALL GB_ADD_SLAVE(L_母親,L_父親)
+ENDIF
+
+RETURN RESULT
+
+
+;--------------------------------------------------
+;	分娩: 魔王 + ARG => 近衛兵
+;--------------------------------------------------
+@GB_ADD_GUARD(L_母親 = 0, L_父親 = 0)
+#DIM L_母親
+#DIM L_父親
+#DIM L_孩子
+#DIM L_B
+#DIM RACE
+L_B = L_母親 == MASTER ? L_父親 # L_母親
+
+;良犬/怪物
+IF L_B == -2 || L_B == -3
+	ADDCHARA RAND:11 + 200
+	CALL ADDCHARA_EX, CHARANUM-1
+;狂王、娼館の客
+ELSEIF L_B < 0
+	ADDCHARA RAND:16 + 1
+	CALL ADDCHARA_EX, CHARANUM-1
+;勇者
+ELSEIF INRANGE(NO:L_B, 1, 16) 
+	ADDCHARA NO:L_B
+	CALL ADDCHARA_EX, CHARANUM-1
+;精英部下
+ELSEIF INRANGE(NO:L_B, 200, 210)
+	ADDCHARA NO:L_B
+	CALL ADDCHARA_EX, CHARANUM-1
+;特殊角色
+ELSE
+	ADDCHARA RAND:16 + 1
+	CALL ADDCHARA_EX, CHARANUM-1
+ENDIF
+
+;孩子產生時的處理順序：
+;ADDCHARA -> 標記後代 | 命名（NID） -> 設定家族關係 -> CHARA_MAKE
+
+;孩子含有近衛後代素質
+L_孩子 = CHARANUM - 1
+EX_TALENT:L_孩子:1 = 1
+EX_TALENT:L_孩子:2 = 1
+
+;種族
+IF L_B > 0
+	TALENT:L_孩子:種族2 = TALENT:L_B:種族2
+	SIF INRANGE(NO:L_孩子, 200, 210)
+		TALENT:L_孩子:現種族 = NO:L_孩子
+ENDIF
+
+
+TALENT:L_孩子:種族 = 9	;魔族
+TALENT:L_孩子:原種族 = 9
+SIF TALENT:L_孩子:現種族 < 190
+	TALENT:L_孩子:現種族 = RAND:3 + 191 ;混沌龍,九尾,黑暗救世主
+	
+;若父母其一為魔王，責具有魔王替身素質
+SIF L_父親 == MASTER || L_母親 == MASTER
+	EX_TALENT:L_孩子:3 = 1
+
+;孩子名字初始化
+CALL GB_DEFINE_NAME(L_孩子,L_母親,L_父親)
+	
+;家族
+CALL FAMILY_BIRTHTO_MOM(L_孩子,L_母親)
+CALL FAMILY_BIRTHTO_DAD(L_孩子,L_父親)
+
+
+;角色素質年齡等初始化(stick修改，增加種族參數，原作者設定人類種族參數為-1)
+RACE = TALENT:L_孩子:種族
+SIF RACE == 0
+    RACE = -1
+CALL CHARA_MAKE(L_孩子 , 0 , RACE)
+
+
+;繼承父母素質
+CALL CHARA_MAKE_INHERIT(L_孩子,L_母親,L_父親)
+
+
+;角色等級
+IF L_B >= 0
+	LOCAL = (CFLAG:L_B:9 + CFLAG:MASTER:9)/2 
+ELSE
+	LOCAL = CFLAG:MASTER:9
+ENDIF
+LOCAL = (LOCAL * 6 + RAND:8) /10
+REPEAT LOCAL
+	CALL ST_UP, L_孩子
+REND
+
+;起始位置
+CFLAG:L_孩子:1 = 0
+
+RETURN L_孩子
+
+;--------------------------------------------------
+;	分娩: L_母親 + L_父親 => 奴隸
+;--------------------------------------------------
+@GB_ADD_SLAVE(L_母親,L_父親)
+#DIM L_母親
+#DIM L_父親
+#DIM L_孩子
+#DIM L_NAME_TYPE
+#DIM RACE
+
+IF INRANGE(NO:L_母親, 1, 16) || INRANGE(NO:L_母親, 200, 210)
+	ADDCHARA NO:L_母親
+	CALL ADDCHARA_EX, CHARANUM-1
+;特殊角色
+ELSE
+	ADDCHARA RAND:16 + 1
+	CALL ADDCHARA_EX, CHARANUM-1
+ENDIF
+
+;孩子含有後代素質
+L_孩子 = CHARANUM - 1
+EX_TALENT:L_孩子:2 = 1
+
+;種族
+TALENT:L_孩子:種族 = TALENT:L_母親:種族
+TALENT:L_孩子:種族2 = TALENT:L_母親:種族2
+TALENT:L_孩子:原種族 = TALENT:L_母親:種族
+IF INRANGE(NO:L_孩子, 200, 210)
+	TALENT:L_孩子:現種族 = NO:L_孩子
+ELSE
+	TALENT:L_孩子:現種族 = TALENT:L_母親:現種族
+ENDIF
+
+;孩子名字初始化
+CALL GB_DEFINE_NAME(L_孩子,L_母親,L_父親)
+
+;家族
+CALL FAMILY_BIRTHTO_MOM(L_孩子,L_母親)
+CALL FAMILY_BIRTHTO_DAD(L_孩子,L_父親)
+
+;角色素質年齡等初始化(stick修改，增加種族參數，原作者設定人類種族參數為-1)
+RACE = TALENT:L_孩子:種族
+SIF RACE == 0
+    RACE = -1
+CALL CHARA_MAKE(L_孩子 , 0 , RACE)
+
+;繼承父母素質
+CALL CHARA_MAKE_INHERIT(L_孩子,L_母親,L_父親)
+
+;角色等級
+IF L_父親 >= 0
+	LOCAL = (CFLAG:L_父親:9 + CFLAG:L_母親:9)/2 
+ELSE
+	LOCAL = CFLAG:L_母親:9
+ENDIF
+LOCAL = (LOCAL * 6 + RAND:LOCAL * 2)/10
+REPEAT LOCAL
+	CALL ST_UP, L_孩子
+REND
+
+;起始位置
+CFLAG:L_孩子:1 = 0
+SIF CFLAG:L_母親:1 == 9 || CFLAG:L_母親:1 == 2
+	CFLAG:L_孩子:1 = 2
+	
+RETURN L_孩子
+
+
+@GB_DEFINE_NAME(L_孩子,L_母親,L_父親)
+#DIM L_孩子
+#DIM L_母親
+#DIM L_父親
+#DIM L_TYPE
+
+IF L_父親 > 0
+	L_TYPE = NID_GET_TYPE(NID(L_父親))
+ELSEIF L_母親 > 0
+	L_TYPE = NID_GET_TYPE(NID(L_母親))
+ELSE
+	L_TYPE = -1
+ENDIF
+
+JUMP CHARA_NAME_RANDOM_DEFINE(L_孩子,L_TYPE)
+
+;--------------------------------------------------
+;   懷孕:懷孕開始時的狀態變化
+;--------------------------------------------------
+@N_CHANGE_STATUS, ARG
+#DIM L_精源
+#DIM L_父親
+#DIM L_壓力
+
+;體力上限減少
+MAXBASE:ARG:0 = MAX(1, MAXBASE:ARG:0 - 500)
+BASE:ARG:0 = MIN(MAXBASE:ARG:0, BASE:ARG:0)
+
+;懷孕導致乳房變大
+CALL N_BREAST_GROW, ARG:0
+PRINTFORML 由於懷孕，%SAVESTR:ARG%的胸部而變大了。
+
+;懷孕導致泌乳
+IF TALENT:ARG:母乳體質 == 0
+	PRINTFORML %SAVESTR:ARG%開始分泌母乳了。
+	WAIT
+	TALENT:ARG:母乳體質 = 1
+ENDIF
+
+;父親が誰なのかと母親の狀態によるストレス値の分岐
+L_壓力 = 0
+L_精源 = CFLAG:ARG:102
+L_父親 = CFLAG:ARG:111
+
+IF L_父親 == 0
+	L_父親 = MASTER
+ELSEIF L_父親 > 0
+	L_父親 = NID_R(L_父親-1)
+ENDIF
+
+;父親が主人で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && L_精源 == 1
+	L_壓力 += 0
+;父親が主人で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && L_精源 == 1
+	L_壓力 += 30
+ENDIF
+
+;父親が助手・奴隷で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && (L_精源 == 2 || L_精源 == 3)
+	IF RELATION:ARG:(L_父親) != 0
+		L_壓力 += 10 * ((200-RELATION:ARG:(L_父親)) / 100) + 10
+	ELSE
+		L_壓力 += 20
+	ENDIF
+;父親が助手・奴隷で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && (L_精源 == 2 || L_精源 == 3)
+	IF RELATION:ARG:(L_父親) != 0
+		L_壓力 += 10 * ((200-RELATION:ARG:(L_父親)) / 100)
+	ELSE
+		L_壓力 += 10
+	ENDIF
+ENDIF
+
+;父親が顧客で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && L_精源 == 4
+	L_壓力 += 80
+;父親が顧客で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && L_精源 == 4
+	L_壓力 += 50
+ENDIF
+
+;父親がノラ犬で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && L_精源 == 5
+	L_壓力 += 100
+	;【牝犬】が付いてればかなり減る
+	SIF TALENT:ARG:136
+		L_壓力 -= 40
+	;野狗が旦那様ならかなり減る
+	SIF CFLAG:ARG:601 == 900
+		L_壓力 -= 40
+;父親がノラ犬で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && L_精源 == 5
+	L_壓力 += 80
+	;【牝犬】が付いてればかなり減る
+	SIF TALENT:ARG:136
+		L_壓力 -= 40
+	;野狗が旦那様ならかなり減る
+	SIF CFLAG:ARG:601 == 900
+		L_壓力 -= 40
+;それ以外で父親がノラ犬。「陥落素質無」とあわせて+90
+ELSEIF L_精源 == 5
+	L_壓力 += 40
+	;【牝犬】が付いてればかなり減る
+	SIF TALENT:ARG:136
+		L_壓力 -= 40
+	;野狗が旦那様ならかなり減る
+	SIF CFLAG:ARG:601 == 900
+		L_壓力 -= 40
+ENDIF
+
+;父親が怪物で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && L_精源 == 6
+	L_壓力 += 100
+	;母親が魔族ならストレスがかなり減る
+	SIF TALENT:ARG:314 == 9
+		L_壓力 -= 40
+	;怪物が旦那様ならストレスがかなり減る
+	SIF CFLAG:ARG:601 >= 1 && CFLAG:ARG:601 <= 12
+		L_壓力 -= 40
+;父親が怪物で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && L_精源 == 6
+	L_壓力 += 80
+	;母親が魔族ならストレスがかなり減る
+	SIF TALENT:ARG:314 == 9
+		L_壓力 -= 40
+	;怪物が旦那様ならストレスがかなり減る
+	SIF CFLAG:ARG:601 >= 1 && CFLAG:ARG:601 <= 12
+		L_壓力 -= 40
+;それ以外で父親が怪物。「陥落素質無」とあわせて+90
+ELSEIF L_精源 == 6
+	L_壓力 += 40
+	;母親が魔族ならストレスがかなり減る
+	SIF TALENT:ARG:314 == 9
+		L_壓力 -= 40
+	;怪物が旦那様ならストレスがかなり減る
+	SIF CFLAG:ARG:601 >= 1 && CFLAG:ARG:601 <= 12
+		L_壓力 -= 40
+ENDIF
+
+;父親が狂王で母親が【愛慕】持ち
+IF TALENT:ARG:愛慕 && L_精源 == 7
+	L_壓力 += 80
+;父親が狂王で母親が【淫亂】持ち
+ELSEIF TALENT:ARG:76 && L_精源 == 7
+	L_壓力 += 30
+ENDIF
+
+;陥落素質がついていない
+SIF TALENT:ARG:愛慕 == 0 && TALENT:ARG:76 == 0
+	L_壓力 += 50
+;未陥落時は生育經驗數でストレスが増える。
+IF EXP:ARG:60 > 0 && TALENT:ARG:愛慕 == 0 && TALENT:ARG:76 == 0
+	L_壓力 += EXP:ARG:60 * 5
+ENDIF
+
+;剛強
+SIF TALENT:ARG:12
+	L_壓力 -= 20
+;母性
+SIF TALENT:ARG:155
+	L_壓力 -= 40
+;軟弱
+SIF TALENT:ARG:134
+	L_壓力 += 20
+;生育經驗あり
+SIF EXP:ARG:60
+	L_壓力 -= 20
+
+;ストレス値の累積が100を超えた場合
+;妊娠したのが你なら崩壞しない
+IF L_壓力 < 100 || ARG:0 == 0
+	PRINTFORML %SAVESTR:ARG%高興地愛撫著自己的肚子………
+ELSEIF L_壓力 >= 100 && TALENT:ARG:9 == 0
+	PRINTFORML %SAVESTR:ARG%呆如木雞，
+	PRINTFORML %SAVESTR:ARG%的心中，有什麼東西壞掉了……
+	PRINTFORML %SAVESTR:ARG%的精神【%TALENTNAME:9%】了。
+	WAIT
+	IF TALENT:ARG:愛慕
+		PRINTFORML %SAVESTR:ARG%失去了【%TALENTNAME:85%】。
+		TALENT:ARG:愛慕 = 0
+	ENDIF
+	IF TALENT:ARG:76
+		PRINTFORML %SAVESTR:ARG%失去了【%TALENTNAME:76%】。
+		TALENT:ARG:76 = 0
+	ENDIF
+	TALENT:ARG:9 = 1
+	WAIT
+ENDIF
+
+;妊娠発覚時のイベント口上
+TARGET = ARG:0
+TFLAG:13 = 11
+CALL SELF_KOJO
+
+DRAWLINE
+
+
+;--------------------------------------------------
+;   懷孕:懷孕/育兒結束時的狀態變化
+;--------------------------------------------------
+@N_RESET_STATUS, ARG
+
+;妊娠時に大きくなった胸のサイズを一段小さくする
+;ただし爆乳は元に戻らないものとする。いいね？
+IF TALENT:ARG:超乳	
+	PRINTFORML %SAVESTR:ARG%超乳仍然淫亂地脹大著縮不回去了。
+ELSE
+	CALL N_BREAST_REVERSE(ARG)
+	PRINTFORML 由於不再給孩子哺乳，%SAVESTR:ARG%的胸部而變小了。
+ENDIF
+;母乳出なくなる
+IF TALENT:ARG:母乳體質 == 1
+	TALENT:ARG:母乳體質 = 0
+	PRINTFORML %SAVESTR:ARG%不再泌乳了。
+ENDIF
+
+TALENT:ARG:妊娠 = 0
+TALENT:ARG:育兒中 = 0
+
+;育児しないと母性に目覚めません
+;妊娠時に減った體力の最大値が回復、妊娠フラグリセット
+MAXBASE:ARG:0 += 500
+CALL N_FLAG_CLEAR(ARG)
+
+;--------------------------------------------------
+;出産場所
+;--------------------------------------------------
+@CHILD_BIRTH_PLACE(ARG)
+;ARGはキャラ登録番號
+IF TALENT:ARG:341
+	PRINT 從巨大的乳房中
+ELSEIF TALENT:ARG:342
+	PRINT 從巨大的陰囊，通過陰莖
+ENDIF
+RETURN 0
+
+;--------------------------------------------------
+;	清除妊娠相關FLAG
+;--------------------------------------------------
+@N_FLAG_CLEAR(ARG)
+SIF CFLAG:ARG:1 == 10
+	CFLAG:ARG:1 = 0
+
+FOR LOCAL, 101, 109
+	CFLAG:ARG:LOCAL = 0
+NEXT
+CFLAG:ARG:110 = 0
+CFLAG:ARG:111 = 0
+CSTR:ARG:2 = 
+
+
+;--------------------------------------------------
+;	妊娠/子育開始時胸膨張処理
+;--------------------------------------------------
+@N_BREAST_GROW, ARG
+IF TALENT:ARG:絕壁
+	PRINTFORML %SAVESTR:(ARG:0)%的胸部從【%TALENTNAME:116%】膨脹為【%TALENTNAME:109%】了。
+	TALENT:ARG:絕壁 = 0
+	TALENT:ARG:貧乳 = 1
+ELSEIF TALENT:ARG:貧乳
+	PRINTFORML %SAVESTR:(ARG:0)%的胸部從【%TALENTNAME:109%】膨脹為普通大小了。
+	TALENT:ARG:貧乳 = 0
+ELSEIF TALENT:ARG:巨乳
+	PRINTFORML %SAVESTR:(ARG:0)%的胸部從【%TALENTNAME:110%】膨脹為【%TALENTNAME:114%】了。
+	TALENT:ARG:巨乳 = 0
+	TALENT:ARG:爆乳 = 1
+ELSEIF TALENT:ARG:爆乳
+	PRINTFORML %SAVESTR:(ARG:0)%的胸部從【%TALENTNAME:114%】膨脹為【%TALENTNAME:119%】了。
+	TALENT:ARG:爆乳 = 0
+	TALENT:ARG:超乳 = 1
+ELSEIF TALENT:ARG:超乳
+	;RETURN
+ELSE
+	PRINTFORML %SAVESTR:(ARG:0)%的胸部從普通大小膨脹為【%TALENTNAME:110%】了。
+	TALENT:ARG:巨乳 = 1 
+ENDIF
+;対象があなたでなく、コンフィグ設定してあるならバストサイズ更新
+IF ARG:0 != 0
+	IF GETBIT(FLAG:5,12) || GETBIT(FLAG:5,15)
+		CALL CHAR_SIZE_GENERATE, ARG:0, CFLAG:(ARG:0):451, 1
+		CFLAG:(ARG:0):454 = RESULT:3
+		CFLAG:(ARG:0):455 = RESULT:4
+	ENDIF
+ENDIF
+
+
+;--------------------------------------------------
+;	妊娠/子育結束時胸膨張処理
+;--------------------------------------------------
+@N_BREAST_REVERSE, ARG
+;爆→巨　巨→普　普→貧　貧・絶→そのまま
+IF TALENT:ARG:超乳
+	TALENT:ARG:超乳 = 1
+ELSEIF TALENT:ARG:爆乳
+	TALENT:ARG:爆乳 = 0
+	TALENT:ARG:巨乳 = 1
+ELSEIF TALENT:ARG:巨乳
+	TALENT:ARG:巨乳 = 0
+ELSEIF TALENT:ARG:貧乳 == 0 && TALENT:ARG:絕壁 == 0
+	TALENT:ARG:貧乳 = 1
+ELSE
+	RETURN
+ENDIF
+;対象があなたでなく、コンフィグ設定してあるならバストサイズ更新
+IF ARG != 0
+	IF GETBIT(FLAG:5,12) || GETBIT(FLAG:5,15)
+		CALL CHAR_SIZE_GENERATE, ARG, CFLAG:ARG:451, 1
+		CFLAG:ARG:454 = RESULT:3
+		CFLAG:ARG:455 = RESULT:4
+	ENDIF
+ENDIF
+
+
+;--------------------------------------------------
+;   育兒:開始育兒
+;--------------------------------------------------
+@CHILD_CARE_BEGIN(ARG)
+;崩壞
+SIF TALENT:ARG:9
+	JUMP CHILD_CARE_CHANGE_NURSE(ARG)
+
+PRINTFORM \@ ARG == MASTER ? %CALLNAME:MASTER% # %SAVESTR:ARG% \@
+PRINTFORML 開始在育兒室照顧孩子。 
+
+
+CFLAG:ARG:1 = 10
+
+SIF FLAG:1 == ARG
+	FLAG:1 = -1
+SIF FLAG:2 == ARG
+	FLAG:2 = -1
+
+;育兒中
+TALENT:ARG:育兒中 = 1
+
+;【愛慕】持ちで父親が主人なら【母性】に目覚める
+IF TALENT:ARG:愛慕 && CFLAG:ARG:111 == NO:MASTER && TALENT:ARG:155 == 0
+	PRINTFORML %SAVESTR:ARG%溫柔地哄著為你生下的孩子………
+	PRINTFORML 看來%SAVESTR:ARG%的【%TALENTNAME:155%】覺醒了。
+	TALENT:ARG:母性 = 1
+ENDIF
+WAIT
+
+
+
+;--------------------------------------------------
+;   育兒:更換照看孩子的人//開始育兒（崩壞）
+;--------------------------------------------------
+@CHILD_CARE_CHANGE_NURSE(ARG)
+
+LOCAL = 0
+REPEAT CHARANUM
+	{
+	IF !TALENT:COUNT:妊娠 && !TALENT:COUNT:育兒中 && TALENT:COUNT:母性 
+		&& !TALENT:COUNT:崩壞 && CFLAG:COUNT:0 == 2 && CFLAG:COUNT:1 == 0
+	}
+		LOCAL += 1
+		BREAK
+	ENDIF
+REND
+
+IF LOCAL <= 0
+	IF TALENT:ARG:崩壞
+		PRINTFORM 崩壞了的%SAVESTR:ARG%不能照顧孩子。
+	ELSE
+		PRINTFORM 現在的%SAVESTR:ARG%不能照顧孩子。
+	ENDIF
+	PRINTFORML 找不到照看孩子的人，%CALLNAME:MASTER%不得已將孩子遺棄了。
+	WAIT
+	
+	CALL N_RESET_STATUS, ARG
+ELSE
+	IF TALENT:ARG:崩壞
+		PRINTFORM 崩壞了的%SAVESTR:ARG%不能照顧孩子。
+	ELSE
+		PRINTFORM 現在的%SAVESTR:ARG%不能照顧孩子。
+	ENDIF
+	PRINTFORML 要把孩子交給誰來照顧？
+	WAIT
+	CUSTOMDRAWLINE ‥
+	REPEAT CHARANUM
+		;現在[妊娠]狀態でも[育兒中]でもなく、[母性]持ちで崩壞してなく、調教可能で、かつ助手可能なキャラを羅列
+		{
+		SIF !TALENT:COUNT:妊娠 && !TALENT:COUNT:育兒中 && TALENT:COUNT:母性 
+			&& !TALENT:COUNT:崩壞 && CFLAG:COUNT:0 == 2 && CFLAG:COUNT:1 == 0
+		}
+			PRINTFORML  [{COUNT}] %SAVESTR:COUNT% 
+	REND
+	CUSTOMDRAWLINE ‥
+	PRINTFORML  [100] - 遺棄孩子
+	
+	$INPUT_LOOP
+	INPUT
+	
+	IF RESULT == 100
+		PRINTFORML %CALLNAME:MASTER%不得已將孩子遺棄了。
+		WAIT
+	ELSEIF !INRANGE(RESULT, 0, CHARANUM-1)
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	{
+	ELSEIF !(!TALENT:RESULT:妊娠 && !TALENT:RESULT:育兒中 && TALENT:RESULT:母性 
+		&& !TALENT:RESULT:崩壞 && CFLAG:RESULT:0 == 2 && CFLAG:RESULT:1 == 0)
+	}
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ELSE
+		LOCAL = RESULT
+		;重設生產日
+		CFLAG:LOCAL:110 = CFLAG:ARG:110
+		
+		;移入育兒室
+		CFLAG:LOCAL:1 = 10
+		TALENT:LOCAL:育兒中 = 1
+		
+		SIF LOCAL == TARGET
+			TARGET = -1
+		SIF LOCAL == ASSI
+			ASSI = -1
+		
+		PRINTFORML %SAVESTR:LOCAL%開始在育兒室照顧孩子。
+		
+		IF TALENT:LOCAL:母乳體質 == 0 && !(TALENT:LOCAL:122)
+			PRINTFORML %SAVESTR:LOCAL%開始分泌母乳了。
+			TALENT:LOCAL:母乳體質 = 1
+		ENDIF
+		IF !(TALENT:LOCAL:122)
+		PRINTFORML 由於給孩子哺乳，%SAVESTR:LOCAL%的胸部變大了。
+		CALL N_BREAST_GROW, LOCAL
+		ENDIF
+		WAIT
+	ENDIF
+	
+	CALL N_RESET_STATUS, ARG
+	
+ENDIF
+
+
+;--------------------------------------------------
+;   育兒:育兒結束
+;--------------------------------------------------
+@CHILD_CARE_DEPART(ARG)
+#DIM L_孩子
+PRINTFORML %SAVESTR:ARG%照顧的孩子終於可以離開母親了。
+DRAWLINE
+WAIT
+
+;親離れ口上
+TARGET = ARG
+TFLAG:13 = 14
+CALL SELF_KOJO
+
+CALL NINSIN_GIVE_BIRTH(ARG)
+L_孩子 = RESULT
+
+;生下的是怪物
+IF L_孩子 < 0
+	
+ELSE
+	PRINTFORMW %SAVESTR:ARG%帶著起名為%SAVESTR:L_孩子%的孩子離開了育兒室。
+	CFLAG:ARG:1 = 0
+	CFLAG:L_孩子:1 = 0
+ENDIF
+
+CALL N_RESET_STATUS, ARG
+DRAWLINE
+
+
+
+;

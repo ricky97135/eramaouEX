@@ -1,0 +1,1523 @@
+﻿@ENDRESET
+
+;【瑪奧】
+SIF GETCHARA(17) < 0
+	EX_FLAG:2805 = 0
+;【金紅桃】
+SIF GETCHARA(20) < 0
+	EX_FLAG:2813 = 0
+;【銀黑桃】
+SIF GETCHARA(21) < 0 && EX_FLAG:2814 < 300
+	EX_FLAG:2814 = 0
+;【黑方片】
+SIF GETCHARA(22) < 0
+	EX_FLAG:2811 = 0
+;【白梅花】
+SIF GETCHARA(23) < 0
+	EX_FLAG:2812 = 0
+;【莉莉】
+SIF GETCHARA(24) < 0		
+	EX_FLAG:2806 = 0
+;【瓊】
+SIF GETCHARA(31) < 0		
+	EX_FLAG:2808 = 0
+;【普林希斯】
+SIF GETCHARA(32) < 0		
+	EX_FLAG:2809 = 0
+;【嘉德】
+SIF GETCHARA(33) < 0 && EX_FLAG:2814 < 500
+	EX_FLAG:2810 = 0
+;【葵希羅】
+SIF GETCHARA(34) < 0		
+	FLAG:2815 = 0
+;【菲婭】
+SIF GETCHARA(35) < 0		
+	EX_FLAG:2807 = 0
+
+
+@ENDCHECKMAIN
+#DIM DYNAMIC COUNTER,1
+COUNTER = 0
+
+;一週目500日N
+SIF DAY:0 == 500 && (EX_FLAG:2801 == 0 || EX_FLAG:2801 >= 90)
+	EX_FLAG:2801 = 99
+	
+SIF MONEY > EX_FLAG:4444 + 8766
+	EX_FLAG:2802 = 10
+
+
+
+DO
+	SIF CFLAG:COUNTER:9 >= 5000 && CFLAG:(COUNTER):1 == 0
+		EX_FLAG:2803 = COUNTER
+	COUNTER += 1
+LOOP COUNTER < CHARANUM	
+
+;
+SIF CFLAG:0:9 >= 1500
+	EX_FLAG:2804 = 10	
+
+;反叛判定
+SIF EX_FLAG:99 <= 0
+	FLAG:2816 = 10
+@ENDCHECKCHARA
+
+IF GETCHARA(17) > 0 && EX_FLAG:2805 == 0
+;瑪奧
+	IF TALENT:GETCHARA(17):85 == 1
+			EX_FLAG:2805 = 10
+		ELSEIF TALENT:GETCHARA(17):76 == 1
+			EX_FLAG:2805 = 20
+	ENDIF
+ENDIF
+IF GETCHARA(20) > 0 && EX_FLAG:2813 == 0
+;金紅桃
+	IF TALENT:GETCHARA(20):85 == 1
+			EX_FLAG:2813 = 10
+		ELSEIF TALENT:GETCHARA(20):76 == 1
+			EX_FLAG:2813 = 20
+	ENDIF
+ENDIF
+IF GETCHARA(21) > 0 && EX_FLAG:2814 < 300
+;銀黑桃
+	CALL ENDCHECKSPADE
+ENDIF	
+IF GETCHARA(22) > 0 
+;黑方片
+	CALL ENDCHECKSQUARE
+ENDIF	
+IF GETCHARA(23) > 0 && EX_FLAG:2812 == 0
+;白梅花
+	IF TALENT:GETCHARA(23):85 == 1
+			EX_FLAG:2812 = 10
+		ELSEIF TALENT:GETCHARA(23):76 == 1
+			EX_FLAG:2812 = 20
+	ENDIF
+ENDIF		
+IF GETCHARA(24) > 0 && EX_FLAG:2806 == 0
+;莉莉
+	IF TALENT:GETCHARA(24):85 == 1
+			EX_FLAG:2806 = 10
+		ELSEIF TALENT:GETCHARA(24):76 == 1
+			EX_FLAG:2806 = 20
+	ENDIF
+ENDIF	
+IF GETCHARA(31) > 0 && EX_FLAG:2808 == 0
+;瓊
+	IF TALENT:GETCHARA(31):85 == 1
+			EX_FLAG:2808 = 10
+		ELSEIF TALENT:GETCHARA(31):76 == 1
+			EX_FLAG:2808 = 20
+	ENDIF
+ENDIF	
+IF GETCHARA(32) > 0 && EX_FLAG:2809 == 0
+;普林希斯
+	IF TALENT:GETCHARA(32):85 == 1
+			EX_FLAG:2809 = 10
+		ELSEIF TALENT:GETCHARA(32):76 == 1
+			EX_FLAG:2809 = 20
+	ENDIF
+ENDIF	
+IF (GETCHARA(33) > 0 && EX_FLAG:2810 < 500) || (EX_FLAG:2810 >= 500)
+;嘉德
+	IF GETCHARA(33) > 0
+		CALL ENDCHECKGODNESS
+	ELSE
+		CALL ENDCHECKGODNESS_SKY_TEMPLE
+	ENDIF
+ENDIF
+IF GETCHARA(34) > 0 && FLAG:2815 == 0
+;葵希羅
+	IF TALENT:GETCHARA(34):85 == 1
+			FLAG:2815 = 10
+		ELSEIF TALENT:GETCHARA(34):76 == 1
+			FLAG:2815 = 20
+	ENDIF
+ENDIF
+SIF GETCHARA(35) > 0
+	CALL ENDCHECKPRINCESS
+;菲婭	
+
+
+@ENDCHECKSQUARE
+;黑方片劇情判定
+
+;通過實驗室愛慕淫亂互換將導致劇情線重置
+IF TALENT:GETCHARA(22):85 == 1 && EX_FLAG:2811 >= 100 && EX_FLAG:2811 <= 200
+	EX_FLAG:2811 = 10
+	;戀慕線起始1
+	CFLAG:GETCHARA(22):515 = 0
+ELSEIF TALENT:GETCHARA(22):76 == 1 && ((EX_FLAG:2811 >= 30 && EX_FLAG:2811 <= 100) || (EX_FLAG:2811 >= 300 && EX_FLAG:2811 <= 310))
+	EX_FLAG:2811 = 110
+	;淫亂線起始10
+	CFLAG:GETCHARA(22):515 = 0
+ENDIF
+
+IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):2 >= 2000 && EX_FLAG:2811 < 10
+		EX_FLAG:2811 = 10
+	ELSEIF EX_FLAG:2811 >= 10 && EX_FLAG:2811 < 20
+		SIF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):2 >= 5000
+			EX_FLAG:2811 = 20
+	ELSEIF EX_FLAG:2811 >= 20 && EX_FLAG:2811 < 30
+		SIF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):2 >= 10000
+			EX_FLAG:2811 = 30
+	ELSEIF EX_FLAG:2811 >= 30 && EX_FLAG:2811 < 40
+		SIF TALENT:GETCHARA(22):85 == 1 && (ABL:GETCHARA(22):10 + ABL:GETCHARA(22):16) >= 14
+			EX_FLAG:2811 = 40
+			CFLAG:GETCHARA(22):515 = 0
+	ELSEIF EX_FLAG:2811 >= 40 && EX_FLAG:2811 < 50
+		IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 10
+				EX_FLAG:2811 = 50
+			ELSE 
+				CFLAG:GETCHARA(22):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2811 >= 50 && EX_FLAG:2811 < 60
+		IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 30
+				EX_FLAG:2811 = 60
+			ELSE 
+				CFLAG:GETCHARA(22):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2811 >= 60 && EX_FLAG:2811 < 70
+		IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 60
+				EX_FLAG:2811 = 70
+			ELSE 
+				CFLAG:GETCHARA(22):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2811 >= 70 && EX_FLAG:2811 < 80
+		IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 100
+				EX_FLAG:2811 = 80
+			ELSE 
+				CFLAG:GETCHARA(22):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2811 >= 80 && EX_FLAG:2811 < 90
+		IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 150
+				EX_FLAG:2811 = 90
+			ELSE 
+				CFLAG:GETCHARA(22):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2811 == 300
+		;IF TALENT:GETCHARA(22):85 == 1 && CFLAG:GETCHARA(22):515 >= 10
+		;		EX_FLAG:2811 = 310
+		;	ELSE 
+		;		CFLAG:GETCHARA(22):515 += 1
+		;ENDIF
+		SIF RAND:5 == 0
+			EX_FLAG:2811 += 10
+ENDIF
+@ENDCHECKSPADE
+;銀黑桃劇情判定
+[SKIPSTART]
+IF CFLAG:GETCHARA(21):1 == 9
+	IF EX_FLAG:2814 >= 30 && EX_FLAG:2814 <=100
+		EX_FLAG:2814 = 300
+		SIF FLAG:1 == GETCHARA(21)
+			FLAG:1 = -1
+		SIF FLAG:2 == GETCHARA(21)
+			G:2 = -1
+
+		;前回の助手・調教対象より前だった場合はフラグを減算
+		SIF FLAG:1 > GETCHARA(21)
+			FLAG:1 -= 1
+		SIF FLAG:2 > GETCHARA(21)
+			FLAG:2 -= 1
+
+		TARGET = FLAG:1
+		ASSI = FLAG:2
+
+		CALL PARTY_CHAR_DEL, EX_FLAG:2803
+		DELCHARA GETCHARA(21)
+		CALL NAME_RESET
+	ENDIF
+ENDIF
+[SKIPEND]
+
+IF EX_FLAG:2814 >= 151
+	LOCAL:1 = (EX_FLAG:2814 - 140)/10*(RAND:200 + 200)
+	PRINTFORMW 銀黑桃乳業獲得的收入desu，一共{LOCAL:1}喲~
+	MONEY += LOCAL:1
+	EX_FLAG:4444 += LOCAL:1 
+ENDIF
+
+;通過實驗室愛慕淫亂互換將導致劇情線重置
+IF TALENT:GETCHARA(21):85 == 1 && EX_FLAG:2814 >= 110 && EX_FLAG:2814 <= 200
+	EX_FLAG:2814 = 30
+	;戀慕線起始3
+	CFLAG:GETCHARA(21):515 = 0
+ELSEIF TALENT:GETCHARA(21):76 == 1 && EX_FLAG:2814 >= 30 && EX_FLAG:2814 <= 100
+	EX_FLAG:2814 = 110
+	;淫亂線起始11
+	CFLAG:GETCHARA(21):515 = 0
+ENDIF
+
+IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):2 >= 2000 && EX_FLAG:2814 < 10
+		EX_FLAG:2814 = 10
+	ELSEIF EX_FLAG:2814 >= 10 && EX_FLAG:2814 < 20
+		SIF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):2 >= 5000
+			EX_FLAG:2814 = 20
+	ELSEIF EX_FLAG:2814 >= 20 && EX_FLAG:2814 < 30
+		SIF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):2 >= 10000
+			EX_FLAG:2814 = 30
+	ELSEIF EX_FLAG:2814 >= 30 && EX_FLAG:2814 < 40
+		SIF TALENT:GETCHARA(21):85 == 1 && (ABL:GETCHARA(21):10 + ABL:GETCHARA(21):16) >= 14
+			EX_FLAG:2814 = 40
+			CFLAG:GETCHARA(21):515 = 0
+	ELSEIF EX_FLAG:2814 >= 40 && EX_FLAG:2814 < 50
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 10
+				EX_FLAG:2814 = 50
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 50 && EX_FLAG:2814 < 60
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 30
+				EX_FLAG:2814 = 60
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 60 && EX_FLAG:2814 < 70
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 60
+				EX_FLAG:2814 = 70
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 70 && EX_FLAG:2814 < 80
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 100
+				EX_FLAG:2814 = 80
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 80 && EX_FLAG:2814 < 90
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 150
+				EX_FLAG:2814 = 90
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 == 300
+		IF TALENT:GETCHARA(21):85 == 1 && CFLAG:GETCHARA(21):515 >= 10
+				EX_FLAG:2814 = 310
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+ENDIF
+
+IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):2 >= 2000 && EX_FLAG:2814 < 10
+		EX_FLAG:2814 = 110
+		CFLAG:GETCHARA(21):515 = 0
+	ELSEIF EX_FLAG:2814 >= 110 && EX_FLAG:2814 < 120
+		SIF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):2 >= 5000
+			EX_FLAG:2814 = 120
+	ELSEIF EX_FLAG:2814 >= 120 && EX_FLAG:2814 < 130
+		IF CFLAG:GETCHARA(21):515 >= 2
+				EX_FLAG:2814 = 130
+			ELSE
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 130 && EX_FLAG:2814 < 140
+		SIF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):2 >= 10000
+			EX_FLAG:2814 = 140
+	ELSEIF EX_FLAG:2814 >= 140 && EX_FLAG:2814 < 150
+		SIF TALENT:GETCHARA(21):76 == 1 && ABL:GETCHARA(21):1 == 10 && ABL:GETCHARA(21):17 == 5 && TALENT:GETCHARA(21):78 == 1 && TALENT:GETCHARA(21):0 == 0
+			EX_FLAG:2814 = 150
+			CFLAG:GETCHARA(21):515 = 0
+	ELSEIF EX_FLAG:2814 >= 150 && EX_FLAG:2814 < 160
+		IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):515 >= 10
+				EX_FLAG:2814 = 160
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 160 && EX_FLAG:2814 < 170
+		IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):515 >= 30
+				EX_FLAG:2814 = 170
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 170 && EX_FLAG:2814 < 180
+		IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):515 >= 60
+				EX_FLAG:2814 = 180
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 180 && EX_FLAG:2814 < 190
+		IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):515 >= 100
+				EX_FLAG:2814 = 190
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+	ELSEIF EX_FLAG:2814 >= 190 && EX_FLAG:2814 < 200
+		IF TALENT:GETCHARA(21):76 == 1 && CFLAG:GETCHARA(21):515 >= 150
+				EX_FLAG:2814 = 200
+			ELSE 
+				CFLAG:GETCHARA(21):515 += 1
+		ENDIF
+ENDIF
+@ENDCHECKPRINCESS
+;白告線判定
+
+SIF GETCHARA(35) > 0 && EX_FLAG:2807 == 0
+	EX_FLAG:2807 = 10
+	;初次會面
+
+;通過實驗室愛慕淫亂互換將導致劇情線重置
+IF TALENT:GETCHARA(35):85 == 1 && EX_FLAG:2807 >= 130
+	EX_FLAG:2807 = 30
+	;戀慕線起始3
+	CFLAG:GETCHARA(35):515 = 0
+ELSEIF TALENT:GETCHARA(35):76 == 1 && EX_FLAG:2807 >= 30 && EX_FLAG:2807 <= 130
+	EX_FLAG:2807 = 130
+	;淫亂線起始13
+	CFLAG:GETCHARA(35):515 = 0
+ENDIF
+
+IF EX_FLAG:2807 >= 10 && EX_FLAG:2807 < 20
+		IF  MARK:GETCHARA(35):1 == 3 && TALENT:GETCHARA(35):0
+				EX_FLAG:2807 = 20
+			ELSEIF (MARK:GETCHARA(35):1 == 3 || MARK:GETCHARA(35):2 == 3) && TALENT:GETCHARA(35):0 == 0
+				EX_FLAG:2807 = -10
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 20 && EX_FLAG:2807 < 30
+		IF TALENT:GETCHARA(35):85 == 1
+				EX_FLAG:2807 = 30
+				;戀慕線起始3
+			ELSEIF TALENT:GETCHARA(35):76 == 1
+				EX_FLAG:2807 = 130
+				;淫亂線起始13
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 30 && EX_FLAG:2807 < 40
+		IF CFLAG:GETCHARA(35):2 >= 2000 
+			EX_FLAG:2807 = 40
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 40 && EX_FLAG:2807 < 50
+		IF CFLAG:GETCHARA(35):2 >= 5000 
+			EX_FLAG:2807 = 50
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 50 && EX_FLAG:2807 < 60
+		IF CFLAG:GETCHARA(35):2 >= 10000
+			EX_FLAG:2807 = 60
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 130 && EX_FLAG:2807 < 140
+		IF CFLAG:GETCHARA(35):2 >= 2000 
+			EX_FLAG:2807 = 140
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 140 && EX_FLAG:2807 < 150
+		IF CFLAG:GETCHARA(35):2 >= 5000 
+			EX_FLAG:2807 = 150
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 150 && EX_FLAG:2807 < 160
+		IF CFLAG:GETCHARA(35):2 >= 10000
+			EX_FLAG:2807 = 160
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 60 && EX_FLAG:2807 < 70
+		IF CFLAG:GETCHARA(35):601 == 901
+			EX_FLAG:2807 = 70
+			CFLAG:GETCHARA(35):515 = 0
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 70 && EX_FLAG:2807 < 80
+		IF CFLAG:GETCHARA(35):515 < 10
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 10
+				EX_FLAG:2807 = 80
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 80 && EX_FLAG:2807 < 90
+		IF CFLAG:GETCHARA(35):515 < 30
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 30
+				EX_FLAG:2807 = 90
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 90 && EX_FLAG:2807 < 100
+		IF CFLAG:GETCHARA(35):515 < 60
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 60
+				EX_FLAG:2807 = 100
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 100 && EX_FLAG:2807 < 110
+		IF CFLAG:GETCHARA(35):515 < 100
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 100
+				EX_FLAG:2807 = 110
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 110 && EX_FLAG:2807 < 120
+		IF CFLAG:GETCHARA(35):515 < 150
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 150
+				EX_FLAG:2807 = 120
+				;12為菲婭戀慕線完結
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 160 && EX_FLAG:2807 < 170
+
+		;該部分判定移動至aftertrain
+	ELSEIF	EX_FLAG:2807 >= 170 && EX_FLAG:2807 < 180
+		IF CFLAG:GETCHARA(35):515 < 10
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 10
+				EX_FLAG:2807 = 180
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 180 && EX_FLAG:2807 < 190
+		IF CFLAG:GETCHARA(35):515 < 30
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 30
+				EX_FLAG:2807 = 190
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 190 && EX_FLAG:2807 < 200
+		IF CFLAG:GETCHARA(35):515 < 60
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 60
+				EX_FLAG:2807 = 200
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 200 && EX_FLAG:2807 < 210
+		IF CFLAG:GETCHARA(35):515 < 100
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 100
+				EX_FLAG:2807 = 210
+		ENDIF
+	ELSEIF	EX_FLAG:2807 >= 210 && EX_FLAG:2807 < 220
+		IF CFLAG:GETCHARA(35):515 < 150
+				CFLAG:GETCHARA(35):515 += 1
+			ELSEIF CFLAG:GETCHARA(35):515 == 150
+				EX_FLAG:2807 = 220
+				;22為菲婭淫亂線完結
+		ENDIF
+	ELSE 
+ENDIF
+
+;菲婭線
+@END7_1
+DRAWLINE
+PRINTFORMW 菲婭在床上迷糊的看著四周……似乎還沒有對自己身上發生的事情有所認知……
+FORCEWAIT
+PRINTFORMW 一下子處在這麼陌生的環境的話，這也是當然的吧，
+PRINTFORMW 已經將幼女的人生完全掌握的%SAVESTR:MASTER%，在水晶球中俯視著影像。
+PRINTFORMW 接下來……要怎麼處置她好呢？
+EX_FLAG:2807 += 1
+
+@END7_2
+DRAWLINE
+PRINTFORMW 「啊，魔王大人～♪」
+PRINTFORMW 看見%SAVESTR:MASTER%的菲婭，啪嗒啪嗒的迎了過來。
+PRINTFORMW 「吶吶，今天也要一起玩嗎？」
+PRINTFORMW [1] 點頭 [2] 搖頭
+CALL ENDINCONSQSELECT,7
+EX_FLAG:2807 += 1
+
+@END7_3
+
+@END7_4
+DRAWLINE
+PRINTFORMW 「魔王大人，今天也是個好天氣呢～」
+FORCEWAIT
+PRINTFORMW 菲婭看著窗外，輕輕的朝著%SAVESTR:MASTER%打著招呼，
+PRINTFORMW 清晨的風吹起菲婭的髮梢，帶著衣角一起搖動著。
+PRINTFORMW 「昨天晚上……夢到魔王大人了呢……」
+PRINTFORMW 「誒？夢的內容嗎？」
+PRINTFORMW 「啊～是秘密喲～秘密～❤」
+PRINTFORMW 菲婭調皮的笑了一下，小臉變得更紅了，
+PRINTFORMW ……大概也能想到是什麼樣的吧。
+EX_FLAG:2807 += 1
+
+@END7_5
+DRAWLINE
+PRINTFORMW 「魔王大人……那個……菲婭……試著做了點心……」
+FORCEWAIT
+PRINTFORMW 「可以的話……那個……」
+PRINTFORMW 菲婭有些扭捏的端著盤子，裡面放著心型的小甜餅，
+PRINTFORMW 雖然顯得有些簡陋，不過對於她來說大概也是很難得才做出來的吧。
+PRINTFORMW 「怎，怎麼樣……味道……？」
+PRINTFORMW ……實在不能稱得上是好吃，要怎麼回答她呢？
+PRINTFORMW [3] 好吃！ [4] 不怎麼好吃
+CALL ENDINCONSQSELECT,7
+EX_FLAG:2807 += 1
+
+@END7_6
+DRAWLINE
+PRINTFORMW 「魔王大人～❤」
+FORCEWAIT
+PRINTFORMW 菲婭撲過來，緊緊的抱著%SAVESTR:MASTER%，深深的吸了一口氣。
+PRINTFORMW 「嗯～魔王大人的味道～」
+PRINTFORMW 菲婭開心的蹭了蹭%SAVESTR:MASTER%，彷彿可以看得見愛心冒出來一樣，
+PRINTFORMW 自從被抓到這裡來已經有了相當一段時間了，
+PRINTFORMW 雖然最初還是很牴觸，但是現在已經完全離不開%SAVESTR:MASTER%了。
+PRINTFORMW 「吶吶，魔王大人，如果有時間的話，還要和菲婭一起玩哦～」
+PRINTFORMW 「因為菲婭，最喜歡魔王大人了～」
+PRINTFORMW 「已經……沒有魔王大人就沒辦法活下去了呢……❤」
+PRINTFORMW 菲婭的小眼睛裡，滿滿的是幸福的表情，
+PRINTFORMW 銀色的戒指，在纖細的手指上閃閃發光。雖然只是訂婚的戒指，但對她來說一定比任何東西都重要吧。
+PRINTFORMW 接下來，要和她結婚嗎？
+PRINTFORMW 【要繼續進行菲婭線的話，請和菲婭舉行婚禮吧】
+EX_FLAG:2807 += 1
+
+@END7_7
+PRINTFORMW 「魔王大人。」
+FORCEWAIT
+PRINTFORMW 菲婭穿著很正式的衣服，有些意外。
+PRINTFORMW 「那個……菲婭考慮了很久，雖然菲婭還很不成熟……但是……果然還是想為魔王大人做些什麼。」
+PRINTFORMW 「所以……最少……能為魔王大人儘自己的一份力……這樣就滿足了呢。」
+PRINTFORMW 已經被%SAVESTR:MASTER%支配了的國家，很容易就承認了原本是就是公主的菲婭。
+PRINTFORMW 正式成爲了魔界的公主的菲婭，雖然還是個孩子，多少也能為%SAVESTR:MASTER%提供一點幫助吧？
+PRINTFORMW 和菲婭的關係更加增進了一層。
+PRINTFORMW  
+PRINTFORMW 菲婭獲得了素質【魔界公主】
+PRINTFORMW 從地上掠奪的資金增加了，而且可以獲得兵員了。
+EX_FLAG:2807 += 1
+TALENT:GETCHARA(35):1254 = 1 
+
+@END7_8
+DRAWLINE
+PRINTFORMW 「啊，魔王大人～～」
+FORCEWAIT
+PRINTFORMW 菲婭慌忙的站了起來，迎接%SAVESTR:MASTER%。，
+PRINTFORMW 雖然年齡還小……但是畢竟以前也算是王族吧，
+PRINTFORMW 從那之後已經過去了10天，偶爾看見菲婭在正式場合，還是稍微有那麼點樣子的。
+PRINTFORMW 「哈嗚嗚，感覺一開始幫魔王大人就忙了好多……也沒有時間和魔王大人玩了～菲婭，好傷心的說～」
+PRINTFORMW 菲婭緊緊抱著%SAVESTR:MASTER%，和以前一樣撒著嬌，
+PRINTFORMW ……果然還只是個孩子啊。
+EX_FLAG:2807 += 1
+
+@END7_9
+DRAWLINE
+PRINTFORMW 「呼……呼……」
+FORCEWAIT
+PRINTFORMW 菲婭輕輕吹著還在冒著熱氣的奶茶，旁邊的女僕站在一旁服侍著。
+PRINTFORMW 「啊，魔王大人～沒想到會到菲婭這裡來呢……嗚哇哇～好開心～」
+PRINTFORMW 看見%SAVESTR:MASTER%的菲婭，小臉上流露出幸福的表情。
+PRINTFORMW 「啊啊，這個是……加了牛奶的紅茶……不知道合不合魔王大人的口味呢……那個……如果要其他的話……那個……」
+PRINTFORMW 剛剛好像還有點優雅感覺的菲婭，轉眼間又變得有些慌亂起來，
+PRINTFORMW 稍微休息一下也沒什麼不好？，
+PRINTFORMW 和菲婭度過了一段有點溫馨的休息時間。
+EX_FLAG:2807 += 1
+
+@END7_10
+DRAWLINE
+PRINTFORMW 最近菲婭似乎在偷偷摸摸做什麼的樣子。
+FORCEWAIT
+PRINTFORMW 「誒？那個……是秘密喲☆」
+PRINTFORMW 「嗚嗚，稍微任性一次啦……那，那個，如果準備好了的話，那個時候再告訴魔王大人～」
+PRINTFORMW 「因為是為魔王大人準備的呢……誒嘿嘿～」
+PRINTFORMW 菲婭在臉上親了一下，啪嗒啪嗒的跑開了，
+PRINTFORMW 看起來還沒有意識到自己已經把正在準備什麼東西的事情暴露出來這件事，
+PRINTFORMW 總之先這樣放著不管吧。
+EX_FLAG:2807 += 1
+
+@END7_11
+DRAWLINE
+PRINTFORMW 路過菲婭的房間的時候，聽見了悅耳的琴聲，
+FORCEWAIT
+PRINTFORMW 出於好奇，朝裡面看了一眼，
+PRINTFORMW 菲婭的小手，正在鋼琴上飛快的舞動著，
+PRINTFORMW 閉著眼睛演奏著的她，似乎完全沒有注意到這邊，
+PRINTFORMW 突然的不和諧的音符中斷了演奏，
+PRINTFORMW 「啊啊……這個程度……還遠遠不行呢……嗚……要繼續加油……」
+PRINTFORMW 琴聲再一次響起來了，
+PRINTFORMW ……就暫時不要打攪她了吧。
+EX_FLAG:2807 += 1
+
+@END7_12
+PRINTFORM 可以達成菲婭的魔界公主end，想要進入這個結局嗎？
+PRINTFORMW [1]好的 [2]唔，還是算了 [3]明天再問我可以喵？
+INPUT
+IF RESULT == 1
+DRAWLINE
+PRINTFORMW 走進菲婭房間的時候，感覺氣氛有些不一樣，
+FORCEWAIT
+PRINTFORMW 和平時可愛的感覺不同，顯得看起來正式很多，
+PRINTFORMW 菲婭坐在鋼琴面前，指尖流露出悅耳的音符來，
+PRINTFORMW 看來是經過相當的練習了吧，彈奏的非常熟練，看來，最近幾個月似乎一直都在準備的就是這個了。
+PRINTFORMW 雖然平時怎麼看都是小孩子，但是正式起來的話，果然還是看得出一點貴族的感覺。
+PRINTFORMW 該怎麼說呢……不愧是公主嗎？  
+PRINTFORMW 「魔王大人……那個……怎麼樣……？」
+PRINTFORMW 「這個呢……是隻彈給喜歡的人聽的曲子哦」
+PRINTFORMW 「拚命，拚命練習了很久，才終於能流利的彈奏出來了呢……」
+PRINTFORMW 「這個是……只為魔王大人……只有魔王大人才可以聽的哦」
+PRINTFORMW 菲婭靠在%SAVESTR:MASTER%的懷裡，閉著眼睛輕輕摩蹭著
+PRINTFORMW 「一開始來到這裡的時候，覺得很可怕……不知道怎麼辦才好……」
+PRINTFORMW 「但是……能遇上魔王大人……菲婭……真的很開心呢……」
+PRINTFORMW 「不管是碰上可怕的事情也好……碰見過分的人也好……只要心裡想著魔王大人……就覺得沒有什麼事情好怕的……」
+PRINTFORMW 「今後……要一直，一直～和魔王大人在一起～」
+PRINTFORMW 「因為魔王大人，是菲婭最最喜歡的人了吶～」
+PRINTFORMW …………
+PRINTFORMW ……
+PRINTFORMW 自從地上世界被完全征服已經過去了相當一段時間了，
+PRINTFORMW 漸漸安定下來的世界，開始收拾起戰爭的殘骸，開始重新建設起文明來。
+PRINTFORMW 在那之中，引領著人們的，正是小小的菲婭。
+PRINTFORMW 雖然年齡尚小，但藉著菲婭的人望，原本混亂的王國漸漸聚攏起來，開始建設起新的秩序，
+PRINTFORMW 騎士們擁立著原來的公主，在%SAVESTR:MASTER%的統治下開始了新的紀元。
+PRINTFORMW 在廢墟上展開的花朵，比原先開放的更加燦爛，
+PRINTFORMW 而在史書上由歷史學家們所記錄的，也大多是讚頌著%SAVESTR:MASTER%的話語，
+PRINTFORMW 當然，那都是後話了，
+PRINTFORMW 現在的%SAVESTR:MASTER%，大概正在和菲婭享受著快樂的時光吧？
+PRINTFORMW ～菲婭 魔界公主Ending～
+EX_FLAG:2807 += 1
+IF EX_FLAG:2801 < 99
+	SIF EX_FLAG:2801 <= 90
+		EX_FLAG:2801 = 90
+	EX_FLAG:2801++
+ENDIF
+ELSEIF RESULT == 2
+	EX_FLAG:2807 += 1
+	PRINTW 好吧，菲婭尊重您的選擇哦~
+ELSE
+	PRINTW 可以哦~明天會繼續問您的~
+ENDIF
+@END713
+
+@END7_14
+DRAWLINE
+PRINTFORMW 「啊，魔王大人～」
+FORCEWAIT
+PRINTFORMW 「今天……要來和菲婭做H的事情嗎？」
+PRINTFORMW 「從早上起來開始……就覺得肚子癢癢的……想要和魔王大人做H的事情想要的不得了呢....」
+PRINTFORMW 「所以……那個……絕對要和菲婭H哦……」
+PRINTFORMW 在路上的時候，被滿臉緋紅色的菲婭叫住了，
+PRINTFORMW 看這個樣子，大概內褲已經濕透了吧……
+PRINTFORMW 要不要今天……就好好的玩弄她一下？
+EX_FLAG:2807 += 1
+
+@END7_15
+DRAWLINE
+PRINTFORMW 「嗯……啾……呼哈……」
+FORCEWAIT
+PRINTFORMW 鬆開菲婭的小嘴，唾液在二人的嘴唇之間拉出數條透明的絲線，
+PRINTFORMW 早餐的時候說想坐在%SAVESTR:MASTER%的懷裡，回過神來就變成這樣的情況了。
+PRINTFORMW 雙手在菲婭的衣服里滑動著，感受著細嫩的身體，
+PRINTFORMW 雖然只是個小孩子，總覺得有種奇妙的誘惑力，
+PRINTFORMW 度過了一段粉紅色的早餐時間……
+EX_FLAG:2807 += 1
+
+@END7_16
+DRAWLINE
+PRINTFORMW 「誒嘿嘿……肚子裡面……還是黏糊糊的呢，感覺好舒服～」
+FORCEWAIT
+PRINTFORMW 「不管自己怎麼弄，都沒有被魔王大人H的舒服呢～」
+PRINTFORMW 菲婭依偎在%SAVESTR:MASTER%的懷裡，泛著粉紅色的小臉上流露出和年齡不符的色慾，
+PRINTFORMW 在她的身體上發泄了多少次呢？這種問題早就記不清了，反正也不需要答案吧，
+PRINTFORMW 對於身心都已經完全離不開%SAVESTR:MASTER%的菲婭來說，
+PRINTFORMW 只要能和%SAVESTR:MASTER%做H的事情就是最大的滿足了，
+PRINTFORMW 要說為什麼的話，因為對於菲婭來說，%SAVESTR:MASTER%就是菲婭一切吧。
+EX_FLAG:2807 += 1
+
+@END7_17
+DRAWLINE
+PRINTFORMW 「啊啊，魔王大人～」
+FORCEWAIT
+PRINTFORMW 遠遠的就被菲婭看見，啪嗒啪嗒的跑了過來，
+PRINTFORMW ……總感覺氣質好像有些不一樣了？
+PRINTFORMW 「吶吶，魔王大人，菲婭呢，從今天開始學習魔法了哦～」
+PRINTFORMW 「上次做了H的事情以後，一直在想要怎麼才能讓自己和魔王大人變得更加舒服呢～」
+PRINTFORMW 「嗯……雖然想了很久都沒有答案，不過也很想為魔王大人做點什麼……」
+PRINTFORMW 「要是菲婭做好了什麼事情，想要被魔王大人用H的事情獎勵呢，誒嘿嘿～」
+PRINTFORMW 和菲婭的關係更加增進了一層。
+PRINTFORMW 
+PRINTFORMW 菲婭獲得了素質【魔女】
+PRINTFORMW 攻擊力和防禦力增加了！
+EX_FLAG:2807 += 1
+TALENT:GETCHARA(35):1253 = 1 
+CFLAG:GETCHARA(35):11 += 200
+CFLAG:GETCHARA(35):12 += 200
+
+@END7_18
+DRAWLINE
+PRINTFORMW 「魔王大人……❤」
+FORCEWAIT
+PRINTFORMW 菲婭趴在%SAVESTR:MASTER%的身上，任由%SAVESTR:MASTER%的雙手玩弄著自己。
+PRINTFORMW 「嗯啾……菲婭……今天也有好好的努力呢……」
+PRINTFORMW 「想要魔王大人的獎勵……舒服的獎勵呢❤」
+PRINTFORMW 一邊說著，菲婭脫下了中間已經黏糊糊的胖次，
+PRINTFORMW 撫摸著菲婭身體的%SAVESTR:MASTER%，一轉身將菲婭壓在身下，開始聳動起來……
+EX_FLAG:2807 += 1
+
+@END7_19
+DRAWLINE
+PRINTFORMW 在走廊上走的時候，看見菲婭從旁邊飛了過去，
+FORCEWAIT
+PRINTFORMW 看來已經能夠很熟練的使用魔法了呢。
+PRINTFORMW 看見%SAVESTR:MASTER%的菲婭，朝這邊轉了過來，輕輕的落在%SAVESTR:MASTER%的面前。
+PRINTFORMW 「吶吶，魔王大人，菲婭現在，已經學會飛了呢～」
+PRINTFORMW 「像這樣子……這樣子動，也沒問題呢～」
+PRINTFORMW 一邊說著，菲婭半空中在擺出幾個姿勢來，
+PRINTFORMW 看起來很熟練的樣子，一定是經過了相當的練習了吧，
+PRINTFORMW 雖然只是小孩子，意外的在這方面有天賦的樣子，
+PRINTFORMW 今後也能成為有用的傢伙吧。
+EX_FLAG:2807 += 1
+
+@END7_20
+DRAWLINE
+PRINTFORMW 「啊，魔王大人，那個……菲婭稍微出去一下哦～」
+FORCEWAIT
+PRINTFORMW 菲婭一邊這麼說著，一邊飛走了，
+PRINTFORMW 最近總覺得菲婭在揹著自己做些什麼，不找她的時候，常常一整天都不見人，
+PRINTFORMW 問手下的女僕，也總是表示一大早就出去了，
+PRINTFORMW 屋子裡面多了許多奇怪的素材，
+PRINTFORMW 大概是在為魔藥之類的東西收集材料吧，
+PRINTFORMW 雖說如此……似乎有些太頻繁了的樣子……下次得說教一下才行。
+EX_FLAG:2807 += 1
+
+@END7_21
+DRAWLINE
+PRINTFORMW 「誒？菲婭在做什麼嗎？」
+FORCEWAIT
+PRINTFORMW 好不容易在菲婭正準備出門的時候抓了個正著。
+PRINTFORMW 「誒嘿嘿～魔王大人這麼想知道的話……」
+PRINTFORMW 「誒多……是秘密喲☆」
+PRINTFORMW 「嗯……但是絕對不是什麼壞的東西喲～」
+PRINTFORMW 「雖然稍微有點任性，但是拜託了呢～」
+PRINTFORMW 這麼說著的菲婭，在%SAVESTR:MASTER%的臉上啾了一下。
+PRINTFORMW 「因為是爲了菲婭最喜歡的魔王大人呀～❤」
+EX_FLAG:2807 += 1
+
+@END7_22
+PRINTFORM 可以達成菲婭的魔女end，想要進入這個結局嗎？
+PRINTFORMW [1]好的 [2]唔，還是算了 [3]明天再問我可以喵？
+INPUT
+IF RESULT == 1
+DRAWLINE
+PRINTFORMW 「吶吶，魔王大人❤」
+FORCEWAIT
+PRINTFORMW 菲婭輕輕飄了過來坐到了%SAVESTR:MASTER%的床邊，小手裡拿著透明的小瓶子，
+PRINTFORMW 瓶子裡面裝著粉紅色的液體，還在時不時的冒著泡泡，
+PRINTFORMW 一眼就能看出是某種魔藥吧。
+PRINTFORMW 雖然乍一看覺得有點危險，但是直覺卻令人覺得是一種很色氣的藥水……
+PRINTFORMW 剛想問的時候，菲婭就已經先開口了。
+PRINTFORMW 「這個呢……是被稱作愛的魔藥的東西呢。」
+PRINTFORMW 「誒嘿嘿，據說可以讓喜歡的人永遠都不會分開來的魔力呢❤」
+PRINTFORMW 「雖然花了很多功夫，不過終於還是完成了～」
+PRINTFORMW 「所以……那個……」
+PRINTFORMW 菲婭期待的看著這邊……
+PRINTFORMW [5] 喝掉 [6] 不喝 [7] 喂菲婭喝
+CALL ENDINCONSQSELECT,7
+PRINTFORMW 一番激烈的運動以後，菲婭依偎在%SAVESTR:MASTER%身旁，
+PRINTFORMW 小小的身體上還殘留著%SAVESTR:MASTER%施暴的痕跡，時不時因為高潮的餘韻而微微顫抖一下。
+PRINTFORMW 「誒嘿嘿……這樣子……魔王大人和菲婭……就永遠都不分開了呢❤」
+PRINTFORMW 「菲婭……好幸福……能夠遇到魔王大人，是菲婭一生最幸運的事情喲……」
+PRINTFORMW 「因為魔王大人，是菲婭最最喜歡的人了吶～」
+PRINTFORMW 「所以……再來一次吧……？❤」
+PRINTFORMW …………
+PRINTFORMW ……
+PRINTFORMW 自從地上世界被完全征服已經過去了相當一段時間了，
+PRINTFORMW 動亂已經漸漸安定下來，人們開始重新建設起新的秩序來，
+PRINTFORMW 但是仍然有些企圖反抗%SAVESTR:MASTER%統治的愚蠢的傢伙們，
+PRINTFORMW 既然有反抗的人，自然也會有鎮壓的人，
+PRINTFORMW 在那之中，有一個在天空中飛舞著的小小的身影，
+PRINTFORMW 在自己出生的這片大地上自由的飛翔著，維護著自己心愛的人的統治，
+PRINTFORMW 那是曾經是王國的公主的，菲婭，不過她現在的身份，是%SAVESTR:MASTER%手下的大魔女，
+PRINTFORMW 在她和許多人的努力下，%SAVESTR:MASTER%建立起了穩固的統治，
+PRINTFORMW 時代翻開了新的一輪篇章，
+PRINTFORMW 當然，那都是後話了，
+PRINTFORMW 現在的%SAVESTR:MASTER%，大概正在和菲婭享受著快樂的時光吧？
+PRINTFORMW ～菲婭 魔女Ending～
+EX_FLAG:2807 += 1
+IF EX_FLAG:2801 < 99
+	SIF EX_FLAG:2801 <= 90
+		EX_FLAG:2801 = 90
+	EX_FLAG:2801++
+ENDIF
+ELSEIF RESULT == 2
+	EX_FLAG:2807 += 1
+	PRINTW 好吧，菲婭尊重您的選擇哦~
+ELSE
+	PRINTW 可以哦~明天會繼續問您的~
+ENDIF
+
+;黑方片線
+@END11_1
+DRAWLINE
+PRINTFORML 「大人，今晚也請早些休息」
+FORCEWAIT
+PRINTFORML 黑方片努力擺出一副嚴肅的樣子來保持自己的威嚴。不過她的打扮只讓她顯得滑稽，且誘惑力十足。
+PRINTFORML 「今天也不一起來嗎？」
+PRINTFORML 和往常一樣，我調戲著這個假正經的孩子。
+PRINTFORML 「您……您在開什麼玩笑？」
+PRINTFORMW 黑方片的臉上出現了慌亂的神色。
+PRINTFORML 「像您這樣又色情又無恥的傢伙……我……」
+PRINTFORML 「行，我知道了。」
+PRINTFORML 沒再理會那個一身完美線條戰士的誘惑，抱著今晚的獵物進入了房間。
+PRINTFORML 「別隨便讓人靠近。如果有人偷聽要給我彙報哦！」
+PRINTFORMW 關上門前，我不懷好意的說道。
+PRINTFORML 「才！才沒有偷聽呢！」
+PRINTFORML 「我可是富商的女兒啊！可不是你手下的那些蕩婦！」
+PRINTFORML 儘管只聽到了聲音，但我似乎已經看到了黑方片羞紅的臉頰和那慌亂的神情……
+PRINTFORML 這是有趣，要強迫這傢伙侍寢嗎？
+PRINTFORMW 不，這對她只是獎勵吧？
+EX_FLAG:2811 += 1
+
+@END11_2
+DRAWLINE
+PRINTFORML 「大人」
+FORCEWAIT
+PRINTFORML 看著突然打開的大門，黑方片僵硬的行了個禮。
+PRINTFORML 「我忠心的護衛哦~有人在這裡偷聽墻角嗎？」
+PRINTFORML 我假裝四處張望，沒把視線投向她。
+PRINTFORMW 「……沒……沒……」
+PRINTFORML 女孩抿著嘴巴，半天蹦不出一句完整的話。
+PRINTFORML 「誒？可我怎麼聽到了奇怪的聲音？」
+PRINTFORML 手被我搭在眼睛上，誇張的做著眺望的動作。
+PRINTFORML 「是哪裡來的野貓在叫春嗎？」
+PRINTFORMW 「是啊！都是又下流又低階的魔王大人！只知道啪啪啪啪，搞得城堡里到處都是發春的牝犬！」
+PRINTFORML 黑方片突然揮舞起手中的大劍，若非自己閃避及時，怕這下就要受傷了……
+PRINTFORML 「噁心死了啊！這樣又沒品又人渣的魔王！你給我去死啊！」
+PRINTFORML 「原來這裡還有一個發春的雌獸。」
+PRINTFORML 本就是自導自演的好戲，怎麼可能會讓情況失控？
+PRINTFORML 被動過手腳的大劍在手中碎成渣滓，沒有了大劍的阻攔，手直直的握上了黑方片胸口的小兔。
+PRINTFORMW 在女孩還愣著沒反應過來前，另一隻手從胯下經過，在洪水氾濫的私處捏了一把，然後把黑方片用公主抱的方式抱了起來。
+PRINTFORML 被突然的襲擊嚇了一天，黑方片尖叫了一聲。驚慌失措中，雙手緊緊掛到你的脖子上。
+PRINTFORML 將黑方片抱回房間，大門被重重的關上。黑方片似乎還沒回過神來。
+PRINTFORML 「想加入就直說嘛。天天板著一張苦瓜臉，給誰看呢？」
+PRINTFORML 赤裸的下身，硬梆梆的陰莖正抵在黑方片的肛門上，在洞口前後滑動著。雙手在她的胸口和私密處遊走，女戰士被開發后的身體正變得越來越熱。
+PRINTFORML 「不要！你別碰我！」
+PRINTFORMW 懷中的黑方片身體顫抖著，大叫吼叫。女戰士扭動著身體，避開在她身上游走的雙手。
+PRINTFORML 「是，是。」
+PRINTFORML 你把她扔到床上，然後丟過去一床被子。
+PRINTFORML 「那今天就不碰你了。」
+PRINTFORML 不等她反應過來，你就笑嘻嘻的將床上昏迷過去的女人抱到了懷裡，赤裸的下身貫穿了進去。
+PRINTFORML 「黑方片，想要的話，隨時叫我就是了哦~！」
+PRINTFORML 強行把被子拉過頭頂，黑方片努力的維持自己最後的尊嚴。
+PRINTFORMW 「才！才不要呢！」
+PRINTFORMW 自慰經驗+10  被調教自慰經驗+10  胸部經驗+10  肛門經驗+10  抖M經驗+10  
+EXP:GETCHARA(22):10 += 10 
+EXP:GETCHARA(22):11 += 10
+EXP:GETCHARA(22):35 += 10 
+EXP:GETCHARA(22):1 += 10
+EXP:GETCHARA(22):30 += 10
+IF TALENT:GETCHARA(22):0 == 0
+	PRINTW V經驗+10
+	EXP:GETCHARA(22):0 += 10 
+ENDIF
+EX_FLAG:2811 += 1
+
+@END11_3
+DRAWLINE
+PRINTFORML 沐浴結束，準備選定今晚的侍奉對象的時候，看到了欲言又止的黑方片。
+FORCEWAIT
+PRINTFORML 不知道是不是放置play玩得過分了，感覺最她樣子有些不對……
+PRINTFORML 「大人……」
+PRINTFORMW 似乎感到到了自己的目光，黑方片鼓起了勇氣走上前來。
+PRINTFORML 「大人……今晚……」
+PRINTFORML 黑方片突然卡住了……
+PRINTFORML 「今晚還沒找到合適的人選嗎？」
+PRINTFORML 「怎麼？今晚要來陪我嗎？」
+PRINTFORML 「……」
+PRINTFORMW 黑方片突然抱了上來。
+PRINTFORML 「……」
+PRINTFORML 你正準備說話，卻被從那線條優美的健壯身體上傳來的熱量嚇到了。
+PRINTFORML 不記得有給她下藥啊……
+PRINTFORML 「沒……沒有喜歡你哦！」
+PRINTFORML 黑方片的聲音細若蚊吶，微不可察。
+PRINTFORMW 「不，不過大人寂寞的話，我可以陪你哦！」
+PRINTFORML 不管是把自己越抱越緊的身軀，還是那瞳子深處閃耀著的光芒，都讓你意識到今晚怕是沒有力氣再尋其它的獵物了。
+PRINTFORML 一把將黑方片抱起，手習慣性的在肛門處點了兩下。
+PRINTFORML 女孩打了個哆嗦，卻沒有職責和嬌啼，反倒是用舌頭調皮的舔了舔你的耳朵。
+PRINTFORMW 「已經……離不開您了……」
+PRINTFORML 「可明天別下不了床哦~」
+PRINTFORML 壞笑著，你抱著黑方片進入了房間。
+PRINTFORML 這次，房間里只有兩個人。
+PRINTFORMW 可聲音，卻比以往都要響亮，都要持久。
+EX_FLAG:2811 += 1
+
+@END11_4
+DRAWLINE
+PRINTFORML 「大人，我想回家一趟……」
+FORCEWAIT
+PRINTFORML 除了被調戲、玩弄到找不到北的時候，很少見到黑方片提及自己的過去。而這麼赤裸裸的說明自己的意圖，還真的是第一次。
+PRINTFORML 「作為富商的女兒也好；作為軍隊的戰士也好；作為魔王的寵姬也好……」
+PRINTFORMW 「或是自己的逃避，或是自己的選擇，又或是命運的捉弄……我已經不知道我是什麼了……」
+PRINTFORML 黑方片的臉上露出了從未有過的困擾神色，看得出來，在她心中，過去所建立的一切『價值觀』正在壞掉。
+PRINTFORML 「請讓我回去吧！等將之前的事情都了結了，我會再一次的回到大人您的身邊。成為您鞍前馬後的侍從，成為您肆意玩弄的溺器，成為您強大證明的奴隸……」
+PRINTFORMW 女戰士的身體顫抖著，眼眶裡有眼淚在滴落。但是在那淚水的後面，你在更深處看到了邪惡的光芒……
+PRINTFORMW [1]打開方便之門 [2]直接丟到床上♂然後幹了個爽
+INPUT
+IF RESULT == 1
+		EX_FLAG:2811 = 300
+		PRINTL 「感謝您的信任……」
+		PRINTFORMW 然而，你所不知道的是，被放走的已經是一頭失去了理智的兇獸……
+		SIF FLAG:1 == GETCHARA(22)
+			FLAG:1 = -1
+		SIF FLAG:2 == GETCHARA(22)
+			G:2 = -1
+
+		;前回の助手・調教対象より前だった場合はフラグを減算
+		SIF FLAG:1 > GETCHARA(22)
+			FLAG:1 -= 1
+		SIF FLAG:2 > GETCHARA(22)
+			FLAG:2 -= 1
+
+		TARGET = FLAG:1
+		ASSI = FLAG:2
+
+		CALL PARTY_CHAR_DEL, EX_FLAG:2803
+		DELCHARA GETCHARA(22)
+		CALL NAME_RESET
+	ELSE
+		EX_FLAG:2811 = 50
+		PRINTFORML 「要壞掉了……」
+		PRINTFORML 「我才不……喜歡……不喜……喜歡……我……喜歡……好喜歡啊！」
+		PRINTFORMW 黑方片臉上的困惑很快就被歡愉所取代了
+		PRINTFORML 「我的身體……被下流的魔王大人……變得好淫亂……啊~！好……好厲害……再多給我一點……」
+		PRINTFORML 緩緩的將堅挺的下身抽出，指尖在黑方片的身上劃過。每一次的觸碰，都讓女戰士的身體像觸電一般的抖動著。
+		PRINTFORMW 看到黑方片失神的樣子，興致正高的你把女戰士翻了個身。
+		PRINTFORML 「我……我……」
+		PRINTFORML 沒有理會黑方片的自語。你用堅挺的陰莖毫不猶豫的貫穿了黑方片洪水氾濫的肛門。
+		PRINTFORML 「好…好充實…大人的……在我的身體裡面……」
+		PRINTFORML 「黏黏糊糊的……我的淫穴…我的肛門…好舒服……要去了……」
+		PRINTFORMW 
+		PRINTFORMW 反抗心、抵抗誘惑消失；攻擊力，防禦力，體力，氣力上升，獲得精英技能:擬態，迷惑，麻痹。誘惑，混亂
+		EX_FLAG:2811 += 1
+		TALENT:GETCHARA(22):11 = 0
+		TALENT:GETCHARA(22):69 = 0
+		TALENT:GETCHARA(22):477 = 1
+		TALENT:GETCHARA(22):478 = 1
+		TALENT:GETCHARA(22):480 = 1
+		TALENT:GETCHARA(22):481 = 1
+		TALENT:GETCHARA(22):482 = 1
+		CFLAG:GETCHARA(22):11 += 200
+		CFLAG:GETCHARA(22):12 += 200
+		BASE:GETCHARA(22):0 += 1000
+		BASE:GETCHARA(22):1 += 1000		
+ENDIF
+
+@END11_5
+DRAWLINE
+PRINTFORML 「大人……」
+FORCEWAIT
+PRINTFORML 黑方片低著腦袋，不時偷瞄過來的眼神中充滿了慾望。
+PRINTFORML 在黑方片的身後，神色惶恐的女孩們縮著身子聚在一起。
+PRINTFORMW 「爲了魔王城的繁榮，她們會兢兢業業的幹到死的哦！」
+PRINTFORML 那些女孩都是黑方片的同族，儘管有著不錯的能力和嬌好的容貌，不過在大家族中也只是男人們的道具。
+PRINTFORML 難怪這幾天沒有人守衛……不對，沒人聽墻角了。原來黑方片擅自離職偷偷溜回了家，把家族中的商人綁了一堆回來。
+PRINTFORML 你忽然想到，乾脆把手下的牧場、展廳等東西交給黑方片打理是個不錯的主意。
+PRINTFORML 理所當然的，大手一揮，就把這些女孩交給黑方片調教去了。
+PRINTFORML 在其它妃子把女孩們帶走後，你和黑方片說起了魔族特色商業產業鏈的構想
+PRINTFORMW 「我也好，我所瞭解的知識也好。都是爲了魔王大人而存在的！」
+PRINTFORML 黑方片一下撲到了座位上，用她健壯的身體牢牢抱著你，她的身體正散發著熱量。
+PRINTFORML 「沒，沒有別的意思哦！只是大人，要獎勵我嗎？」
+PRINTFORMW 女戰士雙手扣住你的脖子，雙腳鎖著你的腰，擅長使用的舌頭在你的胸前舔舐著。
+PRINTFORML 「吶，主人。獎勵~！給我獎勵嘛~！」
+PRINTFORMW 毫不在意此時正在王座上，你解開了她的衣服，陰莖輕車熟路的進入了黑方片的身體。
+PRINTFORMW 侍奉快樂經驗+10 精液經驗+10 
+EXP:GETCHARA(22):20 += 10
+EXP:GETCHARA(22):21 += 10
+IF TALENT:GETCHARA(22):0 == 0
+	PRINTW V經驗+10
+	EXP:GETCHARA(22):0 += 10 
+ENDIF
+PRINTFORMW 各項稅收提升。
+EX_FLAG:2811 += 1
+
+@END11_6
+DRAWLINE
+PRINTFORML 魔王的房間，女孩們用不同的姿勢癱倒在床上。
+FORCEWAIT
+PRINTFORML 作為魔王金庫的打理者，她們無論身心都只屬於魔王。
+PRINTFORML 「看吧~這些傢伙有好好的加油哦~！」
+PRINTFORMW 女戰士氣喘吁吁的，可還是強打起精神，爬到你的身前。
+PRINTFORML 「按您要求的，我都做好了哦。下面，是不是要給我獎勵了？」
+PRINTFORML 黑方片的臉突然就紅了。
+PRINTFORML 「才！才沒有期待什麼哦！只是慣例的……」
+PRINTFORML 話還沒有說完，嘴巴就被你堵上了……
+PRINTFORMW 沉溺在極度的快感而發出尖叫的黑方片最後被那些恢復過來的女孩們抬了出去……
+EX_FLAG:2811 += 1
+
+@END11_7
+DRAWLINE
+PRINTFORML 商業的運作已經走上了軌道。黑方片和她挑選的人都是很厲害的角色。
+FORCEWAIT
+PRINTFORML 問起下一步的打算的時候，女戰士是這樣回答的。
+PRINTFORML 「我準備把她們變成您的護衛~」
+PRINTFORMW 雙腳不斷擺弄著你那不知疲倦的陰莖，噴射出來的液體把黑方片的美腳敷上一層白灼。
+PRINTFORML 「才不是爲了在大人床上陪大人您哦~！」
+PRINTFORML 當然一如既往的傲嬌發言，和兩個月前相比，她的精神狀態已經恢復了。雖然回不到當年那個一本正經抵抗誘惑的樣子，但是現在這種感覺也不錯就是了。
+PRINTFORML 就這麼繼續玩下去也不錯，不過好歹是『四騎士』之一。就這樣把黑方片變成一個只知道交尾的母狗還是有些可惜……
+PRINTFORML 不過既然都弄髒了，那就一起洗洗吧。
+PRINTFORMW 這麼想著，你帶著黑方片去了浴室……
+EX_FLAG:2811 += 1
+
+@END11_8
+DRAWLINE
+PRINTFORML 正好是100天了呢……三個月多一點的時間，整個魔王城已經變了一種感覺。
+FORCEWAIT
+PRINTFORML 雖然主事的黑方片是個腦子裡基本只有和魔王大人做愛，但整個魔王城裡，沉溺在愛慾中的人倒是少了起來。
+PRINTFORML 各地的有趣的東西被商人們販賣了過來，魔王城內雖然沒有人敢進來，但是城門口還是一片繁花景象。托這個的福，治安管理變得麻煩起來。
+PRINTFORML 不過黑方片主動提出了要幫忙訓練城衛隊，建立城管大隊。
+PRINTFORMW 「我不僅是商人的女兒，也是合格的軍人呢！不能浪費這種才華~！」
+PRINTFORML 嗯嗯，你更是一個合格的寵姬，這份才華基本天天在使用。
+PRINTFORML 雖然已經睡了過去，但是女戰士的下體還是緊緊的吸著自己的陰莖，內腔還在一動一動的，真是一點都不消停。
+PRINTFORML 現在拔出來可就太煞風景了。讓她再歇一會，就開始活動吧？
+PRINTFORMW 不知道這樣下去，能不能讓她領會到在性愛中也能安睡的天賦？
+PRINTFORML 似乎感覺到了自己的邪念，女戰士臉上出現了紅暈。口水從嘴角留下，嘴裡含糊不清的唸叨著。
+PRINTFORML 翻來覆去也不過是「我不要」，「我要」，「好喜歡」，「別碰我」，這樣的詞。
+PRINTFORMW 這個傢伙……詞彙量真少……又找到可以開發的地方了~~真棒！
+EX_FLAG:2811 += 1
+
+@END11_9
+DRAWLINE
+PRINTFORM 可以達成黑方片的純愛end，想要進入這個結局嗎？
+PRINTFORMW [1]好的 [2]唔，還是算了 [3]明天再問我可以喵？
+INPUT
+IF RESULT == 1
+PRINTFORML 神殿里，黑方片跟在你的後面進行著工作彙報。
+PRINTFORML 「大人，這裡也已經在我們的掌控之下咯~」
+PRINTFORML 就算不帶著軍隊，也可以毫無顧慮的走在神殿中。年輕的修女和女神官還會用看救世主一般的眼神看過來……真是很奇妙的感覺。
+PRINTFORML 「只要有錢~沒有什麼是辦不到的~」
+PRINTFORMW 黑方片這樣說著，你很清楚，又要慣例一般的討賞了。這就好像兩個人約定好的遊戲，黑方片把一切都奉獻出來，只要求一種『賞賜』。
+PRINTFORML 「乾的很棒哦~」
+PRINTFORML 罕見的，你誇獎了她一句。
+PRINTFORML 「！」
+PRINTFORML 女戰士的臉一下子就紅了。
+PRINTFORMW 「才沒有呢！精靈族，天使……不願意和魔王交易的地方還很多！而且現在也還沒有徹底斬斷狂王的經濟來源呢！」
+PRINTFORML 在黑方片的商賈團隊影響力越發強大的時候，你就打算靠著這個組織，不聲不響的去切斷狂王的經濟來源。
+PRINTFORML 可直到現在，那些和自己為敵的傢伙還是一如既往……這再一次的證明了，狂王在這個世界上的佈置比想像中的要多。
+PRINTFORML 「哦？可不管是商業，還是你成立的城管大隊都做的很好哦~」
+PRINTFORML 黑方片猛地抱住了你，把頭埋在你的懷裡。
+PRINTFORML 「我很努力了吧？不會拋棄我了吧？不會只是個溺器，只是個玩具，然後……然後……」
+PRINTFORMW 解開了黑方片的衣服，你直接的在小修女和女神官驚訝的目光下侵犯著她。
+PRINTFORML 「你的一切都是我的。你的才華，你的能力，你的身體……都是我的。」
+PRINTFORML 黑方片的眼中慾望和恐懼混雜在一起，但誠實的身體讓她只能坦然接受，無法拒絕。
+PRINTFORML 「而在我佔有你的時候，在我們連在一起，你成為我一部分的時候。勉強的，我就勉強算是你的吧。」
+PRINTFORML 黑方片狠狠地吻了上來。
+PRINTFORML 久到要窒息的親吻后，女戰士眼中的恐懼再也看不見了。
+PRINTFORMW 「我……才沒有高興呢！」
+PRINTFORML 「成為低階，下流，變態的魔王大人的一部分什麼的！我才沒有高興呢！」
+PRINTFORML 你知道，眼前的這個女人終於是恢復了正常。那個原本的黑方片，在某些地方，又回來了。
+PRINTFORMW …………
+PRINTFORMW ……
+PRINTFORML 傳說有一個只效忠於魔王的地下組織
+PRINTFORML 傳說這個組織的成員必須是中年以下的美女
+PRINTFORML 傳說要加入這個組織需要經過地獄一般的調教考驗，以及長時間的辛苦學習
+PRINTFORMW 傳說這個組織的首領是魔王的后妃
+PRINTFORML 傳說這個組織間接的控制著世界上一半的國家
+PRINTFORML 但是這個被通稱為『魔王的金手指』的組織，只被當做街頭巷尾的笑談而已
+PRINTFORMW 只有極少一部分人才知道，這個組織雖然並不叫這個名字，但真的存在
+PRINTFORML 而民間流傳的這個流言，卻巧妙的讓大部分人以為這個組織只是一個玩笑而已
+PRINTFORMW 這些流言，自然是由那個組織刻意傳出去的，而『魔王的金手指』這個虛假的名字，則是來源於組織的創立者和魔王交往中自己領會到的，超越了魔王的手指技巧
+PRINTFORMW ～黑方片 傲嬌的商賈后裔 Ending～
+EX_FLAG:2811 += 1
+IF EX_FLAG:2801 < 99
+	SIF EX_FLAG:2801 <= 90
+		EX_FLAG:2801 = 90
+	EX_FLAG:2801++
+ENDIF
+ELSEIF RESULT == 2
+	EX_FLAG:2811 += 1
+	PRINTW 好吧，黑方片尊重您的選擇哦~
+ELSE
+	PRINTW 可以哦~明天會繼續問您的~
+ENDIF
+
+@END11_31
+DRAWLINE
+PRINTFORML 黑方片離開後有訊息傳來，疑似黑方片的女人燒燬了一座莊園，殺死了幾個富賈家族的所有人。
+FORCEWAIT
+PRINTFORML 在收到這條訊息的數日後，你收到了一個包裹和一個水晶球
+PRINTFORML 「沒想到啊，過去的部下竟然會變成了這個奇怪的樣子」
+PRINTFORML 水晶球的影像里，狂王用讓你感覺噁心的表情咧嘴笑著
+PRINTFORMW 「已經完全無法交流了。還想著要關起來重新調教一下，可那樣的野獸根本抓不住……只能殺掉咯~」
+PRINTFORML 黑方片……死掉了？
+PRINTFORML %SAVESTR:MASTER%急匆匆的拆開了包裹
+PRINTFORML 在包裹里的，一個已經分辨出清的標本。雖然只是一部分，但是%SAVESTR:MASTER%能明白，是黑方片的一部分。
+PRINTFORML 現在那曾經帶給自己歡愉的肉體，只不過是一塊乾癟的肉塊……
+PRINTFORMW 「一提到你的名字就會發狂，嘿嘿嘿，你到底對她做了什麼？」
+PRINTFORMW 雖然水晶球的影像還在繼續，但是%SAVESTR:MASTER%已經完全聽不進去了……
+EX_FLAG:2811 = 0
+
+;銀黑桃線
+@END14_1
+DRAWLINE
+PRINTFORMW 「明天見，魔王大人」
+FORCEWAIT
+PRINTFORML 看了一眼門外恭敬的鞠著躬的銀黑桃，%SAVESTR:MASTER%揮了揮手示意她離開，然後便關上了房門
+PRINTFORML %SAVESTR:MASTER%並沒有完全信任數天之前宣誓效忠的銀黑桃
+PRINTFORML 雖然現在也讓她像近衛一樣跟在自己身邊，但是同時也私下裡叮囑了其他近衛好好盯著她。
+PRINTFORMW 雖然直覺告訴自己她不會背叛，但她畢竟曾是魔王的近衛
+PRINTFORML 到底自己什麼時候才能真正的信任她呢？%SAVESTR:MASTER%自己也不知道，甚至可能到打敗狂王的那一天都不行
+PRINTFORML 「咚」「呵」「呀」
+PRINTFORML 忽然，窗外傳來了碰撞聲和吼叫聲
+PRINTFORML %SAVESTR:MASTER%向窗外望去，只見銀黑桃正拖著一個全身血泊的人形物體向魔王城的大門口走去
+PRINTFORML 這時，%SAVESTR:MASTER%忽然意識到最近這段日子針對自己的暗殺行動好像消失了一樣
+PRINTFORMW 看來真正信任她的日子並不像%SAVESTR:MASTER%想像的那麼遙遠
+EX_FLAG:2814 += 1
+
+@END14_2
+DRAWLINE
+PRINTFORMW 早上醒來，%SAVESTR:MASTER%打了個響指
+FORCEWAIT
+PRINTFORMW 「早上好，魔王大人」
+PRINTFORMW 不知道從哪裡冒出來的銀黑桃拿著衣服出現在了%SAVESTR:MASTER%的床邊
+PRINTFORMW 今天她身上並沒有血腥味，不知道是她來之前清洗過身體還是因為她的保護太周密而沒人再策劃暗殺了
+PRINTFORMW 雖然並不是沒有侍女，但是最近開始像更衣之類這種貼身服侍的工作卻總是莫名的想讓銀黑桃來做
+PRINTFORMW 這也是自己已經完全信任她的證明吧
+PRINTFORMW 這樣想著，%SAVESTR:MASTER%抓住銀黑桃的手臂，把她推到了床上……
+PRINTFORMW B經驗+10 C經驗+15 精液經驗+10
+EXP:GETCHARA(21):35 += 10 
+EXP:GETCHARA(21):34 += 15 
+EXP:GETCHARA(21):20 += 10 
+IF TALENT:GETCHARA(21):0 == 0
+	PRINTW V經驗+10
+	EXP:GETCHARA(21):0 += 10 
+ENDIF
+EX_FLAG:2814 += 1
+
+@END14_3
+DRAWLINE
+PRINTFORMW 路過訓練場門口的時候，正好遇到了剛從裡面出來的銀黑桃
+FORCEWAIT
+PRINTFORMW 好像最近她一有空，就會泡在訓練場里
+PRINTFORMW 「魔王大人，您好」
+PRINTFORMW %SAVESTR:MASTER%把手放到了一如既往恭敬的鞠著躬的銀黑桃的頭上
+PRINTFORMW 「魔……魔王大人？」
+PRINTFORMW 直起身的銀黑桃，表情很快從驚訝變成了被撫摸的小貓一樣放鬆的表情
+PRINTFORMW 「很抱歉魔王大人，時間……」
+PRINTFORMW 經由銀黑桃提醒，%SAVESTR:MASTER%才想起自己還有事要做
+PRINTFORMW 但是時間恐怕並不是銀黑桃制止%SAVESTR:MASTER%的唯一理由
+PRINTFORMW 因為%SAVESTR:MASTER%沒有看漏，急匆匆告退的銀黑桃的臉上殘留著一絲紅暈
+PRINTFORMW 走到目的地之前的時間，就用來考慮一下下次要怎麼疼愛她吧
+EX_FLAG:2814 += 1
+
+@END14_4
+DRAWLINE
+PRINTFORMW 「魔王大人，請允許我去暗殺狂王吧」
+PRINTFORMW 雖然銀黑桃已經不是第一次這麼提議了，但是這次她臉上的表情格外認真
+PRINTFORMW 「我知道成功的機率不大，但是這些日子我一直不停的鍛鍊自己，實力已經有所長進了。如果能偷襲的話，也並非完全沒有機會」
+PRINTFORMW 「雖然現在我不知道狂王在哪裡，但是隻要不停的殺掉和狂王有關的人的話，遲早能抓住線索的」
+PRINTFORMW 「不論有多危險，只要能幫您除掉狂王這個心頭之患，我願意一試」
+PRINTFORMW 恐怕這就是她長時間單獨訓練的理由吧
+PRINTFORMW [1]許可 [2]阻止
+INPUT
+IF RESULT == 1
+		EX_FLAG:2814 = 300
+		PRINTL 「是，我會提著狂王的頭回來的」
+		PRINTFORMW 然而，%SAVESTR:MASTER%並不知道，這是銀黑桃對%SAVESTR:MASTER%說的最後一句話
+		SIF FLAG:1 == GETCHARA(21)
+			FLAG:1 = -1
+		SIF FLAG:2 == GETCHARA(21)
+			G:2 = -1
+
+		;前回の助手・調教対象より前だった場合はフラグを減算
+		SIF FLAG:1 > GETCHARA(21)
+			FLAG:1 -= 1
+		SIF FLAG:2 > GETCHARA(21)
+			FLAG:2 -= 1
+
+		TARGET = FLAG:1
+		ASSI = FLAG:2
+
+		CALL PARTY_CHAR_DEL, EX_FLAG:2803
+		DELCHARA GETCHARA(21)
+		CALL NAME_RESET
+	ELSE
+		EX_FLAG:2814 = 50
+		PRINTFORML 「我很高興您會擔心我的安全，但是隻要能……不管我怎麼說，您都不會改變主意吧」
+		PRINTFORML 銀黑桃嘆了口氣
+		PRINTFORML 「既然如此，在我獲得能確實的除掉狂王的力量之前，這個計劃就暫時停止吧」
+		PRINTFORML 「在此期間，請您允許我繼續守護在您的身邊，同時允許我收集關於狂王的情報」
+		PRINTFORML 「那麼，我去訓練場了。」這次獲得許可的銀黑桃，鞠了一躬，退出了房間
+		PRINTFORML 門關上之前，%SAVESTR:MASTER%好像聽到了這麼一句話：[好懷念原來族內收集情報的速度，不知道能不能挖幾個原來的手下來這邊……」
+		PRINTFORMW 
+		PRINTFORMW 獎勵：失去【討厭男人】，攻擊力，防禦力，體力，氣力上升，獲得精英技能鎧破壞，擬態，落穴捕獲。雜兵『忍者』的產出量上升。
+		EX_FLAG:2814 += 1
+		TALENT:GETCHARA(21):82 = 0
+		TALENT:GETCHARA(21):474 = 1
+		TALENT:GETCHARA(21):472 = 1
+		CFLAG:GETCHARA(21):11 += 200
+		CFLAG:GETCHARA(21):12 += 200
+		BASE:GETCHARA(21):0 += 1000
+		BASE:GETCHARA(21):1 += 1000
+		
+ENDIF
+
+@END14_5
+DRAWLINE
+PRINTFORML 「魔王大人，這些人願意隨我一同投奔于魔王大人麾下」
+FORCEWAIT
+PRINTFORML %SAVESTR:MASTER%面前，跪著一排忍者裝束的人
+PRINTFORML 他們都是銀黑桃原來的同族
+PRINTFORMW 還奇怪為什麼最近幾日銀黑桃總是離開城內，原來是在做這種事
+PRINTFORML 「對付狂王的時候，他們一定會成為您的助力的」
+PRINTFORML 理所當然的，這些人還是交給銀黑桃指揮
+PRINTFORML %SAVESTR:MASTER%忽然想到，大量挑選有潛力的魔族交給銀黑桃訓練成忍者好像很也不錯
+PRINTFORMW 那些忍者退下後，%SAVESTR:MASTER%和銀黑桃說起了魔族忍者部隊的構想
+PRINTFORML 「只要是爲了魔王大人，任何事我都願意做。啊？」
+PRINTFORML 銀黑桃發出了驚呼，比起被魔王抱起，她更驚訝的大概被抱的姿勢吧：一隻手臂托起後背，另一隻手臂穿過膝后，也就是通稱為『公主抱』的姿勢
+PRINTFORML 「提前支付的獎勵？魔王大人，什麼意思？」
+PRINTFORMW 然而銀黑桃的混亂很快就平靜了下來，大概是因為她猜到了魔王的目的地是臥室吧……
+PRINTFORMW B經驗+10 C經驗+15 精液經驗+10
+EXP:GETCHARA(21):35 += 10 
+EXP:GETCHARA(21):34 += 15 
+EXP:GETCHARA(21):20 += 10 
+IF TALENT:GETCHARA(21):0 == 0
+	PRINTW V經驗+10
+	EXP:GETCHARA(21):0 += 10 
+ENDIF
+EX_FLAG:2814 += 1
+
+@END14_6
+DRAWLINE
+PRINTFORML 訓練場里，形態各異的魔族鬆散的站成一堆等待著最後的測試
+FORCEWAIT
+PRINTFORML 畢竟這次是以「組成新的魔王直屬部隊」的名義來招募的，他們大概都把這次選拔當做是出人頭地的機會吧。
+PRINTFORML 「好像有不少傢伙是靠權利和金錢混進來的呢……」
+PRINTFORMW 「不管是爲了確認有哪些人能用還是爲了瞭解他們的特長，總之先測試一下吧」
+PRINTFORML 看著這些被推薦上來的「精英」，雖然銀黑桃的嘴角是上揚的，但是%SAVESTR:MASTER%看得出來，她的眼神絕對沒有在笑
+PRINTFORML 「請您放心，那些不能用的傢伙我會讓他們自己放棄，不會給魔王大人添麻煩的」
+PRINTFORML 「總之，先把他們全員逼到極限吧」
+PRINTFORMW 當天晚些時候，不時有連哀嚎都發不出來落榜者被擔架擡出訓練場……
+EX_FLAG:2814 += 1
+
+@END14_7
+DRAWLINE
+PRINTFORML 「訓練正在順利進行」
+FORCEWAIT
+PRINTFORML 偶然問起銀黑桃忍者部隊的事時，她這樣回答道
+PRINTFORML 「有幾個人很快就能正式的派上用場了，現在那邊即使沒有我也沒問題了」
+PRINTFORML 「所以，能不能考慮一下派我去把狂王的首級取過來？」
+PRINTFORMW 雖然經常聽到銀黑桃這麼說，但是她的語氣里早已沒有兩個月前的那份認真
+PRINTFORML 知道銀黑桃只是開玩笑的%SAVESTR:MASTER%，也把這句話當成是撒嬌的一種方式
+PRINTFORML 可惜接下來已經有了其他預定，否則按照現在的氣氛，調教時間很可能會提前開始
+PRINTFORMW 就這樣，銀黑桃並沒有等待%SAVESTR:MASTER%的回答，微笑著深鞠一躬，走出了房間
+EX_FLAG:2814 += 1
+
+@END14_8
+DRAWLINE
+PRINTFORML 僅僅三個月，忍者部隊已經開始發揮作用了
+FORCEWAIT
+PRINTFORML 之前策劃過暗殺%SAVESTR:MASTER%的一個魔族貴族身首異處
+PRINTFORML 數個暗地裡支援狂王的人類國王的詳細資訊被擺在了%SAVESTR:MASTER%的面前
+PRINTFORML 針對一部分抵抗地區的輿論操作與暗殺行動也已經在計劃之中了
+PRINTFORMW 而作為最大功臣的銀黑桃，現在正躺在%SAVESTR:MASTER%的懷裡露出著幸福的睡臉
+PRINTFORML 「嗚……魔王大人……」
+PRINTFORML 感覺到頭髮被撫摸的銀黑桃，翻過身來用四肢纏住了%SAVESTR:MASTER%的身體
+PRINTFORML 搭在%SAVESTR:MASTER%胸口的手腕上，一個樸素的手鐲正閃閃發光
+PRINTFORML 那是爲了不妨礙動作而帶上的戒指的代替品
+PRINTFORML 忽然，%SAVESTR:MASTER%察覺到被銀黑桃纏住的大腿上有些奇怪的感覺
+PRINTFORMW 看來雖然銀黑桃說了那麼可愛的夢話，做的卻似乎是春夢……
+EX_FLAG:2814 += 1
+
+@END14_9
+DRAWLINE
+PRINTFORM 可以達成銀黑桃的純愛end，想要進入這個結局嗎？
+PRINTFORMW [1]好的 [2]唔，還是算了 [3]明天再問我可以喵？
+INPUT
+IF RESULT == 1
+PRINTFORML 走廊上，銀黑桃跟在%SAVESTR:MASTER%的後面說著
+FORCEWAIT
+PRINTFORML 「魔王大人，很抱歉，我們還是沒找到狂王的所在地」
+PRINTFORML 雖然銀黑桃這樣說著，但是%SAVESTR:MASTER%並不打算責怪她
+PRINTFORML 交給忍者部隊的其他任務都進行的很順利，只有這一件事毫無進展，這也證明了狂王隱藏的又多深
+PRINTFORML 「感謝您的寬恕」
+PRINTFORMW 聽著銀黑桃的迴應，走到了目的地的%SAVESTR:MASTER%推開了面前的門
+PRINTFORML 門後面的人看見自己時會是什麼樣的表情呢？
+PRINTFORML 他知道銀黑桃的身份時又會是什麼樣的表情呢？
+PRINTFORML 那個「曾經」資助過狂王，而現在被逼上絕路的國家的國王
+PRINTFORML …………
+PRINTFORMW ……
+PRINTFORML 傳說有一個只效忠於魔王的地下組織
+PRINTFORML 傳說這個組織的成員不論性別，年齡，種族，都是以一當十的精英
+PRINTFORML 傳說要加入這個組織需要經過地獄一般的選拔與訓練
+PRINTFORML 傳說這個組織的首領是魔王的后妃
+PRINTFORMW 傳說這個組織間接的滅掉了好幾個國家
+PRINTFORML 但是這個被通稱為「魔王的無名指」，只被當做街頭巷尾的笑談而已
+PRINTFORML 只有極少一部分人才知道，這個組織雖然並不叫這個名字，但真的存在
+PRINTFORML 而民間流傳的這個流言，卻巧妙的讓大部分人以為這個組織只是一個玩笑而已
+PRINTFORMW 這些流言，自然是由那個組織刻意傳出去的，而「魔王的無名指」這個虛偽的名字，則是來源於組織的創立者不能將戒指帶在左手無名指上的小小遺憾
+PRINTFORMW ～銀黑桃 忍者組織頭領 Ending～
+EX_FLAG:2814 += 1
+IF EX_FLAG:2801 < 99
+	SIF EX_FLAG:2801 <= 90
+		EX_FLAG:2801 = 90
+	EX_FLAG:2801++
+ENDIF
+ELSEIF RESULT == 2
+	EX_FLAG:2814 += 1
+	PRINTW 好吧，銀黑桃尊重您的選擇哦~
+ELSE
+	PRINTW 可以哦~明天會繼續問您的~
+ENDIF
+
+@END14_11
+DRAWLINE
+PRINTFORML 「你終於又來了」
+FORCEWAIT
+PRINTFORML 你剛進屋，銀黑桃就抱了過來
+PRINTFORML 那嫵媚的姿勢，柔和的纏繞在%SAVESTR:MASTER%身上的四肢，以及用胸部輕輕在%SAVESTR:MASTER%身上摩擦求歡的樣子
+PRINTFORMW 已經讓人完全無法與她原本那個酷酷的樣子聯繫在一起了
+PRINTFORML 「你知道這段時間我有多寂寞么」
+PRINTFORML 「當然不知道吧，畢竟只要你一句話，就會有女人排著隊的送上門來」
+PRINTFORML 雖然%SAVESTR:MASTER%自認為最近調教她的次數不少，但是對於銀黑桃來說，好像並不是那樣
+PRINTFORMW 「所以說，就不要浪費時間了，快點來吧」
+PRINTFORML 說著，銀黑桃拉著%SAVESTR:MASTER%坐到了床上
+PRINTFORML 這是%SAVESTR:MASTER%才發現，明明沒有脫衣服的記憶，但不知道什麼時候，你們兩個人都已經一絲不掛了
+PRINTFORML 這也算是忍術么？就算是，也是亂用而已吧
+PRINTFORMW 但是銀黑桃並沒有給%SAVESTR:MASTER%細想的時間，就那樣把%SAVESTR:MASTER%撲倒在了床上……
+PRINTFORMW B經驗+10 C經驗+15 精液經驗+10
+EXP:GETCHARA(21):35 += 10 
+EXP:GETCHARA(21):34 += 15 
+EXP:GETCHARA(21):20 += 10 
+IF TALENT:GETCHARA(21):0 == 0
+	PRINTW V經驗+10
+	EXP:GETCHARA(21):0 += 10 
+ENDIF
+EX_FLAG:2814 += 1
+
+@END14_12
+DRAWLINE
+PRINTFORML 近幾天，%SAVESTR:MASTER%總覺得什麼人的視線
+FORCEWAIT
+PRINTFORML 雖然沒有惡意，但是一直被觀察，沒有人會覺得舒服
+PRINTFORML 更何況作為魔王，不知有多少人在覬覦%SAVESTR:MASTER%的性命，所以%SAVESTR:MASTER%並沒有麻痹大意
+PRINTFORMW 但是不管怎麼查，都查不出視線的來源
+PRINTFORML 沒有找到任何痕跡，也沒有使用魔法的跡象，即使發動人海戰術也依然沒能抓住任何線索
+PRINTFORML 雖然也有人勸阻%SAVESTR:MASTER%說只是神經過敏而已
+PRINTFORML 但是%SAVESTR:MASTER%並沒有動搖
+PRINTFORMW 又不是他們被監視，他們怎麼可能理解%SAVESTR:MASTER%的感受
+EX_FLAG:2814 += 1
+
+@END14_13
+DRAWLINE
+PRINTFORML 被監視已經好幾天了，依然找到沒有任何有用的線索
+FORCEWAIT
+PRINTFORML 但是根據%SAVESTR:MASTER%的感覺，被監視的時間很有規律
+PRINTFORML 基本上，只有%SAVESTR:MASTER%移動的時候才會被監視，應該是在調查你的%SAVESTR:MASTER%活動規律
+PRINTFORML 而其中監視者最關心的似乎是你調教哪一個女人
+PRINTFORMW %SAVESTR:MASTER%又仔細回想了一下那股視線的感覺，忽然腦中靈光一閃
+PRINTFORML 於是，%SAVESTR:MASTER%快步走到了銀黑桃的房間，打開了房門
+PRINTFORML 房間里，銀黑桃把雙手藏在身後，一臉尷尬的看著你
+PRINTFORML 果然，這幾天監視%SAVESTR:MASTER%的就是銀黑桃
+PRINTFORML 雖然依靠高超的忍術一直沒被發現，不過這次實在是太突然了，所以雖然勉強繞過所有人搶在%SAVESTR:MASTER%之前回到了房間，但還是沒能藏好決定性的證據
+PRINTFORMW 被銀黑桃檔在身後的筆記本被%SAVESTR:MASTER%搶了過來
+PRINTFORML 那上面記錄了%SAVESTR:MASTER%這些日子的所有行動
+PRINTFORML 至於她這麼做的原因，筆記本上也寫的很清楚
+PRINTFORML 筆記本上不僅記錄了%SAVESTR:MASTER%之前的行動，也預測了%SAVESTR:MASTER%之後一段時間的行動
+PRINTFORMW 而其中被粉色的心形標記重點的，正是是曾經調教她和以後預定要調教她的日子
+PRINTFORML 「想要做但是你又不來我這裡的時候，我好自己解決啊」
+PRINTFORML 這個「理直氣壯」的理由，%SAVESTR:MASTER%也只好苦笑著把筆記本還給了她
+PRINTFORMW 爲了可以讓銀黑桃稍微收斂一點，看來%SAVESTR:MASTER%也許需要多來調教她幾次了
+EX_FLAG:2814 += 1
+
+@END14_14
+DRAWLINE
+PRINTFORML 雖然只是感覺，但%SAVESTR:MASTER%今天大概又被銀黑桃跟蹤了
+FORCEWAIT
+PRINTFORML 依然沒有任何證據
+PRINTFORML 只是，被那股視線頂著的時間太長了，%SAVESTR:MASTER%甚至都能感覺到其中一些細微的差別了
+PRINTFORML 比如這次，視線格外的熱情，似乎都快把空氣染成粉色了
+PRINTFORMW 看來下次調教要激烈一點了……
+EX_FLAG:2814 += 1
+
+@END14_15
+DRAWLINE
+PRINTFORML 銀黑桃一隻手伸向自己的兩腿之間，另一隻手瘋狂的揉搓著自己的乳房
+FORCEWAIT
+PRINTFORML 口水，乳汁和愛液一點點的侵佔著床單上那已經為數不多的乾燥區域
+PRINTFORML %SAVESTR:MASTER%抓住銀黑桃空著的那一邊乳房輕輕一壓，乳汁立刻噴到了%SAVESTR:MASTER%的臉上
+PRINTFORMW 「啊啊啊啊啊啊啊啊」
+PRINTFORML 發出高亢的呻吟的銀黑桃，就那樣癱在了床上
+PRINTFORML 雖然靠收集她的乳汁來賣賺了不少
+PRINTFORML 但是順著臉頰流進嘴裡的這個越來越順%SAVESTR:MASTER%的口的香甜味道，開始讓你多少有點捨不得了
+PRINTFORML 有沒有辦法可以留下自己夠喝的量，還能不影響經濟收入呢？
+PRINTFORMW 一個計劃在%SAVESTR:MASTER%心裡漸漸地成型了……
+PRINTFORMW 獎勵：失去【討厭男人】，獲得B敏感，爆乳，暴露狂，根據時間給穩定收入
+TALENT:GETCHARA(21):82 = 0
+TALENT:GETCHARA(21):108 = 1
+TALENT:GETCHARA(21):114 = 1
+TALENT:GETCHARA(21):89 = 1
+EX_FLAG:2814 += 1
+
+@END14_16
+DRAWLINE
+PRINTFORML %SAVESTR:MASTER%走在走廊上，手中的繩子連著銀黑桃脖子上的項圈。
+FORCEWAIT
+PRINTFORML 她並沒有因為那套刻意一露出整個乳房的打扮而害羞，反而因此而發情著
+PRINTFORML 想必她現在忍得很辛苦吧
+PRINTFORML 畢竟從今天早上到現在為止，%SAVESTR:MASTER%一直牽著因為露出play而發情她到處走卻幾乎沒有碰她，也不允許她自慰
+PRINTFORMW 
+PRINTFORML 最近幾天，%SAVESTR:MASTER%一直把銀黑桃帶在身邊
+PRINTFORML 這樣一來不僅不用再擔心她的跟蹤了，還可以隨時喝到最新鮮的奶水
+PRINTFORML 很快，『魔王大人喜歡喝人奶』的傳聞就會傳遍大街小巷吧
+PRINTFORMW 但是這也正是%SAVESTR:MASTER%的目的之一
+PRINTFORML 「連魔王都喜歡的東西，肯定會很好喝」
+PRINTFORML 這麼想的魔族越來越多，儼然已經形成了一種流行
+PRINTFORML 人奶的價格也在穩步上漲
+PRINTFORMW 很快，%SAVESTR:MASTER%的計劃就該進入下一個階段了吧
+EX_FLAG:2814 += 1
+
+@END14_17
+DRAWLINE
+PRINTFORML %SAVESTR:MASTER%品味著鮮榨的乳汁
+FORCEWAIT
+PRINTFORML 旁邊的床上，銀黑桃因為剛剛結束的調教而睡了過去
+PRINTFORML 喝完一杯，意猶未盡的%SAVESTR:MASTER%又抓起了銀黑桃的乳房
+PRINTFORMW 「啊……唔……」
+PRINTFORML 發出快樂的呻吟的銀黑桃並未醒來，看來剛才的調教確實消耗了她不少體力
+PRINTFORML 爲了保證乳汁的質量，現在並沒有玩壞她的打算，所以%SAVESTR:MASTER%停了下來，走到了窗邊
+PRINTFORMW 看著窗外院子里那世界上第一間專門生產人乳的農場，%SAVESTR:MASTER%滿意的微笑著
+EX_FLAG:2814 += 1
+
+@END14_18
+DRAWLINE
+PRINTFORML 被固定住在木質框架上的銀黑桃的乳汁順著透明的軟管流到了桶裡
+FORCEWAIT
+PRINTFORML %SAVESTR:MASTER%則一邊撫摸，挑逗著銀黑桃，一邊從桶裡舀出新鮮的乳汁送入口中
+PRINTFORML 被水晶球拍攝下來的這一幕，很快就會傳遍整個世界吧
+PRINTFORMW 意識到這點的銀黑桃，更加激烈的發著情
+PRINTFORML 這並不是單純的爲了調教銀黑桃
+PRINTFORML 一些不知死活的傢伙私自捕獲奴隸開啟了人乳農場
+PRINTFORML 雖然強硬的打壓也行，但是那種傢伙就像蟑螂一樣，解決一波又來一波
+PRINTFORML 所以，%SAVESTR:MASTER%明白最好的方法，就是讓『魔王乳業』深入人心，徹底壟斷這份產業
+PRINTFORML 而現在，就是在爲了宣傳而拍攝廣告
+PRINTFORMW 作為由魔王親自調教出來的乳牛，銀黑桃應該會成為很好的宣傳材料吧
+EX_FLAG:2814 += 1
+
+@END14_19
+DRAWLINE
+PRINTFORML 現在銀黑桃已經徹底成爲了『魔王乳業』的招牌
+PRINTFORML 但是因為乳汁的生產步上正軌，銀黑桃的自由時間反而增加了
+PRINTFORML 於是除了調教和偶爾拍攝廣告外其他時間無事可做的銀黑桃，又開始了監視起了%SAVESTR:MASTER%
+PRINTFORMW 不過與數個月前不同的是，只要%SAVESTR:MASTER%一個暗示，銀黑桃就立刻回主動現身，並奉上自己的胸部來給%SAVESTR:MASTER%解渴
+PRINTFORML 然而到現在，%SAVESTR:MASTER%才發現一個嚴重的問題
+PRINTFORML 銀黑桃剛陷落的時候本來還打算活用她的忍者技術來著，這下不是完全不可能了嗎
+PRINTFORML 用已經徹底沉溺於快感的銀黑桃自己的話來說
+PRINTFORMW 「離開魔王身邊的話，就不能被榨乳了❤」
+EX_FLAG:2814 += 1
+
+@END14_20
+DRAWLINE
+PRINTFORM 可以達成銀黑桃的乳牛end，想要進入這個結局嗎？
+PRINTFORMW [1]好的 [2]唔，還是算了 [3]明天再問我可以喵？
+INPUT
+IF RESULT == 1
+PRINTFORML 今天，%SAVESTR:MASTER%一時興起來視察人乳農場
+FORCEWAIT
+PRINTFORML 銀黑桃並未像往常一樣隱藏起來，而是在%SAVESTR:MASTER%的命令下普通的跟在%SAVESTR:MASTER%的身邊
+PRINTFORML 看著成排被固定住榨乳而發出呻吟的女性，銀黑桃露出了羨慕的眼神
+PRINTFORML 當然，作為魔王乳業的招牌和%SAVESTR:MASTER%親自調教的專屬乳牛，%SAVESTR:MASTER%並沒有打算把銀黑桃和麵前的這些「劣等乳牛」混在一起的打算
+PRINTFORMW …………
+PRINTFORMW ……
+PRINTFORML 現在魔王乳業已經完全不用%SAVESTR:MASTER%費心了
+PRINTFORML 就連廣告，銀黑桃也偶爾爲了滿足自己的露出癖而主動去拍
+PRINTFORML 作為魔王軍穩定的資金來源之一，魔王乳業正源源不絕的充實著你的國庫
+PRINTFORMW 後來在魔族之間的，人乳從流行慢慢變成了日常
+PRINTFORML 甚至出現了因為「抓一隻人類自己養來產奶」這樣的理由而參軍的魔族
+PRINTFORML 不過這一切對於銀黑桃來說都無關緊要
+PRINTFORML 對她來說，只有享受被魔王榨乳的快感才是最重要的
+PRINTFORMW ～銀黑桃 魔王專屬乳牛 Ending～
+EX_FLAG:2814 += 1
+IF EX_FLAG:2801 < 99
+	SIF EX_FLAG:2801 <= 90
+		EX_FLAG:2801 = 90
+	EX_FLAG:2801++
+ENDIF
+ELSEIF RESULT == 2
+	EX_FLAG:2814 += 1
+	PRINTW 好吧，銀黑桃尊重您的選擇哦~
+ELSE
+	PRINTW 可以哦~明天會繼續問您的~
+ENDIF
+
+@END14_31
+DRAWLINE
+PRINTFORML 失去銀黑桃的訊息數日後，%SAVESTR:MASTER%收到了一個包裹和一個水晶球
+FORCEWAIT
+PRINTFORML 【沒想到啊，過去的部下竟然會背叛我到這個地步】
+PRINTFORML 水晶球的影像里，狂王用讓你感覺噁心的表情咧嘴笑著
+PRINTFORML 【怎麼勸說都沒用，還說關起來重新調教一下，誰知道她竟然自盡了】
+PRINTFORMW 銀黑桃……自殺了？
+PRINTFORML %SAVESTR:MASTER%急匆匆的拆開了包裹
+PRINTFORML 雖然只是一部分，但是%SAVESTR:MASTER%能明白，是銀黑桃的一部分
+PRINTFORML 或者說，「曾經」是銀黑桃的一部分
+PRINTFORMW 雖然水晶球的影像還在繼續，但是%SAVESTR:MASTER%已經完全聽不進去了……
+EX_FLAG:2814 = 0

@@ -1,0 +1,261 @@
+﻿;獸姦中毒のLvUP処理とその可否判定
+;eraIm@s_ver.0.17βdのスクリプトをベースに処理を簡略化
+;eraIM@Sから導入しました(eramaou)
+
+;-------------------------------------------------
+;獸姦中毒のLvUP
+;-------------------------------------------------
+@ABLUP39
+DRAWLINE
+;PRINTL 奴隸的獸姦成癮加深了。
+;PRINTL 獸姦中毒越高，越容易在獸交中感到滿足，
+;PRINTL 只有頻繁而激烈的獸交，能安撫她那躁動的心。
+;CUSTOMDRAWLINE ‥
+;獸姦中毒はLv5が上限
+;[淫亂][動物耳朵][牝犬]が付いている場合はLv10まで開放
+IF ABL:39 >= 5 && (TALENT:76 == 0 && TALENT:124 == 0 && TALENT:136 == 0)
+	PRINTW 需要特殊素質才能繼續提升
+	RETURN 0
+ELSEIF ABL:39 >= 10
+	PRINTW 已達最高級
+	RETURN 0
+;精液中毒＋百合中毒＋獸姦中毒は11以上にならない
+;でも、珠が沢山あるの場合はレベルアップできる。
+ELSEIF ABL:32 + ABL:33 + ABL:39 >= 10
+	IF JUEL:5 < ABL:39 * ABL:39 * 4000 || JUEL:6 < ABL:39 * ABL:39 * 4000
+	PRINTFORML 精液中毒({ABL:32})＋百合中毒({ABL:33})＋獸姦中毒({ABL:39})上限為10
+	PRINTFORML 至少達成%PALAMNAME:5%點數{ABL:39 * ABL:39 * 4000}點或%PALAMNAME:6%點數{ABL:39 * ABL:39 * 4000}點的其中一項
+	PRINTFORMW 方可提升目前獸姦中毒的等級
+	RETURN 0
+	ENDIF
+ENDIF
+
+;必要な欲情點數
+A = 0
+;必要な屈服點數
+B = 0
+;必要な獸姦經驗
+C = 0
+;必要な異常經驗回數
+F = 0
+
+CALL DECIDE_ABLUP39
+
+;上げるときは異常經驗必要（素質：[淫亂][容易上癮]なら無視できる）
+SIF F > 0
+	PRINTFORML %EXPNAME:50%{F}以上(現在{EXP:50})且
+
+;慾望が必要
+PRINTFORML %ABLNAME:11%LV{ABL:39 + 1}以上(現在LV{ABL:11})且
+
+PRINTFORM [0] - %PALAMNAME:5%點數×{JUEL:5}/{A} ……
+PRINTV GET_ABLUP_STATE(I)
+PRINTL 
+PRINTFORML 　　　%PALAMNAME:6%點數×{JUEL:6}/{B}
+PRINTFORML 　　　%EXPNAME:56%　{EXP:56}/{C}
+PRINTL [100] - 停止
+
+INPUT
+IF (RESULT < 0 || RESULT > 0) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:39 += 1
+IF RESULT == 0
+	JUEL:5 -= A
+	JUEL:6 -= B
+ENDIF
+
+PRINTFORML %ABLNAME:39%變為LV{ABL:39}。
+
+RETURN 0
+
+
+;-------------------------------------------------
+@CORE_ABLUP39
+;-------------------------------------------------
+ABL:39 ++
+
+IF I == 0
+	JUEL:5 -= A
+	JUEL:6 -= B
+ENDIF
+
+
+;--------------------------------------------------
+;レベルアップに必要な珠計算、レベルアップ予告処理
+;--------------------------------------------------
+@DECIDE_ABLUP39
+;獸姦中毒はLv5が上限
+;[淫亂][動物耳朵][牝犬]が付いている場合はLv10まで開放
+SIF ABL:39 >= 10
+	RETURN 0
+SIF ABL:39 >= 5 && (TALENT:76 == 0 && TALENT:124 == 0 && TALENT:136 == 0)
+	RETURN 0
+;精液中毒＋百合中毒＋獸姦中毒は11以上にならない
+SIF ABL:32 + ABL:33 + ABL:39 >= 30
+	RETURN 0
+
+;條件別にＯＫかダメかを記録する
+I = 0
+
+IF ABL:39 == 0
+	A = 2000
+	B = 2000
+	C = 30
+ELSEIF ABL:39 == 1
+	A = 5000
+	B = 5000
+	C = 100
+ELSEIF ABL:39 == 2
+	A = 10000
+	B = 10000
+	C = 220
+ELSEIF ABL:39 == 3
+	A = 20000
+	B = 20000
+	C = 400
+ELSEIF ABL:39 == 4
+	A = 30000
+	B = 30000
+	C = 800
+ELSEIF ABL:39 == 5
+	A = 45000
+	B = 45000
+	C = 1600
+ELSEIF ABL:39 == 6
+	A = 75000
+	B = 75000
+	C = 2000
+ELSEIF ABL:39 == 7
+	A = 100000
+	B = 100000
+	C = 2800
+ELSEIF ABL:39 == 8
+	A = 200000
+	B = 200000
+	C = 4000
+ELSEIF ABL:39 == 9
+	A = 300000
+	B = 300000
+	C = 6000
+ENDIF
+
+IF ABL:32 + ABL:33 + ABL:39 >= 10
+	A = ABL:39 * ABL:39 * 4000
+	B = ABL:39 * ABL:39 * 4000	
+ENDIF
+
+;戒備森嚴
+IF TALENT:27
+	IF ABL:37 == 3
+		TIMES A , 2.00
+		TIMES B , 2.00
+		TIMES C , 2.00
+	ELSEIF ABL:37 == 4
+		TIMES A , 2.50
+		TIMES B , 2.50
+		TIMES C , 2.50
+	ELSEIF ABL:37 >= 5
+		TIMES A , 3.00
+		TIMES B , 3.00
+		TIMES C , 3.00
+	ENDIF
+ENDIF
+
+F = 0
+;２以上に上げるときは異常經驗必要（素質：[容易上癮][淫亂][牝犬]なら無視できる）
+SIF ABL:39 >= 2 && (TALENT:72 == 0 && TALENT:76 == 0 && TALENT:136 == 0)
+		F = ABL:39 + 1
+
+;克制
+IF TALENT:20
+	TIMES A , 2.50
+	TIMES B , 2.50
+	TIMES C , 1.50
+ENDIF
+;接受快感
+IF TALENT:70
+	TIMES A , 0.75
+	TIMES B , 0.75
+;否定快感
+ELSEIF TALENT:71
+	TIMES A , 1.75
+	TIMES B , 1.75
+ENDIF
+;容易上癮
+IF TALENT:72
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+ENDIF
+;倒錯的
+IF TALENT:80
+	TIMES A , 0.75
+	TIMES B , 0.75
+	TIMES C , 0.75
+ENDIF
+;瘋狂
+IF TALENT:123
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+ENDIF
+;動物耳朵
+IF TALENT:124
+	TIMES A , 0.80
+	TIMES B , 0.80
+	TIMES C , 0.80
+ENDIF
+;牝犬
+IF TALENT:136
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+ENDIF
+;愛慕(心が主人に向いているので獣になびきにくい)
+IF TALENT:85
+	TIMES A , 1.80
+	TIMES B , 1.80
+	TIMES C , 1.50
+ENDIF
+
+;最低でも１回・１個は必要
+SIF A < 1
+	A = 1
+SIF B < 1
+	B = 1
+SIF C < 1
+	C = 1
+
+;慾望が必要
+SIF ABL:11 < ABL:39 + 1
+	I |= 4
+;欲情點數は足りている？
+SIF JUEL:5 < A
+	I |= 1
+;屈服點數は足りている？
+SIF JUEL:6 < B
+	I |= 1
+
+;獸姦經驗は足りている？
+SIF EXP:56 < C
+	I |= 2
+;異常經驗は足りている？
+SIF EXP:50 < F
+	I |= 2
+
+IF I == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;
+;
+;

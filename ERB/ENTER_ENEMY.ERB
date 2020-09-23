@@ -1,0 +1,406 @@
+﻿@ENTER_ENEMY,ARG:0
+#DIM CHARA, 1
+;毎月月末ごろに襲來
+;ARG:0 = 0 通常
+;ARG:0 = キャラNo 知り合い・家族確定エントリー
+
+;LOCAL = RAND:10 + 20
+LOCAL = 10
+
+;FLAG:60 = 勇者基礎レベル補正
+;SIF DAY:2 > LOCAL && ARG:0 == 0 && FLAG:60 < 300
+;	RETURN 0
+
+;莉莉出現
+SIF ARG:0 == 0 || TALENT:(ARG:0):村娘Ａ
+	CALL K_11_LILY
+
+;狂王出現
+CALL K_34_crazylord
+
+;フラグ確保
+;B = 200
+;REPEAT 16
+;	FLAG:B = 1
+;	B += 1
+;REND
+
+;今いるキャラのフラグを消す
+;REPEAT CHARANUM
+;	B = NO:COUNT + 199
+;	FLAG:B = 0
+;REND
+
+;キャラが多すぎる場閤中斷(STICK修改，按照侵攻進度限制勇者數量)
+IF FLAG:82 == 0 && CHARANUM > 60
+	RETURN 0
+ELSEIF FLAG:87 == 0 && FLAG:89 == 0 && FLAG:91 == 0 && CHARANUM > 65
+	RETURN 0
+ELSEIF ((FLAG:87 * FLAG:89 == 0) && (FLAG:89 * FLAG:91 == 0) && (FLAG:91 * FLAG:87 == 0)) && CHARANUM > 70
+	RETURN 0
+ELSEIF (FLAG:87 == 0 || FLAG:89 == 0 || FLAG:91 == 0) && CHARANUM > 75
+	RETURN 0
+ELSEIF FLAG:92 < 15  && CHARANUM > 80
+	RETURN 0	
+ELSEIF CHARANUM >= MAX_CHARANUM
+	RETURN 0
+ENDIF
+
+;キャラのNOを選定 
+CHARA = RAND(1, 17)
+;GETCHARA(キャラ番號, SPフラグ)でキャラが存在しない場合は-1
+;CFLAG:0が0ならば登録番號を返す。CFLAG:0が1=売卻可　2=助手可ならば-1が返るので同じキャラ番號のキャラが攻めてくる。
+IF GETBIT(FLAG:5,32) || GETCHARA(CHARA, 0) == -1
+	
+	IF ARG:0 > 0
+		LOCAL = 0
+		ADDCHARA CHARA
+		CALL ADDCHARA_EX, CHARANUM-1
+		A = CHARANUM - 1
+		CALL CHAR_MAKE,998,ARG:0
+	ELSE
+	;異國の勇者の判定をする
+		CALL CHAR_MAKE_INPORT
+		IF RESULT == 0
+			LOCAL = 0
+			ADDCHARA CHARA
+			CALL ADDCHARA_EX, CHARANUM-1
+			A = CHARANUM - 1
+			CALL CHAR_MAKE
+		ELSE
+			LOCAL = 1
+		ENDIF
+	PRINTL *****************************************
+	SIF LOCAL
+		PRINT 異國的
+	SIF TALENT:RESULT:1000
+		PRINT 異界的
+	IF TALENT:RESULT:122
+		PRINT 冒險者
+	ELSE
+		PRINT 勇者
+	ENDIF
+	PRINTS SAVESTR:RESULT
+	PRINTL 開始了地下城的攻略！
+	PRINTL *****************************************
+	WAIT
+	;勇者LVUP
+	IF FLAG:5 & 2
+		FLAG:60 += 1
+		PRINTFORMW 勇者基礎等級校正後現在是等級{FLAG:60}
+	ENDIF
+	ENDIF
+ELSE
+	PRINTL 出於對魔王的恐懼，勇者沒有出現。
+	WAIT
+	RETURN 0
+ENDIF
+PRINTL  
+A = RESULT
+
+;善惡值調整
+SIF CFLAG:A:151 < -100
+	CFLAG:A:151 = -100
+
+CALL ENTERENEMY_KOUJO
+
+;初期金錢
+;Ref DUNGEON_TOWN.ERB
+;高人氣ボーナス
+LOCAL = 0
+SIF TALENT:A:126
+	LOCAL += 1000
+;物乞い・貧民は援助が少ない
+SIF TALENT:A:315 == 7 || TALENT:A:315 == 9
+	LOCAL -= 500
+;貴族・聖女・軍人は多い
+SIF TALENT:A:315 == 8 || TALENT:A:315 == 12 || TALENT:A:315 == 19
+	LOCAL += 1500
+;金のため・自暴自棄は援助が少ない
+SIF TALENT:A:316 == 2 || TALENT:A:316 == 11
+	LOCAL -= 500
+;國に命じられて・命令されては多い
+SIF TALENT:A:316 == 9 || TALENT:A:316 == 13
+	LOCAL += 500
+	
+
+;レベル補正
+LOCAL += CFLAG:A:9
+
+;對於不受歡迎的勇者
+LOCAL = LOCAL <= 0 ? 0 # LOCAL
+
+CFLAG:A:580 += LOCAL
+
+;初期座標
+
+;座標について…このXY座標は2Dマップモードで使用する座標ですが、現在は死んでいる変數です
+;気が変わったときのために殘しています
+
+LOCAL:0 = RAND:32
+LOCAL:1 = RAND:32
+
+IF RAND:4 == 0
+	LOCAL:0 = 0
+ELSEIF RAND:3 == 0
+	LOCAL:1 = 0
+ELSEIF RAND:2 == 0
+	LOCAL:0 = 31
+ELSE
+	LOCAL:1 = 31
+ENDIF
+
+CFLAG:A:510 = LOCAL:0
+CFLAG:A:511 = LOCAL:1
+
+;初期座標設定終わり
+
+IF GETBIT(FLAG:8, 1)
+	PRINTL
+	CALL SHOW_CHARA_INFO, A
+	PRINTL
+ENDIF
+
+RETURN 1
+
+
+
+;村娘姉用出現関數
+@K_11_LILY
+;ゲーム開始から200日以上で瑪奧が存在し莉莉が存在せずエントリーフラグが存在せずなおかつ調教中で。
+;瑪奧が愛か淫亂の場合莉莉が出現する。
+;エントリーフラグが立っていると出ない
+SIF FLAG:223 == 1
+	RETURN
+;200日未満、瑪奧が存在していない、莉莉が存在していると出ない
+SIF DAY < 200 || GETCHARA(17) < 0 || GETCHARA(24) > 0
+	RETURN
+LOCAL = GETCHARA(17)
+;念のため
+SIF LOCAL < 0
+	RETURN
+;瑪奧に愛も淫亂もないと出ない
+SIF TALENT:LOCAL:85 == 0 && TALENT:LOCAL:76 == 0
+	RETURN
+;瑪奧が待機中じゃないと出ない
+SIF CFLAG:LOCAL:1 != 0
+	RETURN
+
+ADDCHARA 24
+CALL ADDCHARA_EX, CHARANUM-1
+;エントリーフラグを使用
+;參照したのはSELL_CHARA.ERBの@KILL_TARGET関數
+;これを使用すればキャラが重複することはない
+FLAG:223 = 1
+
+A = CHARANUM - 1
+SAVESTR:A = %NAME:A%
+CSTR:A:1 = %NAME:A%
+;初期裝備：劍
+CFLAG:A:550 = 40
+;著替え裝著
+TARGET = A
+CALL WEARING_CLOTH_ABLE
+CALL CHAR_BODY_GENERATE_WAPPED, A
+CALL FAMILY_REGISTER(A)
+TARGET = FLAG:1
+CFLAG:A:501 = 1
+CFLAG:A:502 = 0
+CFLAG:A:1 = 2
+PRINTL
+PRINTL *****************************************
+PRINTL 魔王的地下城附近的村子裡有一對姐妹。她們沒有雙親，一起在親戚的家裡生活。
+PRINTL 某一天，魔王復活了，妹妹也同時下落不明。姐姐像是發瘋一般地四處尋找，也拜託了勇者，卻還是找不到妹妹。
+PRINTW 又過了半年，姐姐終於下定了決心，前往魔王的地下城。一隻手拿著提燈，另一隻手握著勇者丟棄的舊劍。
+PRINTL
+PRINT 村娘
+PRINTS SAVESTR:A
+PRINTL 開始了地下城的攻略！
+PRINTL *****************************************
+CALL ENTERENEMY_KOUJO
+PRINTL
+
+;自製狂王替身
+@K_34_crazylord
+;出現條件350天以上，有金紅桃，且沒有迎擊沒有被調教中。
+;出現條件需要陷落金紅桃。
+;エントリーフラグが立っていると出ない
+SIF FLAG:224 == 1
+	RETURN
+;350天未滿、沒有金紅桃、替身已存在
+SIF DAY < 350 || GETCHARA(20) < 0 || GETCHARA(34) > 0
+	RETURN
+LOCAL = GETCHARA(20)
+;念のため
+SIF LOCAL < 0
+	RETURN
+;金紅桃必須已獲得【愛】或【淫亂】
+SIF TALENT:LOCAL:85 == 0 && TALENT:LOCAL:76 == 0
+	RETURN
+;金紅桃調教中則返回
+SIF CFLAG:LOCAL:1 != 0
+	RETURN
+;四方堡壘全陷落才行
+SIF FLAG:92 != 15
+	RETURN
+	
+ADDCHARA 34
+CALL ADDCHARA_EX, CHARANUM-1
+;エントリーフラグを使用
+;參照したのはSELL_CHARA.ERBの@KILL_TARGET関數
+;これを使用すればキャラが重複することはない
+FLAG:224 = 1
+
+A = CHARANUM - 1
+SAVESTR:A = %NAME:A%
+CSTR:A:1 = %NAME:A%
+
+;性別設定
+;女性
+IF FLAG:500 == 1
+	TALENT:A:121 = 0
+	TALENT:A:122 = 0
+;扶她
+ELSEIF FLAG:500 == 0 || FLAG:500 == 2
+	TALENT:A:121 = 1
+	TALENT:A:122 = 0
+ENDIF
+
+;著替え裝著
+TARGET = A
+CALL WEARING_CLOTH_ABLE
+CALL CHAR_BODY_GENERATE_WAPPED, A
+TARGET = FLAG:1
+
+PRINTL
+PRINTL
+PRINTL *****************************************************************************
+PRINTL 狡猾的狂王，原來對作為情婦和親衛隊長的金紅桃也不是推心置腹。
+PRINTL 在對你已經唯命是從的金紅桃身上，沒有得到任何情報。
+PRINTL 其它的人也是對狂王的行蹤一無所知，各地的魔物也沒有找到狂王。
+PRINTL 正當你滿腦疑惑和不安的時候，一個藍髮紅眼的身影出現在地下城門口。
+PRINTL 邁著悠閑的步伐，一抬手就將守門的怪物全滅了，是狂王？！
+PRINTL 不對，這幽波紋的流動，證明了她只是狂王的替身！
+PRINTL 既是她，也不是她…………但不管如何，她帶著再次封印你的鬥志，向你衝過來了！！
+PRINTW 
+PRINTL
+PRINT 狂王的替身
+PRINTL 葵希羅
+PRINTL 開始了地下城的攻略！
+PRINTL *****************************************************************************
+CALL ENTERENEMY_KOUJO
+PRINTL
+PRINTL
+PRINTFORML [0] 夭壽啦！！來人哪！！護駕？！！！護駕？！～！？！！！
+INPUT
+;侵入階層・侵攻度・侵攻中・再起點設定
+CFLAG:A:501 = 1
+CFLAG:A:502 = 0
+CFLAG:A:1 = 2
+CFLAG:A:508 = 3
+
+;ランダム名前決定
+CFLAG:A:6 = RAND:80
+
+;初期座標
+LOCAL:0 = RAND:32
+LOCAL:1 = RAND:32
+
+IF RAND:4 == 0
+	LOCAL:0 = 0
+ELSEIF RAND:3 == 0
+	LOCAL:1 = 0
+ELSEIF RAND:2 == 0
+	LOCAL:0 = 31
+ELSE
+	LOCAL:1 = 31
+ENDIF
+
+CFLAG:A:510 = LOCAL:0
+CFLAG:A:511 = LOCAL:1
+
+
+RETURN 1
+
+;------------------------------------------
+@GET_ENEMY
+;------------------------------------------
+#DIM CHARA, 1
+;奴隷確定入手
+
+;キャラが多すぎる場閤中斷
+IF FLAG:82 == 0 && CHARANUM > 60
+	RETURN 0
+ELSEIF FLAG:87 == 0 && FLAG:89 == 0 && FLAG:91 == 0 && CHARANUM > 65
+	RETURN 0
+ELSEIF ((FLAG:87 * FLAG:89 == 0) && (FLAG:89 * FLAG:91 == 0) && (FLAG:91 * FLAG:87 == 0)) && CHARANUM > 70
+	RETURN 0
+ELSEIF (FLAG:87 == 0 || FLAG:89 == 0 || FLAG:91 == 0) && CHARANUM > 75
+	RETURN 0
+ELSEIF FLAG:92 < 15  && CHARANUM > 80
+	RETURN 0	
+ELSEIF CHARANUM >= MAX_CHARANUM
+	RETURN 0
+ENDIF
+
+;キャラのNOを選定 
+CHARA = RAND(1, 17)
+
+;異國の勇者の判定をする
+CALL CHAR_MAKE_INPORT,10
+IF RESULT == 0
+	LOCAL = 0
+	ADDCHARA CHARA
+	CALL ADDCHARA_EX, CHARANUM-1
+	A = CHARANUM - 1
+	CALL CHAR_MAKE
+ELSE
+	LOCAL = 1
+ENDIF
+PRINTL *****************************************
+SIF LOCAL
+	PRINT 異國的
+SIF TALENT:RESULT:1000
+	PRINT 異界的
+IF TALENT:RESULT:122
+	PRINT 冒險者
+ELSE
+	PRINT 勇者
+ENDIF
+PRINTS SAVESTR:RESULT
+PRINTL 被俘虜了！
+PRINTL *****************************************
+WAIT
+PRINTL  
+A = RESULT
+
+;カルマ調整
+SIF CFLAG:A:151 < -100
+	CFLAG:A:151 = -100
+
+;侵入階層・侵攻度・侵攻中・再起ポイント設定
+CFLAG:A:501 = 1
+CFLAG:A:502 = 0
+CFLAG:A:1 = 0
+CFLAG:A:508 = 3
+
+;初期座標
+LOCAL:0 = RAND:32
+LOCAL:1 = RAND:32
+
+IF RAND:4 == 0
+	LOCAL:0 = 0
+ELSEIF RAND:3 == 0
+	LOCAL:1 = 0
+ELSEIF RAND:2 == 0
+	LOCAL:0 = 31
+ELSE
+	LOCAL:1 = 31
+ENDIF
+
+CFLAG:A:510 = LOCAL:0
+CFLAG:A:511 = LOCAL:1
+
+
+RETURN A
+

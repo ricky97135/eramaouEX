@@ -1,0 +1,226 @@
+﻿;------------------------------------------
+@GROTESQUE
+#DIM LV
+#DIMS MATURO
+#DIM FAMILY,3
+;ZはTARGETを儲存してるため使用禁止
+;------------------------------------------
+;猟奇・グロ系処刑コマンド
+
+SIF A == 0
+	RETURN 0
+B = A
+
+FAMILY = CFLAG:A:605
+FAMILY:1 = FAMILY % 10
+CALL SEARCH_FAMILY, A
+FAMILY:2 = RESULT
+
+PRINTL [0] 四肢切斷刑
+PRINTL [1] 內臟陵辱刑
+PRINTL [2] 斬首刑
+PRINTL [3] 火燒刑
+PRINTL [4] 食肉刑
+PRINTL [5] 死靈化
+PRINTL [6] 殭屍化
+PRINTL  
+PRINTL [100] 退出
+
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= 7 && RESULT != 100
+	GOTO INPUT_LOOP
+ENDIF
+
+IF RESULT == 100
+	TARGET = FLAG:1
+	RETURN 0
+ENDIF
+
+TARGET = A
+
+IF TALENT:TARGET:220 != 1 && EX_TALENT:TARGET:1 != 1
+	EX_FLAG:99 += 2
+	PRINTFORML 威望值增加
+	ELSE
+	EX_FLAG:99 -= 10
+	PRINTFORML 威望值減少
+	ENDIF
+TFLAG:530 = RESULT
+
+CALL GROTESQUE_KOUJO
+
+IF TFLAG:530 == 0
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW 四肢被固定住的%SAVESTR:A%被怪物們狠狠地凌虐之後
+	PRINTFORMW 四肢被一根一根地切下，餵給了下級怪物們了
+	PRINTFORMW %SAVESTR:A%就這樣被放置直到失血死為止了。
+	PRINTFORMW %SAVESTR:A%之後被漂亮地剝製后，擺在了魔王的大宮殿里當裝飾了………
+	SIF TALENT:A:85
+		PRINTFORMW 你十分疼愛地撫摸著被剝製后的%SAVESTR:A%的臉頰………
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 人棍
+	
+ELSEIF TFLAG:530 == 1
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW 四肢被固定住的%SAVESTR:A%被怪物們活生生地刨開了腹部
+	PRINTFORMW 肝臟還有腎臟都被怪物們互相爭奪吃掉了、只留下維持生命的臟器而已
+	PRINTFORMW %SAVESTR:A%雖然暫時還活著………不過在短暫地掙扎中力竭了………
+	SIF TALENT:A:85
+		PRINTFORMW 你將%SAVESTR:A%的屍體漂亮地剝製后、掛在了你的房間里當裝飾了………
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 活體飼料
+	
+ELSEIF TFLAG:530 == 2
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW 被固定在斬首臺上的%SAVESTR:A%被怪物們狠狠地侵犯的途中………
+	PRINTFORMW 斬首臺的刀刃落下來了………
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%被幹凈利落切下來的腦袋被泡在了充滿福爾馬林液體的罐子里保管起來了………
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 身首異處
+	
+ELSEIF TFLAG:530 == 3
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW 被實行火燒刑的%SAVESTR:A%被火焰抱住了………
+	SIF TALENT:A:85
+		PRINTFORMW 在火焰中的聽到了%SAVESTR:A%不停地哭著求救的叫聲………
+	PRINTFORMW 變成黑炭的%SAVESTR:A%的屍體被掛在了地下城入口處了
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 紅燒肉
+	
+ELSEIF TFLAG:530 == 4
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印后、被執行了食肉刑………
+	PRINTFORMW 用魔法將其身體的痛感變成快感后、怪物們將%SAVESTR:A%的身體大卸八塊了………
+	SIF TALENT:A:85
+		PRINTFORMW 「明明…明明…胸部被怪物們吃著…但是好舒服啊…啊嗚…呃…嗯哼嗚嗚」
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%好像已經壞掉了的樣子………
+	PRINTFORMW 最後%SAVESTR:A%的腦袋被怪物們分食之後，%SAVESTR:A%才嚥下了最後一口氣………
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 肉類
+	
+ELSEIF TFLAG:530 == 5
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW %SAVESTR:A%被施加了死靈化的詛咒………
+	PRINTFORMW 因為詛咒而變成低階死靈的%SAVESTR:A%發出了怪異的叫聲………
+	SIF TALENT:A:85
+		PRINTFORMW 「啊啊啊…這樣就能…一直跟%SAVESTR:PLAYER%、一直一直在一起了~…好、好、好高高高高興興興興興興…………」
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%好像對你的身體十分地眷戀而四處徘徊著………
+	PRINTFORMW %SAVESTR:A%再也不能轉生了，成爲了地下城裡的又一隻遊魂野鬼………
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 低階幽靈
+	
+ELSEIF TFLAG:530 == 6
+	SIF TALENT:A:85
+		PRINTFORM %SAVESTR:A%就這樣不知道為什麼會被處刑的情況下、憐愛地叫著你的名字請求著原諒。然而%SAVESTR:PLAYER%卻
+	PRINTFORMW 在%SAVESTR:A%的身上刻下了封印所有力量的烙印
+	PRINTFORMW %SAVESTR:A%被施加了殭屍化的詛咒………
+	PRINTFORMW 變成殭屍后的%SAVESTR:A%進行著擴張地下城的工作………
+	SIF TALENT:A:85
+		PRINTFORMW 「啊嗚…嗚…胸部…腐爛掉了…要被…要被那位大人討厭了…嫌要被討厭了…」
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%的嘴邊不停地掉落著扭動著的蠕蟲的同時喃喃自語著………
+	PRINTFORMW 變成永遠的奴隸的%SAVESTR:A%將會成為你的力量的基石吧。
+	PRINTL  
+	PRINTL 到手的勇者之力以勳章的形式保留下來了
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 喪屍奴隸
+	
+ENDIF
+
+TSTR:30 = %MATURO%%SAVESTR:A%
+CALL VIDEO_MATURO
+
+A = TARGET
+
+;武器解除
+W:0 = CFLAG:A:550
+CALL EQUIP_GET
+CFLAG:A:550 = -1
+;指輪解除
+W:0 = CFLAG:A:551
+CALL EQUIP_GET
+CFLAG:A:551 = -1
+;指輪解除
+W:0 = CFLAG:A:552
+CALL EQUIP_GET
+CFLAG:A:552 = -1
+
+LV = CFLAG:A:9
+
+X = NO:A + 199
+FLAG:X = 1
+
+;前回の助手・調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手・調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, A
+
+DELCHARA A
+
+CALL NAME_RESET
+
+
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+PRINTFORMW 《吸收了被封印的勇者之力后你獲得了{LV}的經驗值！》
+
+RETURN 0

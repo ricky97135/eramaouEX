@@ -1,0 +1,1162 @@
+﻿;----------------------------------
+@KYOTEN_EVENT, ARG:0
+;原本是2017/1/1日站新加的INVASION_EVENT但由於漢化EX早已有此函式且明顯漢化版的更有內容改名為KYOTEN_EVENT
+;侵攻度による侵略イベント
+;2000、4000、6000、8000、10000でイベント開始、一度のみ。
+;ARG:0（1:人間界　2:エルフの領域　3:ドラゴンの山　4:天界
+;FLAG:81 = 人間界の侵攻度  FLAG:86 = エルフの領域侵攻度  FLAG:88 = ドラゴンの山の侵攻度  FLAG:90 = 天界の侵攻度
+;FLAG:93～96　侵略イベントフラグ
+;仕様的に侵略完了後でも侵略イベントは見られる。バグではない。
+;ストッパー的に侵攻度を強制上書きしようかと思ったが侵攻度が減る仕様を考えて斷念
+;2000越えて村が焼けた後、侵攻度減る＝村奪還でその後を見れるのも考えられるが………
+;----------------------------------
+;人間界侵略
+IF ARG:0 == 1
+	IF FLAG:81 >= 2000 && FLAG:93 == 0
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　佔領了村莊　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 1
+	ELSEIF FLAG:81 >= 4000 && FLAG:93 == 1
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　佔領了港口　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 2
+	ELSEIF FLAG:81 >= 6000 && FLAG:93 == 2
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　攻陷了堡壘　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 3
+	ELSEIF FLAG:81 >= 8000 && FLAG:93 == 3
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　佔領了街道　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 4
+	ELSEIF FLAG:81 >= 10000 && FLAG:93 == 4
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　佔領了城市　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 5
+	ELSEIF FLAG:81 <= 500 && FLAG:93 == 1
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　人間界的軍隊佔領了村莊　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 0
+	ELSEIF FLAG:81 <= 2000 && FLAG:93 == 2
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　人間界的軍隊佔領了港口　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 1
+	ELSEIF FLAG:81 <= 4000 && FLAG:93 == 3
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　人間界的軍隊攻陷了堡壘　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 2
+	ELSEIF FLAG:81 <= 6000 && FLAG:93 == 4
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　人間界的軍隊佔領了街道　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 3
+	ELSEIF FLAG:81 <= 8000 && FLAG:93 == 5
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　人間界的軍隊佔領了城市　　　　　　　　　　　　　**********
+		PRINTL *********　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　**********
+		PRINTL *******************************************************************************************
+		PRINTL *******************************************************************************************
+		FLAG:93 = 4
+	ENDIF
+;エルフの領域侵略
+ELSEIF ARG:0 == 2
+	IF FLAG:87 == 0
+	IF FLAG:86 >= 2000 && FLAG:94 == 0
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 1
+	ELSEIF FLAG:86 >= 4000 && FLAG:94 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 2
+	ELSEIF FLAG:86 >= 6000 && FLAG:94 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 3
+	ELSEIF FLAG:86 >= 8000 && FLAG:94 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 4
+	ELSEIF FLAG:86 >= 10000 && FLAG:94 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 5
+	ELSEIF FLAG:86 <= 500 && FLAG:94 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 0
+	ELSEIF FLAG:86 <= 2000 && FLAG:94 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 1
+	ELSEIF FLAG:86 <= 4000 && FLAG:94 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 2
+	ELSEIF FLAG:86 <= 6000 && FLAG:94 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 3
+	ELSEIF FLAG:86 <= 8000 && FLAG:94 == 5
+		PRINTL *******************************************************************************************
+		;FLAG:94 = 4
+	ENDIF
+	ENDIF
+;ドラゴンの山侵略
+ELSEIF ARG == 3
+	IF FLAG:88 >= 2000 && FLAG:95 == 0
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 1
+	ELSEIF FLAG:88 >= 4000 && FLAG:95 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 2
+	ELSEIF FLAG:88 >= 6000 && FLAG:95 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 3
+	ELSEIF FLAG:88 >= 8000 && FLAG:95 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 4
+	ELSEIF FLAG:88 >= 10000 && FLAG:95 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 5
+	ELSEIF FLAG:88 <= 500 && FLAG:95 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 0
+	ELSEIF FLAG:88 <= 2000 && FLAG:95 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 1
+	ELSEIF FLAG:88 <= 4000 && FLAG:95 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 2
+	ELSEIF FLAG:88 <= 6000 && FLAG:95 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 3
+	ELSEIF FLAG:88 <= 8000 && FLAG:95 == 5
+		PRINTL *******************************************************************************************
+		;FLAG:95 = 4
+	ENDIF
+;天界侵略
+ELSEIF ARG == 4
+	IF FLAG:90 >= 2000 && FLAG:96 == 0
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 1
+	ELSEIF FLAG:90 >= 4000 && FLAG:96 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 2
+	ELSEIF FLAG:90 >= 6000 && FLAG:96 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 3
+	ELSEIF FLAG:90 >= 8000 && FLAG:96 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 4
+	ELSEIF FLAG:90 >= 10000 && FLAG:96 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 5
+	ELSEIF FLAG:90 <= 500 && FLAG:96 == 1
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 0
+	ELSEIF FLAG:90 <= 2000 && FLAG:96 == 2
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 1
+	ELSEIF FLAG:90 <= 4000 && FLAG:96 == 3
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 2
+	ELSEIF FLAG:90 <= 6000 && FLAG:96 == 4
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 3
+	ELSEIF FLAG:90 <= 8000 && FLAG:96 == 5
+		PRINTL *******************************************************************************************
+		;FLAG:96 = 4
+	ENDIF
+ENDIF
+
+RETURN 0
+
+
+@INVASION_EVENT, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+; 返回值：0 - 繼續侵攻，1 - 侵攻結束
+#DIM AREA		;侵攻地區 - 81人間 86精靈族領域 88龍之山脈 90天界
+#DIM SINDO		;侵攻地區Flag參數 - 0 未完成 2 完成
+#DIM INV_TYPE	;侵攻類別
+; [0] - 使用現有怪物的一半去進攻（資金・俘虜）
+; [1] - 使用魔王的魔力（經驗值）
+; [2] - 派遣勇者帶三分之一的怪物去進攻（資金・經驗值・俘虜）
+; [3] - 派遣勇者前去掠奪資金（資金・經驗值）
+#DIM REF SINKOU		;侵攻點數
+#DIM YUSYA_I	;領軍勇者
+
+LOCAL = RAND:10
+
+IF LOCAL == 9
+	JUMP INVASION_EVENT_FORT, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+ELSEIF LOCAL == 8
+	JUMP INVASION_EVENT_CHALLENGE, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+ENDIF
+
+JUMP INVASION_EVENT_SEIEI, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+
+
+RETURN 0
+
+
+
+;精英部隊事件
+@INVASION_EVENT_SEIEI, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+#DIM AREA
+#DIM SINDO
+#DIM INV_TYPE
+#DIM SINKOU
+#DIM YUSYA_I
+#DIM SEIEI_I
+#DIM TIME_I
+#DIM TMP2_I
+
+SIF FLAG:SINDO != 0
+	RETURN -1
+
+;メモ
+;侵略度が5000を越えてると精鋭部隊出現
+;rand:侵略度 > 2000で出現する。
+;勇者が負けると捕獲されてＮＴＲフラグが立つ
+IF FLAG:AREA == 0 && FLAG:SINDO == 0
+	DRAWLINE
+	PRINTFORMW 根據傳聞狂王爲了應對魔王軍的入侵已開始組織起了精銳部隊。
+	DRAWLINE
+ELSEIF FLAG:AREA >= 1 && FLAG:AREA < 5000 && FLAG:SINDO == 0 && INV_TYPE != 1
+	DRAWLINE
+	PRINTFORMW 狂王組織的精銳部隊似乎已經開始行動了。
+	PRINTFORMW 如果不盡快採取行動的話………
+	DRAWLINE
+ELSEIF FLAG:AREA >= 1 && FLAG:AREA < 10000 && FLAG:SINDO == 0 && INV_TYPE != 1
+	DRAWLINE
+	PRINTFORMW 根據斥候打探的訊息，狂王的精銳部隊似乎已經在前方的城鎮中佈下了防線。
+	PRINTFORMW 而且精銳部隊的真正目的是要捕捉魔王麾下的勇者………
+	DRAWLINE
+ENDIF
+
+SIF INV_TYPE != 2
+	RETURN -1
+
+;----------------------------------
+;精鋭部隊との戦闘
+;----------------------------------
+IF FLAG:AREA >= 5000 && FLAG:SINDO == 0 && INV_TYPE == 2
+	LOCAL = FLAG:AREA
+	LOCAL = RAND:LOCAL
+	IF LOCAL > 2000
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 精銳部隊出現了！
+		;精鋭部隊は體力気力9000攻撃150防禦200レベル50の防禦型と 體力気力7500攻撃200防禦150レベル50の攻撃型の２種類
+		;20回毆り合って決著つける
+		;勝ったら侵略開始、負けたら敗走or攫われる（NTRフラグ時）引き分けは撤退。
+		;勇者側のダメージ＝（自分の攻撃-相手の防禦）*((合計戦力/1024)+1)*2
+		;勇者側は會心の一撃を1/5で出せる（」ダメージ」２倍）
+		;勇者側は攻め手なので必ず先制攻撃
+		PRINTFORMW 你的勇者%SAVESTR:YUSYA_I%率領著魔王軍和精銳部隊展開了戰鬥！
+		PRINTFORMW （怪物的戰鬥力將被新增到攻擊力和體力和氣力上）
+		TIME_I = 0
+		IF RAND:2 == 0
+			;防禦型
+			ADDCHARA 18
+			CALL ADDCHARA_EX, CHARANUM-1
+			SEIEI_I = GETCHARA(18)
+		ELSE
+			;攻撃型
+			ADDCHARA 19
+			CALL ADDCHARA_EX, CHARANUM-1
+			SEIEI_I = GETCHARA(19)
+		ENDIF
+		;勇者基礎レベル補正
+		CFLAG:SEIEI_I:11 += FLAG:60
+		CFLAG:SEIEI_I:12 += FLAG:60
+		MAXBASE:SEIEI_I:0 += (10 * FLAG:60)
+		MAXBASE:SEIEI_I:1 += (10 * FLAG:60)
+		BASE:SEIEI_I:0 += (10 * FLAG:60)
+		BASE:SEIEI_I:1 += (10 * FLAG:60)
+		;SINKOU補正
+		BASE:YUSYA_I:0 += SINKOU
+		BASE:YUSYA_I:1 += SINKOU
+		REPEAT 21
+			IF TIME_I > 19
+				PRINTFORMW ………
+				PRINTFORMW ……
+				PRINTFORMW …
+				PRINTFORML 沒有時間了，戰線已經不可能再維持下去了！
+				PRINTFORML %SAVESTR:YUSYA_I%的部隊開始了後退，怪物們在後退中潰散著。
+				PRINTFORML 最終活著回來的怪物不到十隻………
+				PRINTL
+				EXP:YUSYA_I:80 += SINKOU / 10
+				PRINTFORMW %SAVESTR:YUSYA_I%獲得了{SINKOU/10}點經驗值！
+				SEIEI_I = CHARANUM - 1
+				CALL PARTY_CHAR_DEL, SEIEI_I
+				DELCHARA SEIEI_I
+				CALL NAME_RESET
+				RETURN 1
+			ENDIF
+
+		DRAWLINE
+		;魔王軍
+		PRINTFORML 魔王軍 %SAVESTR:YUSYA_I%
+		PRINT HP
+		BAR BASE:YUSYA_I:0, MAXBASE:YUSYA_I:0, 50
+		PRINTFORML {BASE:YUSYA_I:0}/{MAXBASE:YUSYA_I:0}
+		PRINT 氣力
+		BAR BASE:YUSYA_I:1, MAXBASE:YUSYA_I:1, 50
+		PRINTFORML {BASE:YUSYA_I:1}/{MAXBASE:YUSYA_I:1}
+		PRINTFORML 攻擊{CFLAG:YUSYA_I:11 * (SINKOU/1024+1)} 防禦{CFLAG:YUSYA_I:12} 怪物的合計戰力{SINKOU}點
+		
+		PRINTW VS
+		
+		;精鋭部隊
+		PRINTFORML %CALLNAME:SEIEI_I%
+		PRINT HP
+		BAR BASE:SEIEI_I:0, MAXBASE:SEIEI_I:0, 50
+		PRINTFORML {BASE:SEIEI_I:0}/{MAXBASE:SEIEI_I:0}
+		PRINT 氣力
+		BAR BASE:SEIEI_I:1, MAXBASE:SEIEI_I:1, 50
+		PRINTFORML {BASE:SEIEI_I:1}/{MAXBASE:SEIEI_I:1}
+		PRINTFORML 攻擊{CFLAG:SEIEI_I:11} 防禦{CFLAG:SEIEI_I:12}
+		WAIT
+		DRAWLINE
+
+		;魔王軍の先制攻撃
+		IF CFLAG:SEIEI_I:12 < (CFLAG:YUSYA_I:11 * (SINKOU/2048+1))
+			IF RAND:5 == 0
+				TMP2_I = CFLAG:SEIEI_I:12
+				CFLAG:SEIEI_I:12 /= 2
+				PRINTFORML 迅猛的一擊！
+				PRINTFORML %SAVESTR:YUSYA_I%率領魔王軍的攻擊使%CALLNAME:SEIEI_I%受到了{(CFLAG:YUSYA_I:11 *(SINKOU/1024+1) - TMP2_I)*4}點傷害！
+				SIF TALENT:SEIEI_I:251 == 0
+					CFLAG:SEIEI_I:11 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)/100
+				SIF CFLAG:SEIEI_I:11 < 1
+					CFLAG:SEIEI_I:11 = 1
+				BASE:SEIEI_I:0 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)*4
+				BASE:SEIEI_I:1 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)*4
+				WAIT
+			ELSE
+				TMP2_I = CFLAG:SEIEI_I:12
+				CFLAG:SEIEI_I:12 /= 2
+				PRINTFORML %SAVESTR:YUSYA_I%率領魔王軍的攻擊使%CALLNAME:SEIEI_I%受到了{(CFLAG:YUSYA_I:11 *(SINKOU/1024+1) - TMP2_I)*2}點傷害！
+				SIF TALENT:SEIEI_I:251 == 0
+					CFLAG:SEIEI_I:11 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)/100
+				SIF CFLAG:SEIEI_I:11 < 1
+					CFLAG:SEIEI_I:11 = 1
+				BASE:SEIEI_I:0 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)*2
+				BASE:SEIEI_I:1 -= (CFLAG:YUSYA_I:11*(SINKOU/1024+1) - TMP2_I)*2
+				WAIT
+			ENDIF
+		ELSE
+			PRINTFORML %CALLNAME:SEIEI_I%承受著%SAVESTR:YUSYA_I%的攻擊。
+			CFLAG:SEIEI_I:12 /= 2
+		ENDIF
+
+		CALL _INV_DEATH_CHECK
+		IF RESULT == 2
+			;魔王側獲得勝利
+			EXP:YUSYA_I:80 += SINKOU / 5
+			PRINTFORMW %SAVESTR:YUSYA_I%獲得了{SINKOU/5}點經驗值！
+			
+			SEIEI_I = CHARANUM - 1
+			CALL PARTY_CHAR_DEL, SEIEI_I
+			DELCHARA SEIEI_I
+			CALL NAME_RESET
+			BREAK
+		ELSEIF RESULT == 1
+			SEIEI_I = CHARANUM - 1
+			CALL PARTY_CHAR_DEL, SEIEI_I
+			DELCHARA SEIEI_I
+			CALL NAME_RESET
+			RETURN 1
+		ENDIF
+
+		;精鋭部隊の攻撃
+		;ダメージ５倍でちと痛い
+		IF CFLAG:YUSYA_I:12 < CFLAG:SEIEI_I:11
+			TMP2_I = CFLAG:YUSYA_I:12
+			CFLAG:YUSYA_I:12 /= 3
+			CFLAG:YUSYA_I:12 *= 2
+			PRINTFORML %CALLNAME:SEIEI_I%發起進攻使%SAVESTR:YUSYA_I%率領的魔王軍受到了{(CFLAG:SEIEI_I:11 - TMP2_I)*5}點傷害！
+			SIF TALENT:YUSYA_I:251 == 0
+				CFLAG:YUSYA_I:11 -= (CFLAG:SEIEI_I:11 - TMP2_I) / 100
+			SIF CFLAG:YUSYA_I:11 < 1
+				CFLAG:YUSYA_I:11 = 1
+			BASE:YUSYA_I:0 -= (CFLAG:SEIEI_I:11 - TMP2_I)*5
+			BASE:YUSYA_I:1 -= (CFLAG:SEIEI_I:11 - TMP2_I)*5
+			WAIT
+		ELSE
+			PRINTFORML %SAVESTR:YUSYA_I%率領的魔王軍承受著%CALLNAME:SEIEI_I%的攻擊。
+			CFLAG:YUSYA_I:12 /= 3
+			CFLAG:YUSYA_I:12 *= 2
+		ENDIF
+
+		CALL _INV_DEATH_CHECK, YUSYA_I, SEIEI_I
+		IF RESULT == 2
+			SEIEI_I = CHARANUM - 1
+			CALL PARTY_CHAR_DEL, SEIEI_I
+			DELCHARA SEIEI_I
+			CALL NAME_RESET
+			BREAK
+		ELSEIF RESULT == 1
+			SEIEI_I = CHARANUM - 1
+			CALL PARTY_CHAR_DEL, SEIEI_I
+			DELCHARA SEIEI_I
+			CALL NAME_RESET
+			RETURN 1
+		ENDIF
+		TIME_I += 1
+		REND
+	ELSE
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 傳聞中的精銳部隊並沒有出現…………
+	ENDIF
+ELSEIF INV_TYPE == 2
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORMW …
+	PRINTFORMW 傳聞中的精銳部隊並沒有出現…………
+ENDIF
+
+RETURN 0
+
+;--------------------------------------
+@_INV_DEATH_CHECK, ARG:0, ARG:1
+;ARG:0が元勇者　ARG:1が精鋭部隊
+;-------------------------------------- 
+
+;勇者死亡判定
+IF BASE:(ARG:1):0 <= 0
+	PRINTFORML %CALLNAME:(ARG:1)%被%SAVESTR:(ARG:0)%率領的魔王軍消滅了………
+	PRINTL
+	RETURN 2
+ELSEIF BASE:(ARG:1):0 <= 100
+	PRINTFORML %CALLNAME:(ARG:1)%被%SAVESTR:(ARG:0)%率領的魔王軍擊潰了………
+	PRINTL
+	RETURN 2
+ELSEIF BASE:(ARG:1):1 <= 0
+	PRINTFORML 被魔王軍包圍的%CALLNAME:(ARG:1)%失去戰鬥的意志投降了………
+	PRINTL
+	RETURN 2
+ENDIF
+
+;魔王側の生き殘りを判定
+IF BASE:(ARG:0):1 <= 1000 && TALENT:(ARG:0):280 && (FLAG:5 & 128)
+	PRINTFORML 被狂王俘虜過的%SAVESTR:(ARG:0)%喪失了戰意，拋下武器投降了。
+	PRINTFORMW %CALLNAME:(ARG:1)%俘獲了%SAVESTR:(ARG:0)%………
+	CFLAG:(ARG:0):1 = 9
+	DRAWLINE
+	RETURN 1
+ELSEIF BASE:(ARG:0):0 <= 0
+	PRINTFORM 魔王軍被%CALLNAME:(ARG:1)%消滅了，
+	IF FLAG:5 & 128
+		PRINTFORMW %SAVESTR:(ARG:0)%也被俘虜了…………
+		CFLAG:(ARG:0):1 = 9
+	ELSE
+		PRINTFORMW %SAVESTR:(ARG:0)%孤身逃了回來…………
+		CFLAG:(ARG:0):1 = 0
+	ENDIF
+	DRAWLINE
+	RETURN 1
+ELSEIF BASE:(ARG:0):0 <= 300
+	PRINTFORM 魔王軍被%CALLNAME:(ARG:1)%擊潰了，
+	IF FLAG:5 & 128
+		PRINTFORMW %SAVESTR:(ARG:0)%也被俘虜了…………
+		CFLAG:(ARG:0):1 = 9
+	ELSE
+		PRINTFORMW %SAVESTR:(ARG:0)%從亂軍中逃了回來…………
+		CFLAG:(ARG:0):1 = 0
+	ENDIF
+	DRAWLINE
+	RETURN 1
+ELSEIF BASE:(ARG:0):1 <= 0
+	PRINTFORM 被%CALLNAME:(ARG:1)%包圍的魔王軍失去戰鬥的意志投降了，
+	IF FLAG:5 & 128
+		PRINTFORMW %SAVESTR:(ARG:0)%被投降的部下獻給了%CALLNAME:(ARG:1)%…………
+		CFLAG:(ARG:0):1 = 9
+	ELSE
+		PRINTFORMW %SAVESTR:(ARG:0)%沒臉見人地逃了回來…………
+		CFLAG:(ARG:0):1 = 0
+	ENDIF
+	DRAWLINE
+	RETURN 1
+ENDIF
+
+
+RETURN 0
+
+
+;--------------------------------------------
+;侵略中途事件（要塞）
+;--------------------------------------------
+@INVASION_EVENT_FORT, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+#DIM AREA
+#DIM SINDO
+#DIM INV_TYPE
+#DIM REF SINKOU
+#DIM YUSYA_I
+#DIM L_CHOICE
+
+;
+SIF FLAG:SINDO || INV_TYPE != 0 && INV_TYPE != 2 && INV_TYPE != 3
+	RETURN -1
+
+IF AREA == 81
+	LOCALS:0 = 人間界
+	LOCALS:1 = 人類軍隊
+	LOCALS:2 = 城堡
+	LOCAL:3 = TALENT:YUSYA_I:種族 == 0
+ELSEIF AREA == 86
+	LOCALS:0 = 精靈森林
+	LOCALS:1 = 精靈族戰士
+	LOCALS:2 = 精靈城寨
+	LOCAL:3 = TALENT:YUSYA_I:種族 == 1
+ELSEIF AREA == 88
+	LOCALS:0 = 龍之山脈
+	LOCALS:1 = 龍族戰士
+	LOCALS:2 = 戰爭堡壘
+	LOCAL:3 = TALENT:YUSYA_I:種族 == 5
+ELSEIF AREA == 90
+	LOCALS:0 = 天界
+	LOCALS:1 = 天界衛隊
+	LOCALS:2 = 天使要塞
+	LOCAL:3 = TALENT:YUSYA_I:種族 == 6
+ELSEIF AREA == 93
+	LOCALS:0 = 天神宮
+	LOCALS:1 = 十字軍
+	LOCALS:2 = 天使要塞
+	LOCAL:3 = TALENT:YUSYA_I:種族 == 6
+ENDIF
+
+
+IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+	PRINTFORML 魔王軍浩浩蕩蕩地向%LOCALS:0%進發著。
+	PRINTFORML 早有準備的%LOCALS:1%在必經之路上建起了一座%LOCALS:2%，集結了大量的%LOCALS:1%。
+	PRINTFORMW %LOCALS:2%看起來防禦堅固防備森嚴，於是%CALLNAME:YUSYA_I%決定……
+	PRINTFORML [1] 全軍強攻
+	PRINTFORML [2] 親自潛入
+	PRINTFORML [3] 繞路
+	
+	$INPUT_LOOP
+	INPUT
+	
+	L_CHOICE = RESULT
+	IF !INRANGE(RESULT,1,3)
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+ELSEIF INV_TYPE == 3 	;派遣勇者前去掠奪資金
+	PRINTFORML %CALLNAME:YUSYA_I%向%LOCALS:0%進發著，卻在必經之路上遇到了%LOCALS:1%建起的一座%LOCALS:2%。
+	PRINTFORMW %LOCALS:2%看起來防禦堅固防備森嚴，於是%CALLNAME:YUSYA_I%決定……
+	PRINTFORML [1] 偷偷潛入
+	PRINTFORML [2] 繞路
+	
+	$INPUT_LOOP2
+	INPUT
+	
+	L_CHOICE = RESULT + 1
+	IF !(RESULT == 1 || RESULT == 2)
+		CLEARLINE 1
+		GOTO INPUT_LOOP2
+	ENDIF
+ELSEIF INV_TYPE == 0	;使用現有怪物的一半去進攻
+	PRINTFORML 魔王軍浩浩蕩蕩地向%LOCALS:0%進發著。
+	PRINTFORML 早有準備的%LOCALS:1%在必經之路上建起了一座%LOCALS:2%，集結了大量的%LOCALS:1%。
+	PRINTFORMW %LOCALS:2%看起來防禦堅固防備森嚴，於是魔王軍發起了強攻。
+	
+	L_CHOICE = 1
+ENDIF
+
+DRAWLINE
+;[1] 全軍強攻
+IF L_CHOICE == 1
+	LOCAL = RAND:10
+	;強攻成功（40%）
+	IF LOCAL >= 6
+		PRINTFORML 魔王軍向著%LOCALS:2%發起了最為猛烈的進攻，在付出較小的代價後攻破了%LOCALS:2%的一角。
+		PRINTFORML %LOCALS:2%中的%LOCALS:1%倉皇外逃，被%LOCALS:2%外的魔王軍盡數剿滅、
+		PRINTFORML 獲勝的魔王軍高呼萬歲，繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			EXP:YUSYA_I:80 += SINKOU / 5
+			PRINTFORML %SAVESTR:YUSYA_I%獲得了{SINKOU/5}點經驗值！
+		ENDIF
+		
+		PRINTFORML 怪物數量減少了10\%
+		SINKOU = SINKOU * 9 / 10
+		WAIT
+		RETURN 0
+	;強攻慘勝（40%）
+	ELSEIF LOCAL >= 2
+		PRINTFORML 魔王軍向著%LOCALS:2%發起了最為猛烈的進攻。
+		PRINTFORML %LOCALS:2%的防禦極其堅固，%LOCALS:1%憑藉著掩體不斷地攻擊，讓魔王軍損失慘重。
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			PRINTFORML %CALLNAME:YUSYA_I%不得不親自上陣，這才逆轉了局面，攻下了%LOCALS:2%。
+		ELSE
+			PRINTFORML 在付出巨大的代價后，魔王軍才攻下了%LOCALS:2%。
+		ENDIF
+		PRINTFORML 僥倖獲勝的魔王軍繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			EXP:YUSYA_I:80 += SINKOU / 5
+			PRINTFORML %SAVESTR:YUSYA_I%獲得了{SINKOU/5}點經驗值！
+			
+			BASE:YUSYA_I:0 /= 2
+			PRINTFORML %SAVESTR:YUSYA_I%的體力減少了一半！
+		ENDIF
+		
+		PRINTFORML 怪物數量減少了50\%
+		SINKOU = SINKOU  / 2
+		WAIT
+		RETURN 0
+	;慘敗（20%）
+	ELSE
+		PRINTFORML 魔王軍向著%LOCALS:2%發起了最為猛烈的進攻。
+		PRINTFORML %LOCALS:2%的防禦極其堅固，令魔王軍久攻不下，陷入僵局。
+		PRINTFORML 打破僵局的是一支突然出現在魔王軍背後的%LOCALS:1%援軍。
+		PRINTFORML 腹背受敵的魔王軍一觸即潰，隨即被裡應外合的兩支軍隊盡數殲滅。
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			PRINTFORML 率領魔王軍的%CALLNAME:YUSYA_I%孤身一人逃了回來。
+			PRINTL
+			
+			BASE:YUSYA_I:0 = BASE:YUSYA_I:0 * 3 / 10
+			PRINTFORML %SAVESTR:YUSYA_I%的體力減少了70\%！
+		ELSE
+			PRINTL
+		ENDIF
+		PRINTFORMW 侵攻中止。
+		CFLAG:YUSYA_I:1 = 0
+		RETURN 1
+	ENDIF
+	
+;[2] 親自潛入
+ELSEIF L_CHOICE == 2 && INV_TYPE == 2
+	LOCAL = RAND:10
+	
+	;帶隊奴隸有天使/惡魔翼 成功率100%
+	IF TALENT:YUSYA_I:惡魔翅膀 || TALENT:YUSYA_I:種族 == 6 || TALENT:YUSYA_I:種族 == 8
+		PRINTFORML %CALLNAME:YUSYA_I%趁著夜色從空中潛入了%LOCALS:2%，在躲過多支巡邏隊后終於打開了%LOCALS:2%的大門。
+		PRINTFORML 早已等待多時的魔王軍迅速殺入了%LOCALS:2%內，沒有遇到頑強的抵抗便控制了整個%LOCALS:2%。
+		PRINTFORML 當天空出現第一縷陽光時，%LOCALS:2%內已經只剩下了魔王軍和魔王軍的俘虜了。
+		PRINTFORML 獲勝的魔王軍高呼萬歲，繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		
+		EXP:YUSYA_I:80 += SINKOU / 5
+		PRINTFORML %SAVESTR:YUSYA_I%獲得了{SINKOU/5}點經驗值！
+		
+		FLAG:83 += 5
+		PRINTFORML 人間牧場肉便器數量+5。
+		
+		WAIT
+		RETURN 0
+	
+	;潛入成功 50%
+	ELSEIF LOCAL >= 5 || LOCAL:3
+		PRINTFORML %CALLNAME:YUSYA_I%喬裝打扮成功混進了%LOCALS:2%里。
+		PRINTFORML 當天夜裡，%CALLNAME:YUSYA_I%殺死了大門的守衛，將等候多時的魔王軍引入%LOCALS:2%內。
+		PRINTFORML %LOCALS:2%內的%LOCALS:1%還沒有組織起反抗便被消滅殆盡。
+		PRINTFORML 獲勝的魔王軍高呼萬歲，繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		
+		EXP:YUSYA_I:80 += SINKOU / 5
+		PRINTFORML %SAVESTR:YUSYA_I%獲得了{SINKOU/5}點經驗值！
+		
+		FLAG:83 += 5
+		PRINTFORML 人間牧場肉便器數量+5。
+		
+		WAIT
+		RETURN 0
+		
+	;失敗逃竄 30%
+	ELSEIF LOCAL >= 2 || !(FLAG:5 & 128)
+		PRINTFORML %CALLNAME:YUSYA_I%喬裝打扮試圖混進%LOCALS:2%里，但被大門的守衛識破。
+		PRINTFORML %CALLNAME:YUSYA_I%殺出一條血路，勉強逃回了魔王軍。
+		PRINTFORML 魔王軍不得已只好發動強攻，在鏖戰後最終慘勝。
+		PRINTFORML 僥倖獲勝的魔王軍，繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		
+		BASE:YUSYA_I:0 = 1
+		PRINTFORML %SAVESTR:YUSYA_I%的體力歸零
+		
+		SINKOU = SINKOU * 7 / 10
+		PRINTFORML 怪物數量減少了30\%
+		WAIT
+		RETURN 0
+	
+	;失敗被捕 20%
+	ELSE
+		PRINTFORML %CALLNAME:YUSYA_I%喬裝打扮試圖混進%LOCALS:2%里，但卻被大門的守衛識破。
+		PRINTFORML 在一番激烈戰鬥后%CALLNAME:YUSYA_I%還是被%LOCALS:1%生擒。
+		PRINTFORML 失去指揮官的魔王軍隨即被出城迎擊的%LOCALS:1%擊潰。
+		PRINTFORML 
+		PRINTFORMW %CALLNAME:YUSYA_I%被俘虜，侵攻中止。
+		CFLAG:YUSYA_I:1 = 9
+		RETURN 1
+	ENDIF
+	
+;[2] 親自潛入
+ELSEIF L_CHOICE == 2 && INV_TYPE == 3
+	LOCAL = RAND:10
+	
+	;帶隊奴隸有天使/惡魔翼 成功率100%
+	IF TALENT:YUSYA_I:惡魔翅膀 || TALENT:YUSYA_I:種族 == 6 || TALENT:YUSYA_I:種族 == 8
+		PRINTFORMW %CALLNAME:YUSYA_I%趁著夜色從空中穿過了%LOCALS:2%。
+		RETURN 0
+	;潛入成功 50%
+	ELSEIF LOCAL >= 5 || LOCAL:3
+		PRINTFORMW %CALLNAME:YUSYA_I%喬裝打扮成功通過了%LOCALS:2%。
+		RETURN 0
+	;失敗逃竄 30%
+	ELSEIF LOCAL >= 2 || !(FLAG:5 & 128)
+		PRINTFORML %CALLNAME:YUSYA_I%喬裝打扮試圖混進%LOCALS:2%里，但被大門的守衛識破。
+		PRINTFORMW %CALLNAME:YUSYA_I%殺出一條血路，勉強逃了回去。
+		
+		BASE:YUSYA_I:0 = 1
+		CFLAG:YUSYA_I:1 = 0
+		RETURN 1
+	;失敗被捕 20%
+	ELSE
+		PRINTFORML %CALLNAME:YUSYA_I%喬裝打扮試圖混進%LOCALS:2%里，但卻被大門的守衛識破。
+		PRINTFORMW 在一番激烈戰鬥后%CALLNAME:YUSYA_I%還是被%LOCALS:1%生擒。
+		
+		CFLAG:YUSYA_I:1 = 9
+		RETURN 1
+	ENDIF
+	
+;[3] 繞路
+ELSEIF L_CHOICE == 3 && INV_TYPE == 2
+	LOCAL = RAND:10
+	
+	;平安無事到達90%
+	IF LOCAL > 0
+		PRINTFORML 魔王軍繞開%LOCALS:2%向%LOCALS:0%進發，因為路途遙遠地形複雜損失了一些人馬。
+		PRINTFORML
+		
+		SINKOU = SINKOU * 9 / 10
+		PRINTFORMW 怪物數量減少了10\%
+		RETURN 0
+	;被埋伏10%
+	ELSE
+		PRINTFORML 魔王軍繞開%LOCALS:2%向%LOCALS:0%進發，但卻遇到了埋伏。
+		PRINTFORML 在一番血戰後，魔王軍擊退了伏軍繼續向%LOCALS:0%進發。
+		PRINTFORML
+		
+		SINKOU = SINKOU * 5 / 10
+		PRINTFORMW 怪物數量減少了50\%
+		RETURN 0
+	ENDIF
+	
+	
+;[3] 繞路
+ELSEIF L_CHOICE == 3 && INV_TYPE == 3
+	;平安無事到達90%
+	IF LOCAL > 0
+		PRINTFORML %CALLNAME:YUSYA_I%繞開%LOCALS:2%向%LOCALS:0%進發，因為路途遙遠地形複雜耗費了一些體力。
+		BASE:YUSYA_I:0 = BASE:YUSYA_I:0 * 9 /10
+	;被埋伏10%
+	ELSE
+		PRINTFORML %CALLNAME:YUSYA_I%繞開%LOCALS:2%向%LOCALS:0%進發，但卻遇到了埋伏。
+		IF FLAG:5 & 128
+			PRINTFORMW 在一番激烈戰鬥后%CALLNAME:YUSYA_I%還是被活捉了。
+			CFLAG:YUSYA_I:1 = 9
+		ELSE
+			PRINTFORMW 在一番激烈戰鬥后%CALLNAME:YUSYA_I%終於逃了回來。
+			CFLAG:YUSYA_I:1 = 0
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;--------------------------------------------
+;侵略中途事件（被勇者叫陣單挑）
+;--------------------------------------------
+@INVASION_EVENT_CHALLENGE, AREA, SINDO, INV_TYPE, SINKOU, YUSYA_I
+#DIM AREA
+#DIM SINDO
+#DIM INV_TYPE
+#DIM REF SINKOU
+#DIM YUSYA_I
+#DIM L_CHOICE
+
+;
+SIF INV_TYPE != 0 && INV_TYPE != 2 && INV_TYPE != 3
+	RETURN -1
+	
+	
+IF AREA == 81
+	LOCALS:0 = 人間界
+	LOCALS:1 = 一座河邊的橋
+	LOCALS:2 = 女騎士
+	LOCALS:3 = 騎上戰馬一騎絕塵離開了
+	LOCALS:4 = 劍術非常高超
+	LOCAL:10 = -1	;人類
+	LOCAL:12 = 9	;騎士
+	LOCAL:20 = EX_FLAG:95 | 1
+	SIF EX_FLAG:95 & 1
+		RETURN -1
+;エルフの領域侵略
+ELSEIF AREA == 86
+	LOCALS:0 = 精靈森林
+	LOCALS:1 = 一條密林中的狹道
+	LOCALS:2 = 月之祭司
+	LOCALS:3 = 遁入密林之中消失了
+	LOCALS:4 = 箭術無比精準
+	LOCAL:10 = 1	;精靈
+	LOCAL:12 = RAND:2 ? 12 # 16	;弓手
+	LOCAL:20 = EX_FLAG:95 | 2
+	SIF EX_FLAG:95 & 2
+		RETURN -1
+;ドラゴンの山侵略
+ELSEIF AREA == 88
+	LOCALS:0 = 龍之山脈
+	LOCALS:1 = 一座山谷間的吊橋
+	LOCALS:2 = 龍族巫女
+	LOCALS:3 = 吟唱了傳送咒語憑空消失了
+	LOCALS:4 = 龍語魔法無比犀利
+	LOCAL:10 = 5	;龍族
+	LOCAL:12 = RAND:2 ? 10 # 14	;巫女
+	LOCAL:20 = EX_FLAG:95 | 4
+	SIF EX_FLAG:95 & 4
+		RETURN -1
+;天界侵略
+ELSEIF AREA == 90
+	LOCALS:0 = 天界
+	LOCALS:1 = 一座天界的虹橋
+	LOCALS:2 = 女武神
+	LOCALS:3 = 振起潔白的羽翅飛走了
+	LOCALS:4 = 聖力極其雄厚
+	LOCAL:10 = 6	;天使
+	LOCAL:12 = RAND:2 ? 1 # 5 ;女戰士
+	LOCAL:20 = EX_FLAG:95 | 8
+	SIF EX_FLAG:95 & 8
+		RETURN -1
+;天界侵略
+ELSEIF AREA == 93
+	LOCALS:0 = 天神宮
+	LOCALS:1 = 一座天界的虹橋
+	LOCALS:2 = 十字軍
+	LOCALS:3 = 振起潔白的羽翅飛走了
+	LOCALS:4 = 聖力極其雄厚
+	LOCAL:10 = 6	;天使
+	LOCAL:12 = RAND:2 ? 1 # 5 ;女戰士
+	LOCAL:20 = EX_FLAG:95 | 16
+	SIF EX_FLAG:95 & 16
+		RETURN -1
+ENDIF
+
+
+IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+	PRINTFORML 魔王軍浩浩蕩蕩地向%LOCALS:0%進發著，卻在%LOCALS:1%前停下了腳步。
+	PRINTFORML 原來是一名%LOCALS:2%在大軍的前方擋住了道路。
+	PRINTDATA
+		DATALIST
+			DATA 『哎呀真是好多人啊，人家好緊張呢~』
+			DATA 『快去叫親愛的魔王大人出來，人家要和他比試比試呢』
+		ENDLIST
+		DATALIST
+			DATA 『今天運氣真是不錯哦~』
+			DATA 『叫魔王出來，他的腦袋是我的了！』
+		ENDLIST
+		DATALIST
+			DATA 『這就是魔王軍啊，與其說是軍隊倒不如說是哪裡冒出來的犯罪團伙呢~』
+			DATA 『快去叫你們的魔王出來，就說有人來取他的性命了』
+		ENDLIST
+		DATALIST
+			DATA 『咦？傳聞中的魔王軍呢』
+			DATA 『聽說你們的魔王很厲害，不知道能否有幸過兩手呢』
+		ENDLIST
+	ENDDATA
+	PRINTFORML 毫無緊張感的%LOCALS:2%這樣說著。
+	
+	PRINTFORMW 面對%LOCALS:2%的挑釁，%CALLNAME:YUSYA_I%決定……
+	PRINTFORML [1] 召喚魔王應戰
+	PRINTFORML [2] 親自上前處理
+	PRINTFORML [3] 無視，全軍進攻
+	
+	$INPUT_LOOP
+	INPUT
+	
+	L_CHOICE = RESULT
+	IF !INRANGE(RESULT,1,3)
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+	ENDIF
+	
+	IF L_CHOICE == 1
+		PRINTFORML 魔王迴應了%CALLNAME:YUSYA_I%召喚前來迎戰%LOCALS:2%。
+	ELSEIF L_CHOICE == 2
+		PRINTFORML %CALLNAME:YUSYA_I%決定親自迎戰%LOCALS:2%。
+	ELSE
+		PRINTFORML 在%CALLNAME:YUSYA_I%一聲令下，魔王軍緩緩前進，展開了對%LOCALS:2%戰鬥。
+	ENDIF
+ELSEIF INV_TYPE == 3 	;派遣勇者前去掠奪資金
+	PRINTFORML %CALLNAME:YUSYA_I%向%LOCALS:0%進發著，卻在%LOCALS:1%前被一名突然出現的%LOCALS:2%攔下了腳步。
+	PRINTDATA
+		DATALIST
+			DATA 『哎呀~是親愛魔王大人的手下呢』
+			DATA 『既然魔王大人不肯出來，人家只好和你比試比試了呢』
+		ENDLIST
+		DATALIST
+			DATA 『今天運氣真是不錯哦~可憐的魔族，你的腦袋是我的了！』
+		ENDLIST
+		DATALIST
+			DATA 『聞到魔物的味道就過來了，看我發現了什麼有趣的東西呢……有遺言么？』
+		ENDLIST
+		DATALIST
+			DATA 『咦？是魔王手下的那個誰呢』
+			DATA 『既然魔王那麼厲害，想必你也不簡單吧。來過兩手吧』
+		ENDLIST
+	ENDDATA
+	
+	WAIT
+	L_CHOICE = 2
+	
+ELSEIF INV_TYPE == 0	;使用現有怪物的一半去進攻
+	PRINTFORML 魔王軍浩浩蕩蕩地向%LOCALS:0%進發著，卻在%LOCALS:1%前停下了腳步。
+	PRINTFORML 原來是一名%LOCALS:2%在大軍的前方擋住了道路。
+	PRINTDATA
+		DATA 『哎呀真是好多人啊，人家好緊張呢~』
+		DATA 『今天運氣真是不錯哦~可悲的魔族，你們的腦袋是我的了！』
+		DATA 『啊~哪裡冒出來的犯罪團伙呢~這就來取你們的性命了』
+		DATA 『咦？傳聞中的魔王軍呢。既然撞上了就怪你們運氣不佳好了』
+	ENDDATA
+	PRINTFORML 毫無緊張感的%LOCALS:2%這樣說著。
+	
+	L_CHOICE = 3
+	PRINTFORMW 在意識到敵人只有一個人後，魔王軍向敢於挑釁的%LOCALS:2%發起了猛烈的進攻。
+ENDIF
+
+;[1] 召喚魔王應戰
+IF L_CHOICE == 1
+	
+	IF MONEY >= 3000
+		PRINTFORML 但對方看起來也不是省油的燈、未必能穩操勝券、
+		PRINTFORML 好在魔王身上攜帶了些一次性魔法道具、
+		PRINTFORML 雖然價格昂貴但威力巨大、
+		PRINTFORML 魔王考慮著是否要在決鬥中使用這些道具。。。
+		PRINTFORML [1] 使用氪金道具
+		PRINTFORML [2] 堂堂正正一決勝負
+		
+		$INPUT_LOOP2
+		INPUT
+		
+		L_CHOICE = RESULT
+		IF L_CHOICE != 1 && L_CHOICE != 2
+			CLEARLINE 1
+			GOTO INPUT_LOOP2
+		ENDIF
+	ELSE
+		L_CHOICE = 2
+	ENDIF
+	
+	LOCAL = RAND:10
+	;抓捕勇者數量限制
+	IF FLAG:82 == 0 && CHARANUM > 60
+		LOCAL = 0
+	ELSEIF FLAG:87 == 0 && FLAG:89 == 0 && FLAG:91 == 0 && CHARANUM > 65
+		LOCAL = 0
+	ELSEIF ((FLAG:87 * FLAG:89 == 0) && (FLAG:89 * FLAG:91 == 0) && (FLAG:91 * FLAG:87 == 0)) && CHARANUM > 70
+		LOCAL = 0
+	ELSEIF (FLAG:87 == 0 || FLAG:89 == 0 || FLAG:91 == 0) && CHARANUM > 75
+		LOCAL = 0
+	ELSEIF FLAG:92 < 15  && CHARANUM > 80
+		LOCAL = 0
+	ELSEIF FLAG:94 == 0 && CHARANUM > 90
+		LOCAL = 0
+	ELSEIF CHARANUM >= MAX_CHARANUM
+		LOCAL = 0
+	ENDIF
+	;開掛取勝 80%
+	IF L_CHOICE == 1 && LOCAL >= 2
+		PRINTFORML 魔王和%LOCALS:2%的戰鬥開始了。
+		 PRINTFORM 在試探數合之後，
+		PRINTDATAL
+			DATALIST
+				DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%扔出了高級泥沼卷軸。
+				DATAFORM %LOCALS:2%陷入了泥沼中，動彈不得，被魔王抓住了。
+			ENDLIST
+			DATALIST
+				DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%扔出了強效麻痹藥水。
+				DATAFORM 藥瓶正中的%LOCALS:2%在藥水的作用下動彈不得，被魔王抓住了。
+			ENDLIST
+			DATALIST
+				DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%祭起了邪能封印壺。
+				DATAFORM %LOCALS:2%猝不及防被吸進了封印壺內，被魔王抓住了。
+			ENDLIST
+		ENDDATA
+		PRINTFORML
+		PRINTFORMW 魔王軍高呼魔王萬歲，繼續向%LOCALS:0%進發。
+		;產生相應種族職業勇者一名。
+		
+		ADDCHARA LOCAL:12
+		CALL ADDCHARA_EX, CHARANUM-1
+		CALL CHARA_MAKE(CHARANUM -1, , LOCAL:10)
+		A = RESULT
+		CFLAG:A:1 = 0
+		PRINTFORMW %CALLNAME:A%被魔王抓住了。金錢-3000
+		MONEY -= 3000
+		EX_FLAG:4444 -= 3000
+		EX_FLAG:95 = LOCAL:20
+		EX_FLAG:99 += 1
+		RETURN 0
+	;開掛失敗 20%
+	ELSEIF L_CHOICE == 1
+		PRINTFORML 魔王和%LOCALS:2%的戰鬥開始了。
+		 PRINTFORM 在試探數合之後，
+		PRINTDATAL
+			DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%扔出了高級泥沼卷軸。
+			DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%扔出了強效麻痹藥水。
+			DATAFORM 魔王趁%LOCALS:2%不備，向%LOCALS:2%祭起了邪能封印壺。
+		ENDDATA
+		PRINTFORML 然而%LOCALS:2%提前察覺了魔王的動作，躲閃掉了。
+		PRINTFORML 在鄙夷地看了魔王一眼后，%LOCALS:2%%LOCALS:3%。
+		PRINTFORML 雖然被人鄙視了，但靦著臉的魔王命令魔王軍繼續向%LOCALS:0%前進。
+		PRINTFORML
+		PRINTFORMW 金錢-3000。
+		MONEY -= 3000
+		EX_FLAG:4444 -= 3000
+		RETURN 0
+	;不開掛取勝 20%
+	ELSEIF LOCAL < 2
+		PRINTFORML 魔王和%LOCALS:2%的戰鬥開始了、
+		PRINTFORML 儘管%LOCALS:2%的%LOCALS:4%、
+		PRINTFORML 但還是敵不過魔王的邪惡魔法、
+		PRINTFORML 很快就成爲了一具屍體。
+		PRINTFORML 魔王軍高呼魔王萬歲、繼續向%LOCALS:0%進發。
+		PRINTFORML
+		PRINTFORMW 魔王魔力減少50\%、魔王經驗+500
+		BASE:MASTER:1 /= 2
+		EXP:YUSYA_I:80 += 500
+		RETURN 0
+	;不開掛失敗 80%
+	ELSE
+		PRINTFORML 魔王和%LOCALS:2%的戰鬥開始了、
+		PRINTFORML %LOCALS:2%的%LOCALS:4%、
+		PRINTFORML 魔王左支右絀、招架不住、
+		PRINTFORML 被%LOCALS:4%抓住空隙、達成了重傷。
+		PRINTFORML 魔王軍士氣動搖、救下昏迷的魔王匆匆逃回魔王城。
+		PRINTFORML
+		PRINTFORMW 魔王體力魔力清空、侵攻中止
+		BASE:MASTER:0 = 0
+		BASE:MASTER:1 = 0
+		RETURN 1
+	ENDIF
+
+ELSEIF L_CHOICE == 2
+	LOCAL = RAND:10
+	
+	;奴隸取勝 20%
+	IF LOCAL < 2
+		PRINTFORML %CALLNAME:YUSYA_I%與%LOCALS:2%開始了戰鬥。
+		PRINTFORML 雖然%LOCALS:2%%LOCALS:4%，但卻被%CALLNAME:YUSYA_I%抓住機會打傷了。
+		PRINTFORML %LOCALS:2%心有不甘地%LOCALS:3%。
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			PRINTFORML 魔王軍高萬歲，繼續向%LOCALS:0%進發。
+		ELSE
+			PRINTFORML %CALLNAME:YUSYA_I%繼續向%LOCALS:0%進發。
+		ENDIF
+		PRINTFORML
+		PRINTFORMW %CALLNAME:YUSYA_I%經驗+500，體力-50\%
+		EXP:YUSYA_I:80 += 500
+		BASE:YUSYA_I:0 /= 2
+		RETURN 0
+	;奴隸不分勝負 40%
+	ELSEIF LOCAL < 6
+		PRINTFORML %CALLNAME:YUSYA_I%與%LOCALS:2%開始了戰鬥。
+		PRINTFORML 雖然%LOCALS:2%%LOCALS:4%，但%CALLNAME:YUSYA_I%也不遑多讓。
+		PRINTFORML 在大戰幾百回合之後，%LOCALS:2%心有不甘地%LOCALS:3%。
+		
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			PRINTFORML 魔王軍高呼萬歲，繼續向%LOCALS:0%進發。
+		ELSE
+			PRINTFORML %CALLNAME:YUSYA_I%繼續向%LOCALS:0%進發。
+		ENDIF
+		PRINTFORML
+		PRINTFORMW %CALLNAME:YUSYA_I%體力-90\%
+		BASE:YUSYA_I:0 /= 10
+		RETURN 0
+	;奴隸失敗 40%
+	ELSE
+		PRINTFORML %CALLNAME:YUSYA_I%與%LOCALS:2%激烈交戰起來。
+		PRINTFORML %LOCALS:2%的%LOCALS:4%，沒過多久，%CALLNAME:YUSYA_I%就被%LOCALS:2%打暈了過去。
+		PRINTFORML %LOCALS:2%輕蔑的一笑，%LOCALS:3%。
+		IF INV_TYPE == 2	;派遣勇者帶三分之一的怪物去進攻
+			PRINTFORML 失去指揮官的魔王軍只好撤退了。
+		ELSEIF (FLAG:5 & 128) && !FLAG:SINDO
+			PRINTFORML 暈過去的%CALLNAME:YUSYA_I%成爲了狂王的俘虜。
+			CFLAG:YUSYA_I:1 = 9
+		ELSE
+			PRINTFORML 不知道過了多久后才甦醒過來的%CALLNAME:YUSYA_I%原路返回了。
+			CFLAG:YUSYA_I:1 = 0
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+ELSEIF L_CHOICE == 3
+	IF RAND:2
+		;損失慘重撤退 50%
+		PRINTFORML 然而由於地形狹窄魔王軍的數量優勢無法發揮、
+		PRINTFORML 並且%LOCALS:2%的%LOCALS:4%、
+		PRINTFORML 在損失了大批魔物之後、
+		PRINTFORML %LOCALS:2%輕蔑的一笑、%LOCALS:3%。
+		PRINTFORML 魔王軍元氣大傷只好撤退了。
+		PRINTFORML 
+		PRINTFORMW 侵攻中止。
+		RETURN 1
+	ELSE
+		;損失一般繼續進攻 50%
+		PRINTFORML 然而由於地形狹窄魔王軍的數量優勢無法發揮、
+		PRINTFORML 並且%LOCALS:2%的%LOCALS:4%、
+		PRINTFORML 導致損失了不少魔物、
+		PRINTFORML 最後%LOCALS:2%體力不支、%LOCALS:3%。
+		PRINTFORML 付出了不少代價的魔王軍、繼續向%LOCALS:0%進發。
+		PRINTFORML 
+		PRINTFORMW 魔物數量-20\%。
+		SINKOU = SINKOU * 4 /5
+		RETURN 0
+	ENDIF
+ENDIF
+
+RETURN 0

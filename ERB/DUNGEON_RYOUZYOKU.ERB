@@ -1,0 +1,2903 @@
+﻿;-------------------------------------
+@RYOUZYOKU,ARG
+#DIM VIRGIN
+#DIM MON_COUNT
+#DIM MON_FEAR
+;-------------------------------------
+
+ARG = A
+VIRGIN = TALENT:ARG:0
+
+PRINTFORML %SAVESTR:ARG%將被凌辱――
+PRINTL  
+DRAWLINE
+CALL SHOW_DATA(ARG)
+PRINTL  
+
+PRINTL [0] - 旁觀凌辱
+PRINTL [1] - 不要凌辱
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= 2
+	GOTO INPUT_LOOP
+ENDIF
+SIF RESULT == 1
+	RETURN 0
+
+
+;凌辱畏怖記憶があるか
+MON_COUNT = 0
+MON_FEAR = 0
+
+
+WHILE MON_COUNT < 300
+	;PRINTFORMW ID{mon_count}，數量{E:(MON_COUNT + 99)}，凌辱{E:(MON_COUNT + 7)}
+	LOCAL = MON_COUNT + 99
+	IF E:LOCAL <= 0
+		LOCAL = MON_COUNT + 7
+		E:LOCAL = 0
+	ENDIF
+	LOCAL = MON_COUNT + 7
+	IF E:LOCAL > 0
+		LOCAL:1 = E:MON_COUNT
+		;被凌辱モンスターID記憶を見る
+		SIF CFLAG:ARG:130 == LOCAL:1
+			MON_FEAR = MON_COUNT
+	ENDIF
+	MON_COUNT += 100
+WEND
+
+
+TARGET = ARG
+CALL DUNGEON_RYOUZYOKU
+
+MON_COUNT = 0
+WHILE MON_COUNT < 300
+	LOCAL = MON_COUNT + 7
+	LOCAL:1 = E:MON_COUNT
+	IF E:LOCAL > 0 && MON_FEAR == 0
+		PRINTFORMW %MONSTERNAME(LOCAL:1)%的凌辱開始了。
+		;凌辱畏怖記憶
+		CFLAG:ARG:130 = LOCAL:1
+		MON_FEAR = LOCAL:1
+		CFLAG:ARG:131 = 0
+	ELSEIF E:LOCAL > 0 && MON_FEAR == LOCAL:1
+		PRINTFORMW %MONSTERNAME(LOCAL:1)%的凌辱開始了。
+		CFLAG:ARG:131++
+	ELSEIF E:LOCAL > 0 && MON_FEAR != LOCAL:1
+		PRINTFORMW %MONSTERNAME(LOCAL:1)%的凌辱開始了。
+	ENDIF
+	B = MON_COUNT
+	IF E:LOCAL == 1
+		;カタコト
+		CALL ORC_RYOU,ARG
+	ELSEIF E:LOCAL == 2
+		;史萊姆
+		CALL SLIME_RYOU,ARG
+	ELSEIF E:LOCAL == 3
+		;昆蟲
+		CALL INSECT_RYOU,ARG
+	ELSEIF E:LOCAL == 4
+		;蔦觸手
+		CALL IVY_RYOU,ARG
+	ELSEIF E:LOCAL == 5
+		;觸手
+		CALL SYOKUSYU_RYOU,ARG
+	ELSEIF E:LOCAL == 6
+		;妖精
+		CALL FAILY_RYOU,ARG
+	ELSEIF E:LOCAL == 7
+		;巨人
+		CALL GIANT_RYOU,ARG
+	ELSEIF E:LOCAL == 8
+		;男
+		CALL MAN_RYOU,ARG
+	ELSEIF E:LOCAL == 9
+		;女
+		CALL GIRL_RYOU,ARG
+	ELSEIF E:LOCAL == 10
+		;獣
+		CALL BEAST_RYOU,ARG
+	ELSEIF E:LOCAL == 11
+		;腦奸
+		CALL BRAIN_RYOU,ARG
+	ELSEIF E:LOCAL == 12
+		;馬
+		CALL HORSE_RYOU,ARG
+	ENDIF
+	PRINTL  
+	MON_COUNT += 100
+WEND
+
+IF EXP:0 > 0 && TALENT:0 == 1
+	TALENT:0 = 0
+	PRINTL 【處女喪失】
+	CFLAG:15 = 104
+ENDIF
+
+CALL DUNGEON_RYOUZYOKU_AFTER
+
+$ESCAPE
+;畏怖應用機會太少，增加逃跑
+CALL DUNGEON_RYOUZYOKU_ESCAPE,ARG
+
+RETURN 0
+
+;--------------------------------------------
+@ORC_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『把這傢伙綁起來…』
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 『被俺儂的…肉棒…俘虜了啊』
+		DATAFORM 『已經是…俺儂的…老婆啦！』
+		DATAFORM 『又壘了呀…已經、沉迷了嗎？』
+		DATAFORM 『俺儂的…崽…拜託啦』
+		DATAFORM 『噗嘻嘻唏…喜歡臭臭的？』
+		DATAFORM 『俺儂的…家畜』
+		DATAFORM 『噗嘻嘻唏！等久啦』
+		DATAFORM 『這麼、喜歡、肉棒嗎？』
+		DATAFORM 『嘿嘿…可不會放了咯…』
+		DATAFORM 『噗嘻嘻唏、俺儂的同類啦』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 『延伸不錯喲…』
+		DATAFORM 『又是你啊…』
+		DATAFORM 『求求你放過我、才對吧？』
+		DATAFORM 『差不多了吧…』
+		DATAFORM 『噗嘻嘻唏、就是這勢頭』
+		DATAFORM 『越發老實了啊』
+		DATAFORM 『把屁股翹起來…』
+		DATAFORM 『腚兒轉過來』
+		DATAFORM 『哈哈……把手放下來……？』
+		DATAFORM 『臉紅了哦？』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 0
+	;弱畏怖狀態
+	PRINTDATAW
+		DATAFORM 『哦…又是…』
+		DATAFORM 『你是、之前的…』
+		DATAFORM 『這傢伙…咋又來了？』
+		DATAFORM 『又輸給、俺儂了啊』
+		DATAFORM 『噗嘻嘻唏、有夠弱的』
+		DATAFORM 『這點水平……』
+		DATAFORM 『又輸了啊？』
+		DATAFORM 『太好咯！　又是俺儂的、勝利啦！』
+		DATAFORM 『哈哈…又贏啦…』
+		DATAFORM 『哦吼！　俺儂強爆啦！』
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『女…女人…喔哦…』
+		DATAFORM 『好女人哦…好哦…呵呵…』
+		DATAFORM 『這傢伙……隨便弄，沒問題吧？』
+		DATAFORM 『懷上，我的孩子吧。你，一定能生下健康的孩子，吧。』
+		DATAFORM 『嘻嘻嘻，是女人啊！…』
+		DATAFORM 『別掙扎了……』
+		DATAFORM 『別掙扎了……出來混總是要還的』
+		DATAFORM 『太好了！　是我們的，勝利！』
+		DATAFORM 『哈哈……是女人啊！……』
+		DATAFORM 『哦哦！　我們也能，贏下來！』
+		DATAFORM 『今天大夥運氣不錯，哈哈哈！』
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTW 『可惡！這傢伙有封印！』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，一摸上去，手都發麻了。
+	PRINTFORMW 『行啊你！我就不信你把便便的洞也封住了！』
+	PRINTFORMW %SAVESTR:ARG%的另一個穴，被髮泄了獸慾……
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	
+	PRINTDATAL
+		DATAFORM 『你……是我的東西了…』
+		DATAFORM 『我獨佔的……噗嘻嘻』
+		DATAFORM 『誰都沒看到……』
+		DATAFORM 『贏了！　活下來了！』
+	ENDDATA
+	PRINTFORML %SAVESTR:ARG%被一隻獸人推倒，拚命抽插著，射滿了精液。
+	PRINTL 她四肢著地趴在地上，臉貼著地板，隨著身後的抽插不停地哭泣。
+	PRINTL 私處經驗+1
+	PRINTL 精液經驗+1
+	EXP:ARG:0 += 1
+	EXP:ARG:20 += 1
+	
+	IF TALENT:ARG:12
+		;剛強
+		PRINTFORMW %SAVESTR:ARG%咬著嘴唇忍受著凌辱……
+		PRINTFORMW 在那剛強的臉上，精液無情地飛撒著。
+		PRINTFORML 苦痛點數+{MON_NUM * 10}
+		JUEL:ARG:9 += MON_NUM * 10
+	ELSE 
+		PRINTFORMW %SAVESTR:ARG%耷拉著頭，
+	ENDIF
+		
+	PRINT 四肢著地趴在地上，
+	
+	IF TALENT:ARG:陰毛狀態 > 200
+		PRINT 硬毛露了出來
+	ELSEIF TALENT:ARG:陰毛狀態 > 150
+		PRINT 隱約看見了陰毛
+	ENDIF
+	
+	IF TALENT:ARG:魅力點 == 14
+		;ヒップライン
+		PRINT 美麗的屁股從后露了出來
+	ELSEIF TALENT:ARG:魅力點 == 23
+		;大きな尻
+		PRINT 大的屁股從后露了出來
+	ELSE
+		PRINT 屁股從后露了出來
+	ENDIF
+	
+	PRINTDATA
+		DATAFORM 陰莖
+		DATAFORM 髒污的陰莖
+		DATAFORM 帶肉刺的陰莖
+		DATAFORM 巨根
+		DATAFORM 蘑菇似的陰莖
+	ENDDATA
+	
+	PRINTL 便插了進去，
+	
+	PRINT 臉上
+	IF CFLAG:ARG:131 > 5
+		;隷屬狀態
+		IF TALENT:ARG:35
+			;恥じらい
+			PRINTL 流露著沉浸在了羞恥與情慾之中的神色……
+			PRINTFORML 恥情點數+{MON_NUM * 12}
+			JUEL:ARG:8 += MON_NUM * 10
+		ELSE 
+			PRINTL 的神情為屈服的喜悅與口水所浸染……
+			PRINTFORML 屈服點數+{MON_NUM * 12}
+			JUEL:ARG:6 += MON_NUM * 10
+		ENDIF
+	ELSEIF CFLAG:ARG:131 > 2
+		;中畏怖狀態
+		IF TALENT:ARG:35
+			;恥じらい
+			PRINTL 流露著在羞恥與快樂間彷徨的神色……
+			PRINTFORML 恥情點數+{MON_NUM * 12}
+			JUEL:ARG:8 += MON_NUM * 10
+		ELSE 
+			PRINTL 隱約露出了屈服的喜悅……
+			PRINTFORML 屈服點數+{MON_NUM * 12}
+			JUEL:ARG:6 += MON_NUM * 10
+		ENDIF
+	ELSE
+		IF (TALENT:ARG:14 || TALENT:ARG:26 || TALENT:ARG:44) && TALENT:ARG:45 == 0
+			;大人しい・悲観的・涙もろいで泣かないが無い
+			PRINTL 被眼淚浸濕了……
+			PRINTFORML 恐怖點數+{MON_NUM * 10}
+			JUEL:ARG:10 += MON_NUM * 10
+		ELSEIF TALENT:ARG:35
+			;恥じらい
+			PRINTL 浸染著羞恥的神色……
+			PRINTFORML 恥情點數+{MON_NUM * 10}
+			JUEL:ARG:8 += MON_NUM * 10
+		ELSEIF TALENT:ARG:11
+			;反抗的
+			PRINTL 的表情因憤怒而扭曲……
+		ELSE 
+			PRINTL 染上了絕望的神色……
+			PRINTFORML 屈服點數+{MON_NUM * 10}
+			JUEL:ARG:6 += MON_NUM * 10
+		ENDIF
+	ENDIF
+	
+	PRINTL 私處經驗+1
+	PRINTL 精液經驗+1
+	EXP:ARG:0 += 1
+	EXP:ARG:20 += 1
+	
+	;処女
+	SIF TALENT:ARG:0
+		PRINTL 『處女誒！　恭喜破處啦……』
+	;濡れやすい
+	SIF TALENT:ARG:42
+		PRINTL 『這傢伙被強姦著都濕了啊』
+	
+	WAIT
+	
+	RETURN 0
+ENDIF
+
+IF RAND:5 == 0
+;口交
+	PRINTDATAW
+		DATAFORM 『喂！閉嘴……別吵啦！快點喝下去！』
+		DATAFORM 『舔個……乾淨……』
+		DATAFORM 『打得都勃起了……』
+	ENDDATA
+	
+	IF TALENT:ARG:52
+		;擅用舌頭
+		PRINTW 『呃……這傢伙，簡直就是經驗豐富的妓女嘛～』
+		PRINTFORMW %SAVESTR:ARG%拚命地用舌頭侍奉著，展現出天賦般的好技術。
+		PRINTFORMW 獸人抵受不住她那靈活的舌頭，射在%SAVESTR:ARG%的嘴裡了。
+		MON_NUM *= 2
+	ENDIF
+	
+	SIF TALENT:ARG:種族 == 4
+		PRINTFORM 無頭騎士的
+	
+	PRINTFORM %SAVESTR:ARG%
+	
+	IF TALENT:ARG:種族 == 4
+		PRINTFORM 身體被固定住了，只剩下腦袋來像飛機杯似的
+	ELSE
+		PRINTFORM 全裸地
+	ENDIF
+	PRINTFORMW 侍奉著獸人們的陰莖。只要喝掉所有{MON_NUM}只獸人的精液的話，它們就答應不侵犯她的下體………
+	
+	IF CFLAG:ARG:131 > 5
+		;隷屬狀態
+		IF TALENT:ARG:13
+			;素直
+			PRINTFORM 毫無猶豫、
+		ELSEIF TALENT:ARG:14
+			;大人しい
+			PRINTFORM 小心翼翼地、
+		ELSEIF TALENT:ARG:17
+			;プライド低い
+			PRINTFORM 一邊土下座扭著腰部的
+		ELSEIF TALENT:ARG:35
+			;恥じらい
+			PRINTFORM 期待與羞恥將臉染紅的
+		ELSEIF TALENT:ARG:0
+			;処女
+			PRINTFORM 爲了守住自己處女的
+		ELSE
+			PRINTFORM 面露期待的
+		ENDIF
+	ELSEIF CFLAG:ARG:131 > 2
+		;中畏怖狀態
+		IF TALENT:ARG:13
+			;素直
+			PRINTFORM 老實遵從於獸人的
+		ELSEIF TALENT:ARG:14
+			;大人しい
+			PRINTFORM 煞有其事地、
+		ELSEIF TALENT:ARG:17
+			;プライド低い
+			PRINTFORM 不住向陰莖獻媚的
+		ELSEIF TALENT:ARG:35
+			;恥じらい
+			PRINTFORM 面對陰莖羞紅了臉的
+		ELSEIF TALENT:ARG:0
+			;処女
+			PRINTFORM 爲了守住自己處女的
+		ELSE
+			PRINTFORM 已然無法反抗的
+		ENDIF
+	ELSE
+		IF TALENT:ARG:11
+			;反抗的
+			PRINTFORM 帶著反抗的目光看著它們，其中一隻獸人對她怒喝了一聲，
+			PRINTFORML 恐怖點數+{MON_NUM * 10}
+			JUEL:ARG:10 += MON_NUM * 10
+		ELSEIF TALENT:ARG:13
+			;素直
+			PRINTFORM 迫於獸人的威脅，她衡量了一下得失之後，老實地接受了屈辱的命運……聽天由命地流淚，
+			PRINTFORML 恥情點數+{MON_NUM * 10}
+			JUEL:ARG:8 += MON_NUM * 10
+		ELSEIF TALENT:ARG:14
+			;大人しい
+			PRINTFORM 提心吊膽地
+		ELSEIF TALENT:ARG:17
+			;プライド低い
+			PRINTFORM 嘿嘿媚笑著
+		ELSEIF TALENT:ARG:35
+			;恥じらい
+			PRINTFORM 不敢直視肉棒而閉上了眼睛
+		ELSEIF TALENT:ARG:0
+			;処女
+			PRINTFORM 爲了守住自己處女的
+		ENDIF
+	ENDIF
+	
+	PRINTFORM %SAVESTR:ARG%把
+	
+	PRINTDATA
+		DATAFORM 陰莖
+		DATAFORM 髒污的陰莖
+		DATAFORM 帶肉刺的陰莖
+		DATAFORM 巨根
+		DATAFORM 蘑菇似的陰莖
+	ENDDATA
+	
+	PRINT 含了下去，
+	
+	IF TALENT:ARG:52
+		;舌使い
+		PRINTW 『呃……這傢伙，簡直就是經驗豐富的妓女嘛～』
+		PRINTFORMW %SAVESTR:ARG%拚命地用舌頭侍奉著，展現出天賦般的好技術。
+		PRINTFORMW 獸人抵受不住她那靈活的舌頭，射在%SAVESTR:ARG%的嘴裡了。
+		;舌使いボーナス
+		MON_NUM *= 2
+	ELSEIF TALENT:ARG:21
+		;無関心
+		PRINTFORM 像工作一樣地奉仕著，
+	ELSEIF TALENT:ARG:36
+		;恥薄い
+		PRINTFORM 不禁發出了粗俗的聲音，
+	ELSEIF TALENT:ARG:50
+		;習得早い
+		PRINTFORM 很快地抓住了奉仕的訣竅，
+	ELSEIF TALENT:ARG:62
+		;汚臭敏感
+		PRINTFORM 忍受著腥臭味，
+	ELSEIF TALENT:ARG:63
+		;獻身的
+		PRINTFORM 拚命地用舌頭奉仕著，
+	ENDIF
+	
+	PRINTL 奉仕持續了下去……
+	
+	PRINTFORML 口交經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:22 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+
+		
+ELSEIF RAND:4 == 0
+
+	;全穴奉仕
+	
+	PRINTDATAW
+		DATAFORM 『兄弟們，把所有的穴都塞滿哦！』
+		DATAFORM 『嘿，簡直像三明治一樣』
+		DATAFORM 『連耳朵，都給你灌滿精液咯』
+	ENDDATA
+	
+	PRINTFORMW %SAVESTR:ARG%被{MON_NUM}只獸人用積存已久的精液，將私處、嘴巴、肛門……所有能用的穴，注滿了精液……
+        PRINTW 她用空洞的眼神望向地下城那陰暗的天花板，眼裡完全失去了焦點。
+	PRINTFORMW %SAVESTR:ARG%的臉和性器都用精液化上了妝。獸人們看著她這樣子，開懷大笑。
+
+	PRINT 獸人的
+	
+	PRINTDATA
+		DATAFORM 陰莖
+		DATAFORM 髒污的陰莖
+		DATAFORM 帶肉刺的陰莖
+		DATAFORM 巨根
+		DATAFORM 蘑菇似的陰莖
+	ENDDATA
+	
+	PRINTFORM 插進了%SAVESTR:ARG%的喉嚨深處，射精的同時噴濺出來的精液在%SAVESTR:ARG%的
+	
+	IF CFLAG:ARG:42 == 83
+		PRINT 眼鏡上飛撒著……
+	ELSEIF TALENT:ARG:魅力點 == 2
+		PRINT 可愛的眼睛上飛撒著……
+	ELSEIF TALENT:ARG:魅力點 == 3
+		PRINT 漂亮的鼻子里噴了出來……
+	ELSEIF TALENT:ARG:魅力點 == 22
+		PRINT 光鮮亮麗的頭髮上飛撒著……
+	ELSE
+		PRINT 臉上飛撒著……
+	ENDIF
+
+	IF TALENT:ARG:12
+		;剛強
+		PRINTFORMW %SAVESTR:ARG%咬著嘴唇忍受著凌辱……
+		PRINTFORMW 在那剛強的臉上，精液無情地飛撒著。
+		PRINTFORML 苦痛點數+{MON_NUM * 10}
+		JUEL:ARG:9 += MON_NUM * 10
+		
+	ELSEIF TALENT:ARG:70 || TALENT:ARG:73
+		;接受快感・容易陷落
+		PRINTFORMW 在凌辱開始不久后，漸漸地聽到了嫵媚的嬌喘聲。
+		PRINTFORMW 『喔！這傢伙有感覺了哦！』
+		PRINTFORMW %SAVESTR:ARG%被快感衝擊著，忍不住主動扭著腰。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+		
+	ELSE
+		PRINTW 她用空洞的眼神望向地下城那陰暗的天花板，眼裡完全失去了焦點。
+		
+	ENDIF
+	
+	
+	PRINTW   
+	PRINTFORM 獸人們把潤滑液塗在了%SAVESTR:ARG%的
+	
+	IF TALENT:ARG:魅力點 == 21
+		PRINT 漂亮的
+	ELSEIF TALENT:ARG:魅力點 == 14
+		PRINT 漂亮的屁股的縫隙中的
+	ELSEIF TALENT:ARG:魅力點 == 23
+		PRINT 大的屁股的縫隙中的
+	ELSEIF TALENT:ARG:125
+		PRINT 無毛額
+	ELSEIF TALENT:ARG:248
+		PRINT 肌肉明顯的兩腿間的
+	ELSEIF TALENT:ARG:陰毛狀態 > 200
+		PRINT 從陰阜到肛門都被茂密的陰毛所覆蓋的
+	ELSEIF TALENT:ARG:陰毛狀態 > 150
+		PRINT 長著茂盛的陰毛的
+	ENDIF
+	
+	PRINTL 性器和肛門上
+	PRINTFORM 在%SAVESTR:ARG%的
+	
+	IF TALENT:ARG:99
+		;魁梧
+		PRINT 魁梧的身體上
+	ELSEIF TALENT:ARG:100
+		;嬌小
+		PRINT 嬌小的身體上
+	ELSEIF TALENT:ARG:115
+		;肥満
+		PRINT 鬆鬆垮垮的身體上
+	ELSEIF TALENT:ARG:248
+		;筋肉質
+		PRINT 緊緻的身體上
+	ELSEIF TALENT:ARG:256
+		;虛弱
+		PRINT 窈窕的身體上
+	ELSEIF TALENT:ARG:體型 <= 100
+		PRINT 纖細的身體上
+	ELSEIF TALENT:ARG:體型 > 200
+		PRINT 肉感的身體上
+	ELSE
+		PRINT 身體上
+	ENDIF
+	
+	PRINTL 像要擠爆她似的激烈地持續侵犯著……
+
+	PRINTW 她用空洞的眼神望向地下城那陰暗的天花板，眼裡完全失去了焦點。
+
+	
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 口交經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:22 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+
+ELSEIF RAND:3 == 0
+
+	;屈辱プレイ
+	
+	PRINTDATAW
+		DATAFORM 『你不要做人了。從今往後就是家畜了。像豬一樣叫幾聲來聽聽。』
+		DATAFORM 『豬就要有，豬的樣子』
+		DATAFORM 『你只是，比我們還低階的，家畜罷了！』
+	ENDDATA
+	
+	PRINTFORM %SAVESTR:ARG%全裸地四肢著地趴在地下、
+	
+	IF TALENT:ARG:10 || TALENT:ARG:14
+		;臆病・大人しい
+		PRINT 渾身顫抖著、
+	ELSEIF TALENT:ARG:11
+		;反抗的
+		PRINT 怒目圓睜著、
+	ELSEIF TALENT:ARG:13
+		;素直
+		PRINT 拚命服從著、
+	ELSEIF TALENT:ARG:17
+		;プライド低い
+		PRINT 拚命獻媚著、
+	ELSEIF TALENT:ARG:35
+		;恥じらい
+		PRINT 羞紅了臉、
+	ENDIF
+	
+	PRINTW 屈辱地模仿豬叫……
+	
+	PRINTFORMW {MON_NUM}只獸人看到這個情形都笑了。完全沒有了光輝冒險者的樣子，就是一隻慘叫的豬而已。
+	
+	IF ABL:ARG:17
+		;露出癖
+		PRINTFORMW %SAVESTR:ARG%的臉猶如發燒一般，不停地重複著上述行為。
+		PRINTFORMW 好像因為被視奸，而有了感覺。
+		PRINTFORML 恥情點數+{MON_NUM * 10}
+		JUEL:ARG:8 += MON_NUM * 10
+	ENDIF
+	
+	IF ABL:ARG:21
+		;抖M氣質
+		PRINTFORMW %SAVESTR:ARG%好像因為被罵而有了感覺。
+		PRINTFORMW 『明明就是母豬，還說自己是冒險者！』
+		PRINTFORMW %SAVESTR:ARG%連眼神都濕潤了～
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORM 『豬
+	IF TALENT:ARG:17
+		;プライド低い
+		;喜び
+		CALL GOBI_KOUJO, 1
+	ELSE
+		;情けない
+		CALL GOBI_KOUJO, 5
+	ENDIF
+	PRINTFORM 還自稱冒險者……簡直傻了
+	
+	IF TALENT:ARG:17
+		;プライド低い
+		;喜び
+		CALL GOBI_KOUJO, 1
+	ELSE
+		;情けない
+		CALL GOBI_KOUJO, 5
+	ENDIF
+	
+	PRINTFORMW 　噗噗，噗嘻！』
+	
+	IF TALENT:ARG:17
+		;プライド低い
+		PRINTFORMW %SAVESTR:ARG%拋棄了自尊心，拚命地求饒著。
+		PRINTFORML 屈服點數+{MON_NUM * 10}
+		JUEL:ARG:6 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 恥情點數+{MON_NUM * 10}
+	PRINTFORML 屈服點數+{MON_NUM * 10}
+	JUEL:ARG:8 += MON_NUM * 10
+	JUEL:ARG:6 += MON_NUM * 10
+ELSEIF RAND:2 == 0
+	PRINTW 『來試試，看能放多粗的東西進去？』
+	PRINTFORMW %SAVESTR:ARG%感受到了自己身上的危機，拚命地哀求著。
+	PRINTFORMW 不過，她的身體依舊被獸人們牢牢抓住。M字開腳地把不設防的性器和肛門展示在大家面前。
+	PRINTFORMW 其中一隻獸人，拿起她的心愛的武器用柄的那端捅入她的私處。
+	PRINTFORMW %SAVESTR:ARG%的喊叫聲，迴響在{MON_NUM}只獸人的耳邊。
+	
+	IF TALENT:ARG:40
+		;害怕疼痛
+		PRINTFORMW 「好痛……不要啊……嗚哇哇哇哇哇哇！」
+		PRINTFORMW %SAVESTR:ARG%受不了痛楚，高聲哭喊著。
+		PRINTFORML 苦痛點數+{MON_NUM * 10}
+		JUEL:ARG:9 += MON_NUM * 10
+	ENDIF
+	
+	IF ABL:ARG:21
+		;抖M氣質
+		PRINTFORMW %SAVESTR:ARG%在痛楚中感到了愉悅。
+		PRINTFORMW 難道自己是個潛在的性變態？這麼想著，%SAVESTR:ARG%對自身的反應感到害怕。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+ELSE
+	PRINTW 『抬起屁股！然後說：請用！』
+	PRINTFORMW %SAVESTR:ARG%用屈辱的姿勢抬起了屁股，把手扶在地下城的墻壁上。
+	PRINTFORMW 她完全被淹沒在{MON_NUM}只獸人之中，獸人們大笑著，輪流侵犯她的私處和肛門。
+	PRINTFORMW %SAVESTR:ARG%的嗚咽，被獸人們的歡呼聲掩埋在地下城的黑暗中。
+	
+	IF TALENT:ARG:70 || TALENT:ARG:73
+		;接受快感・容易陷落
+		PRINTFORMW 隨著凌辱的持續，%SAVESTR:ARG%的私處里漸漸滴出了粘液。
+		PRINTFORMW 『別這麼快就去了啊！老子都不知道操哭多少人類女性了。』
+		PRINTFORMW %SAVESTR:ARG%呼出了熾熱的氣息，雙腿直抖著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+		
+	ELSEIF TALENT:ARG:11
+		;反抗心
+		PRINTFORMW 『喂！把腰抬起來！還沒完呢！』
+		PRINTFORMW %SAVESTR:ARG%用冰冷的目光瞪了獸人們一眼。
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@SLIME_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 黏液纏住了冒險者的腿，令他無法移動。
+	RETURN 0
+ENDIF
+
+PRINTDATAW
+	DATAFORM 奇妙的黏液蠢動著……
+	DATAFORM 冒險者反感地在黏液中掙扎著……
+	DATAFORM 冒險者發現自己無法逃離這些黏液……
+	DATAFORM 冒險者的身體被黏液纏住了，她高聲尖叫了起來……
+	DATAFORM 黏液將冒險者困住了……
+ENDDATA
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，將試圖入侵的黏液彈開了。
+	PRINTFORMW 黏液迷茫了一會兒，但馬上又發現了另一個突破口。
+	PRINTFORMW %SAVESTR:ARG%的嘴巴和肛門，被灌入了黏液。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:5 == 0
+	PRINTW 黏液殺到了冒險者的嘴巴里。
+	PRINTFORMW %SAVESTR:ARG%感覺呼吸困難，正掙扎著，突然呼吸又順暢了。但一部分的黏液已經藉機流入了她的內臟，從內部蹂躪著她。
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+ELSEIF RAND:4 == 0
+	PRINTW 黏液殺到了冒險者的肛門裡。
+	PRINTFORMW %SAVESTR:ARG%被肛門裡大量逆流的黏液弄的苦不堪言，但是四肢都被黏液牢牢控制，無法反抗。
+	IF CFLAG:ARG:131 > 5
+		;隷屬狀態
+		PRINTFORMW %SAVESTR:ARG%反弓起腰來、似乎沉浸於粘液的杠虐快感之中……
+	ELSEIF CFLAG:ARG:131 > 3
+		;強畏怖狀態
+		PRINTFORMW %SAVESTR:ARG%已然被粘液攻陷了……
+	ELSEIF CFLAG:ARG:131 > 0
+		;弱畏怖狀態
+		PRINTFORMW %SAVESTR:ARG%開始習慣被粘液涌入的感覺……
+	ELSE
+		PRINTW 冒險者在肛虐的痛苦中癲狂地慘叫著。
+	ENDIF
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+ELSEIF RAND:3 == 0
+	PRINTW 被全裸地四腳著地壓在地上，黏液逆流到肛門裡了。
+	PRINTFORMW %SAVESTR:ARG%腹部運勁，將黏液噴出肛門，但依然有大量的黏液流入體內。
+	PRINTFORML 恥情點數+{MON_NUM * 10}
+	PRINTFORML 屈服點數+{MON_NUM * 10}
+	JUEL:ARG:8 += MON_NUM * 10
+	JUEL:ARG:6 += MON_NUM * 10
+ELSEIF RAND:2 == 0
+	PRINTW 黏液瘋狂地凌辱著，大量的黏液灌入了直腸里讓冒險者的肚子都膨脹了幾分。
+	PRINTFORMW %SAVESTR:ARG%堅強地試圖站起來。
+	PRINTFORMW 但是大量的黏液一下子又從肛門裡洶涌地噴出來了，膝蓋一軟又跪倒在地。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	EXP:ARG:1 += MON_NUM
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+ELSE
+	PRINTW 冒險者被包在黏液里，只露出頭部發出嗚嗚的呻吟。
+	PRINTFORMW 看來沒人相救的話，%SAVESTR:ARG%要被消化在黏液里了。
+	PRINTFORMW 但黏液持續的愛撫著身體，可能也會讓她溶化在快感之中。
+	PRINTFORMW 黏液的麻痹成分，漸漸把%SAVESTR:ARG%遭受凌辱的苦痛身體治癒了。
+	BASE:ARG:0 += 100
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@INSECT_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 節肢動物在冒險者的脖子上打入了麻痹毒素。
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 節肢動物發出了喜悅的聲音、冒險者緩緩地擁向了甲殼…
+		DATAFORM 冒險者對感覺不到情感的節肢動物產生了情慾
+		DATAFORM 冒險者忘記了夥伴與使命、正任憑快樂遊走于全身
+		DATAFORM 冒險者輕輕地愛撫著、眼前灼灼而立的產卵管
+		DATAFORM 即使語言不通、節肢動物與冒險者之間也產生了無需言語的情愛
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 節肢動物發出了喜悅的聲音、冒險者脫力了似的靠了上去…
+		DATAFORM 冒險者對感覺不到情感的節肢動物產生了些許期待
+		DATAFORM 冒險者放棄了呼救的念頭、將腰拱了起來
+		DATAFORM 面對眼前灼灼而立的產卵管、冒險者滿臉通紅
+		DATAFORM 即使語言不通、節肢動物也牽手相吻了起來
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 0
+	;弱畏怖狀態
+	PRINTDATAW
+		DATAFORM 節肢動物的甲殼像在歡迎似的攢動著…
+		DATAFORM 冒險者對感覺不到情感的節肢動物的陵辱感到窒息
+		DATAFORM 冒險者放棄了呼救的念頭、獻上了身體
+		DATAFORM 面對眼前灼灼而立的產卵管、冒險者吞了吞口水
+		DATAFORM 即使語言不通、節肢動物的喜悅已一目瞭然
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 節肢動物用甲殼摩擦著。
+		DATAFORM 被節肢動物無情地凌辱著，冒險者非常害怕。
+		DATAFORM 冒險者拚命地呼救著，但節肢動物置若罔聞。
+		DATAFORM 節肢動物把輸卵管伸到冒險者面前。
+		DATAFORM 冒險者完全無法與對方交流，絕望了。
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTW 『嘰吱嘰吱嘰吱……』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，節肢動物無法入侵。
+	PRINTFORMW 它怒了，將輸卵管直接插入肛門裡。
+	PRINTFORMW %SAVESTR:ARG%因劇痛發出了淒厲的慘叫……
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	PRINTL 『嘰吱嘰吱嘰吱……』
+	PRINTFORML %SAVESTR:ARG%被節肢動物抓住，直接被輸卵管插入私處里。
+	PRINTL 她不斷地慘叫著，但節肢動物依舊毫不留情。
+	PRINTL 私處經驗+1
+	EXP:ARG:0 += 1
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:2 == 0
+	PRINTW 『嘰吱嘰吱嘰吱……』
+	PRINTFORMW %SAVESTR:ARG%的嘴巴被輸卵管插入了，被播下了卵。
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+
+ELSE
+	PRINTW 『嘰吱嘰吱嘰吱……』
+	PRINTFORMW %SAVESTR:ARG%的肛門被輸卵管插入了，被播下了卵。
+	PRINTW 不喝下打蟲藥劑的話，魔界的蟲子就會從肛門裡孵化了吧。
+	PRINTFORMW {MON_NUM}只節肢動物輪流撲在%SAVESTR:ARG%身上，從臀部到背部全被卵覆蓋了。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	EXP:ARG:1 += MON_NUM
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@IVY_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 植物用藤蔓搶走了冒險者的武器。
+	RETURN 0
+ENDIF
+
+PRINTDATAW
+	DATAFORM 藤蔓把冒險者纏住了。
+	DATAFORM 冒險者被藤蔓綁了起來。
+	DATAFORM 『吱吱吱吱…』
+	DATAFORM 藤蔓纏得很緊，冒險者不由地慘叫了起來。
+	DATAFORM 被藤蔓徹底包圍，冒險者變成了綠色的一團。
+ENDDATA
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，將試圖入侵的藤蔓燒燬。
+	PRINTFORMW 但是，本來就對純潔這東西沒概念的植物，
+	PRINTFORMW 把目標轉移到了%SAVESTR:ARG%的肛門……
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:2 == 0
+	PRINTW 藤蔓勒住了冒險者的脖子。
+	PRINTFORMW %SAVESTR:ARG%呼吸困難，痛苦掙扎著，被開放的時候，忍不住粗聲地喘息。
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+ELSE
+	PRINTW 藤蔓在冒險者的肛門裡紮根了。
+	PRINTFORMW %SAVESTR:ARG%的肛門被蹂躪著，發出了喊破喉嚨的慘叫聲。
+	PRINTW 藤蔓吸收到了足夠的養分，一下子從直腸里連根拔走。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@SYOKUSYU_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 冒險者的身體被觸手纏住了。
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 冒險者充滿愛意地撫摸著蠕動的觸手………
+		DATAFORM 冒險者滿眼期待地看著、形狀猥褻的觸手
+		DATAFORM 冒險者受觸手分泌的媚藥成分影響、已是口水鼻涕橫流的模樣了
+		DATAFORM 冒險者的身體被觸手緊縛著、冒險者不住地抽搐了起來……
+		DATAFORM 觸手將冒險者圍了起來、冒險者主動脫去了衣服誘惑著觸手
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 冒險者被形似男性生殖器的觸手頂著、臉漲得通紅
+		DATAFORM 觸手察覺到了逐漸放棄抵抗的冒險者、歡快地扭動了起來
+		DATAFORM 冒險者吸入了含有媚藥成分的香氣、感到股間濕了起來
+		DATAFORM 觸手將冒險者圍了起來、像是對並未企圖逃脫的冒險者困惑不已似的躁動了起來
+		DATAFORM 冒險者的身體被觸手緊縛著、非但沒有如同過去那般的抵抗、冒險者也只是稍稍地將臉朝向了別處
+		DATAFORM 冒險者在觸手跟前、丟下了自己的武器
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 奇怪的觸手，蠢動著……
+		DATAFORM 冒險者看著形狀下流的觸手，咒罵著自己的命運。
+		DATAFORM 冒險者被觸手分泌的媚藥成分弄得頭昏腦脹。
+		DATAFORM 冒險者的身體被觸手綁起來了。
+		DATAFORM 觸手將冒險者包住了。
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量保護著，觸手一摸上去，就發麻了。
+	PRINTFORMW 觸手放棄了，向次要目標進發。
+	PRINTFORMW %SAVESTR:ARG%的菊花，被強行撬開了。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:5 == 0
+	PRINTW 觸手伸進了冒險者的嘴巴里。
+	PRINTFORMW %SAVESTR:ARG%的喉嚨被大量的體液灌入，嗆到了。不久，她的意識開始模糊了。
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+ELSEIF RAND:4 == 0
+	PRINTW 觸手伸進了冒險者的肛門裡。
+	PRINTFORMW %SAVESTR:ARG%的肛門被大量的體液灌入，直腸吸收了裡面的成分。不久，她的意識開始模糊了。
+	PRINTW 不一會兒，全身肌肉都鬆弛了，大量的渾濁體液從肛門流出。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+ELSEIF RAND:3 == 0
+	PRINTW 仰面倒下的冒險者，正被觸手侵犯著私處。
+	PRINTFORMW %SAVESTR:ARG%不斷悲鳴著，但被大量的體液灌入私處后，開始半張著嘴流著口水，目光虛無地看著上方。
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+	EXP:ARG:0 += MON_NUM
+ELSEIF RAND:2 == 0
+	PRINTW 觸手把冒險者綁了起來，吊在半空。
+	PRINTFORMW %SAVESTR:ARG%的嘴巴也好，私處也好，肛門也好，能被觸手侵犯的地方都被灌入了大量的體液。
+	PRINTFORMW ……不久，地上滴落的液體里，開始出現了觸手體液之外的東西。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+ELSE
+	PRINTW 冒險者被觸手吸著乳頭，不斷的擠奶。
+	PRINTFORMW %SAVESTR:ARG%帶著難以置信的表情，感受著觸手的體液順著乳頭流入，最終融化到了腦髓里。
+	PRINTFORMW 不久之後她感到乳房發脹，觸手順勢開始了榨乳。
+	PRINTFORMW 不久之後，%SAVESTR:ARG%母乳開始無法抑制地從乳頭噴出。
+	PRINTFORML 噴奶經驗+1
+	EXP:ARG:54 += 1
+ENDIF
+PRINTFORMW 觸手經驗+{MON_NUM}
+EXP:ARG:55 += MON_NUM
+RETURN 0
+
+;--------------------------------------------
+@FAILY_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『下次再來玩啊～』
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 『小姐姐、還要再來呀』
+		DATAFORM 『從今以後、要一直一起玩哦！』
+		DATAFORM 『耶、小姐姐來啦！』
+		DATAFORM 『小姐姐、結婚吧♪』
+		DATAFORM 『小姐姐、壞得可真徹底呀』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 『小姐姐怎麼了嗎？』
+		DATAFORM 『又來一起玩了呀』
+		DATAFORM 『變得色情了啊、小姐姐♪』
+		DATAFORM 『又來了哇、小姐姐』
+		DATAFORM 『耶、又來玩了！』
+		DATAFORM 『稍微抵抗下、也可以喲？』
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『小姐姐，來做更Ｈ的事吧』
+		DATAFORM 『來啪啪啪！』
+		DATAFORM 『哇！新的玩具哦！』
+		DATAFORM 『這一次，讓小姐姐有全新感受哦！♪』
+		DATAFORM 『小姐姐的那裡，想看看呢！』
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 『所謂的冒險者真是牢不可破啊！』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，一摸上去，手都發麻了。
+	PRINTFORMW 妖精拿出了一根和自己身高相等的假陽具。
+	PRINTFORMW 『小姐姐來享受這邊的穴吧！』
+	PRINTFORMW %SAVESTR:ARG%的慘叫回響在洞窟里……
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	PRINTL 『小姐姐，要做我的肉便器嗎？』
+	PRINTFORML %SAVESTR:ARG%的陰蒂，被一隻妖精不停舔舐著。
+	PRINTFORML %SAVESTR:ARG%忍受著M字開腳的這份屈辱……
+	PRINTL 陰核點數+1
+	JUEL:ARG:0 += 10
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:2 == 0
+	PRINTW 『小姐姐的裡面，是什麼模樣呢？』
+	PRINTFORMW %SAVESTR:ARG%的私處被妖精鉆入了。妖精對她的反應感到相當有趣，不斷地玩弄著私處內的皺褶。
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 私處點數+{MON_NUM * 10}
+	EXP:ARG:0 += MON_NUM
+	JUEL:ARG:1 += MON_NUM * 10
+ELSE
+	PRINTW 『舔舔看！』
+	PRINTFORMW %SAVESTR:ARG%的陰蒂和兩乳頭都被妖精們舔舐著。
+	PRINTW 她的身體在妖精們的欺負下越發苦悶了。
+	PRINTFORML 陰核點數+{MON_NUM * 10}
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:0 += MON_NUM * 10
+	JUEL:ARG:5 += MON_NUM * 10
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@GIANT_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『呵呵，不行了嗎？』
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 『瓦全的　變成了　灰機杯了呀』
+		DATAFORM 『巨人肉棒的　形狀　幾住了哇』
+		DATAFORM 『嘿嘿　已經　淋亂不糠了啊』
+		DATAFORM 『已經　不是巨人陰莖　就沒滑　滿足　了嗎？』
+		DATAFORM 『和巨人肉棒　挺搭的　肉棒套子　嘛』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 『哈哈　熟絡起來了欸』
+		DATAFORM 『又壘了呀……灰機女人』
+		DATAFORM 『正愁呢　來得正好』
+		DATAFORM 『沒用的哦　向巨人　反抗啥的……』
+		DATAFORM 冒險者意識到了自己是無法抵抗巨人那壓倒性的體型的矮小種族……
+		DATAFORM 面對巨大雄性的體型、冒險者的武器從手中落下、呆呆地跪坐在地上
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『看起來值得凌辱一翻。』
+		DATAFORM 『忍不住了！』
+		DATAFORM 『屁股和那個穴，是相連的？』
+		DATAFORM 『要讓我滿足哦！』
+		DATAFORM 『真是太小啦！』
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 『你這傢伙，盡然被封印了』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，巨人無法打破。
+	PRINTFORMW 『尾指的話，應該能進去』
+	PRINTFORMW %SAVESTR:ARG%狹窄的肛門，被巨人粗壯的尾指捅入。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+	EXP:ARG:1 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+IF MON_NUM == 1
+	PRINTL 『喝下去哦』
+	PRINTFORML %SAVESTR:ARG%侍奉著一隻巨人，不過怎麼張嘴都吞不進巨人的陰莖，只能舔舐著。
+	PRINTL 絕頂了的巨人，把精液從頭到腳澆了她一身。
+	PRINTL 口交經驗+1
+	PRINTL 精液經驗+1
+	EXP:ARG:22 += 1
+	EXP:ARG:20 += 1
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:4 == 0
+	PRINTFORMW 『簡直就像洋娃娃一樣』
+	PRINTFORMW %SAVESTR:ARG%的腰被巨人抓著，用巨大的陰莖貫穿了。
+	PRINTFORMW 『喂！還要繼續的啊！』
+	
+	IF TALENT:ARG:41
+		;不懼疼痛
+		PRINTFORMW %SAVESTR:ARG%因為平時的訓練，勉強保留著意識。
+		PRINTFORMW 『不錯的聲音哦！來吧！』
+		PRINTFORMW %SAVESTR:ARG%痛苦得基本叫不出聲了，拚命地忍受著擴張。
+		PRINTFORML 恐怖點數+{MON_NUM * 10}
+		JUEL:ARG:10 += MON_NUM * 10
+		
+	ELSE
+		;その他
+		PRINTFORMW 經歷過最初的失禁以及失神之後，她已經不知道這是第幾個巨人了。
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	PRINTFORML 陰道擴張經驗+{MON_NUM}
+	PRINTFORML 異常經驗+1
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	EXP:ARG:50 += 1
+	EXP:ARG:53 += MON_NUM
+ELSEIF RAND:3 == 0
+	PRINTW 『快點啊！』
+	PRINTFORMW %SAVESTR:ARG%拚命地舔舐著巨人的陰莖。
+	PRINTW 她拚命地哀求著，請饒了她，不要玩壞她的性器和肛門。
+	PRINTFORMW 必須快點搞定這{MON_NUM}只巨人，不然不知道他們什麼時候會改變主意。
+	
+	IF TALENT:ARG:52
+		;擅用舌頭
+		PRINTW 『哦！小東西，你很擅長用舌頭嘛！』
+		PRINTFORMW %SAVESTR:ARG%拚命地用舌頭侍奉著，展現出天賦般的好技術。
+		PRINTFORMW 巨人被她靈活的舌頭弄射了，精液像噴泉一樣，從%SAVESTR:ARG%的頭頂淋到腳底。
+		MON_NUM *= 2
+	ENDIF
+	
+	PRINTFORML 口交經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:22 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+ELSEIF RAND:2 == 0
+	PRINTW 『哦！小東西，叫得不錯嘛！』
+	PRINTFORMW %SAVESTR:ARG%的肛門被巨人強行用陰莖貫穿，撕裂的痛楚讓她聲嘶力竭地慘叫著，暈了過去。肛門處流出了鮮血。
+	PRINTFORMW 『又一個壞掉了嗎？用點回復藥或許可以再來幾下。』
+	PRINTFORMW 插壞了的肛門，用了回覆藥之後被繼續玩弄著，直到滿足了所有{MON_NUM}只巨人為止……
+	
+	IF TALENT:ARG:34
+		;抵抗
+		PRINTFORMW %SAVESTR:ARG%竭盡全力地企圖爬走，但是被輕易地抓了回來。
+		PRINTFORMW 『喂！這裡有個想逃跑的！抓住她！』
+		PRINTFORMW %SAVESTR:ARG%被巨人抓著四肢，那不設防的肛門，又一次被巨人的巨根插入了……
+		PRINTFORML 恐怖點數+{MON_NUM * 10}
+		JUEL:ARG:10 += MON_NUM * 10
+		
+	ENDIF
+	
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	PRINTFORML 肛門擴張經驗+{MON_NUM}
+	PRINTFORML 異常經驗+1
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	EXP:ARG:50 += 1
+	EXP:ARG:53 += MON_NUM
+ELSE
+	PRINTW 『我想到好主意了』
+	PRINTFORMW 巨人們不知為何開始集體打飛機，集中射在巨大的水盆裡。
+	PRINTFORMW %SAVESTR:ARG%對未知狀況非常恐懼。
+	PRINTFORMW 巨人端著一大盆精液，對她說，
+	PRINTFORMW 『不想死的話，就全部喝光。』
+	PRINTFORMW %SAVESTR:ARG%臉上血色褪盡。
+	
+	IF TALENT:ARG:11
+		;反抗心
+		PRINTFORMW %SAVESTR:ARG%用冷淡的眼神瞪著巨人，表示不從。
+		PRINTFORMW 『看來還不明白啊！』
+		PRINTFORMW 巨人用巨大的手掌按著%SAVESTR:ARG%的頭，直接把頭按入水盆裡。
+		PRINTFORMW 「咕嚕，咕嚕，咕咕嚕」
+		PRINTFORMW 巨人把她的頭抓起來，那張滿臉精液的臉上，再也見不到反抗的意思了。
+		PRINTFORML 恐怖點數+{MON_NUM * 10}
+		JUEL:ARG:10 += MON_NUM * 10
+		
+	ENDIF
+	
+	PRINTFORML 精液經驗+{MON_NUM * 10}
+	EXP:ARG:20 += MON_NUM * 10
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@MAN_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『我饒你一命』
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 『已經、離不開我們了嗎』
+		DATAFORM 『嘿嘿、今兒也會好好疼你』
+		DATAFORM 『對黑暗世界、還習慣嗎』
+		DATAFORM 『又來被侵犯了嗎』
+		DATAFORM 『又來尋歡啊…不知道過去的自己見到現在這樣、會怎麼想啊？』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 『哦、又來啦』
+		DATAFORM 『怕不是故意輸掉的吧？』
+		DATAFORM 『這麼喜歡我們的肉棒嗎？』
+		DATAFORM 『真是心口不一』
+		DATAFORM 冒險者默默服從著魔族男人們的要求……
+		DATAFORM 魔族男人們、緩緩地向冒險者靠近、冒險者將目光撇到了一邊
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『真是好女人啊！』
+		DATAFORM 『真是喜歡啊！？』
+		DATAFORM 『小妹妹，歡迎來到黑暗的世界。』
+		DATAFORM 『別怨了，是你們先打下來的。』
+		DATAFORM 『有想過會變成這樣嗎？』
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 『笨女人，前面嚴防死守，後面卻全是破綻。』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量保護著，不過沒能堵住肛門。
+	PRINTFORMW 『來吧！讓菊花綻放！』
+	PRINTFORMW %SAVESTR:ARG%的肛門被插入了，不斷地被灌入了精液。
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	PRINTL 『如果作為肉便器被賣掉了話，我每晚都來抱你～』
+	PRINTFORML %SAVESTR:ARG%被魔族男人從后侵犯著。
+	PRINTL 她四肢著地趴在地上，臉貼著地板，隨著身後的抽插不停地哭泣。
+	PRINTL 私處經驗+1
+	PRINTL 精液經驗+1
+	EXP:ARG:0 += 1
+	EXP:ARG:20 += 1
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:5 == 0
+	IF TALENT:ARG:109
+		;貧乳
+		PRINTFORMW 『完全沒有胸嘛！屁股露出來，抬高點！』
+		PRINTFORMW %SAVESTR:ARG%露出了屈辱的神色，向魔族男人翹起了屁股。
+	
+	ELSE
+		PRINTW 『用胸部來…乳交你不知道？』
+	ENDIF
+	PRINTFORMW %SAVESTR:ARG%全裸地侍奉著獸人們的陰莖。只要喝掉所有{MON_NUM}個男人的精液的話，它們就答應不侵犯她的下體………
+	
+	IF TALENT:ARG:110 || TALENT:ARG:114|| TALENT:ARG:119
+		;巨乳・爆乳・超乳
+		PRINTFORMW 被%SAVESTR:ARG%傲人的豐滿胸部夾著，魔族男人們紛紛去了。
+		PRINTFORMW 『喔！真是一雙好乳房啊……陰莖專用的乳房！』
+		PRINTFORMW 胸部的觸感讓%SAVESTR:ARG%紅暈滿臉，低下了頭。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+		
+	ELSEIF TALENT:ARG:109
+		;貧乳
+		PRINTFORMW 『接下來用嘴！雞雞都被你弄髒了，弄乾凈！』
+		PRINTFORMW %SAVESTR:ARG%依照吩咐，用嘴巴侍奉著陰莖……
+	
+	ENDIF
+	PRINTFORML 口交經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:22 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+
+ELSEIF RAND:4 == 0
+	
+	PRINTFORMW %SAVESTR:ARG%被強行宣佈為肉便器，全身都被寫滿了淫穢的話語。
+	
+	;落書きの文字
+	PRINTFORM %SAVESTR:ARG%的身上，被寫著
+	IF TALENT:ARG:0
+		;處女
+		PRINT 【處女開通紀念】
+	ELSE
+		PRINT 【最喜歡陰莖】
+	ENDIF
+	
+	IF TALENT:ARG:22 || TALENT:ARG:21
+		;感情淡薄・冷漠
+		PRINT 【性冷淡便器】
+	ENDIF
+	
+	IF TALENT:ARG:24 || TALENT:ARG:30
+		;保守的・看重貞操
+		PRINT 【千金小姐便器出道】
+	ENDIF
+	
+	IF TALENT:ARG:42
+		;容易濕
+		PRINT 【又粘又濕】
+	ENDIF
+	
+	IF TALENT:ARG:70 || TALENT:ARG:73
+		;接受快感・容易陷落
+		PRINT 【愉悅的臉】
+	ENDIF
+	
+	IF TALENT:ARG:110 || TALENT:ARG:114|| TALENT:ARG:119
+		;巨乳・爆乳・超乳
+		PRINT 【乳牛】
+	ENDIF
+	
+	IF TALENT:ARG:121 || TALENT:ARG:122
+		;扶她・男人
+		PRINT 【有雞雞的奴隸】
+	ENDIF
+	
+	IF RAND:3 == 0
+		PRINT 【操我】
+	ELSEIF RAND:2 == 0
+		PRINT 【肛門免費】
+	ELSE
+		PRINT 【母豬】
+	ENDIF
+	
+	PRINTFORM 之類的話。
+	
+	PRINTFORMW 絡繹不絕的魔族男人，將嘴巴、私處、肛門等等地方都侵犯了，精液流得到處都是。
+	PRINTFORMW 當被最後一人抱著的時候，%SAVESTR:ARG%已經失去了任何表情，成為全身的穴都流出著精液的下流便器了。
+	PRINTFORMW 地下城裡，充斥著{MON_NUM}人份的精液和愛液的異樣臭味。魔族男人對原冒險者重產生為肉便器相當歡迎。
+	
+	;肌の色で分岐
+	IF TALENT:ARG:244
+		;惡魔肌膚
+		PRINTFORMW %SAVESTR:ARG%的藍色肌膚，被沾滿了精液……
+	ELSEIF TALENT:ARG:253
+		;褐色肌膚
+		PRINTFORMW %SAVESTR:ARG%健康的褐色肌膚，與白濁的精液形成鮮明又淫靡的對比……
+	ELSEIF TALENT:ARG:255
+		;白皙
+		PRINTFORMW %SAVESTR:ARG%美麗的白皙肌膚被精液玷污了……
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 口交經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:22 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	;初吻
+	SIF CFLAG:16 == -1
+		CFLAG:16 = 995
+ELSEIF RAND:3 == 0
+	PRINTW 『明明是冒險者，卻忍不住了嗎？』
+	PRINTFORMW %SAVESTR:ARG%的肛門被灌入了灌腸液，忍受著強烈的便意。
+	PRINTFORMW 『快點自慰！在漏出來之前自慰去了的話就帶你上廁所！』
+	PRINTFORMW %SAVESTR:ARG%拚命地自慰著，但是在這異常的狀況中，卻無法興奮起來。
+	PRINTFORMW 肛門裡的污物，終於無法忍耐地飛散而出。
+	PRINTFORMW 魔族男人們看到這樣，毫不留情地說著侮蔑的話，%SAVESTR:ARG%在這份屈辱中泣不成聲。
+	
+	IF TALENT:ARG:62
+		;反感污臭
+		PRINTFORMW %SAVESTR:ARG%因自己拉出的東西的味道而皺起眉頭，羞愧欲死。
+		PRINTFORML 苦痛點數+{MON_NUM * 10}
+		JUEL:ARG:9 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 恥情點數+{MON_NUM * 10}
+	PRINTFORML 屈服點數+{MON_NUM * 10}
+	PRINTL 自慰經驗+1
+	PRINTL 調教自慰經驗+1
+	JUEL:ARG:8 += MON_NUM * 10
+	JUEL:ARG:6 += MON_NUM * 10
+	EXP:ARG:10 += 1
+	EXP:ARG:11 += 1
+ELSEIF RAND:2 == 0
+	PRINTW 『那個冒險者大人，在舔我的肛門哦！』
+	PRINTFORMW %SAVESTR:ARG%以舔肛門為代價，獲得了魔族男人對於生命安全的保證。
+	PRINTFORMW 『你的尊嚴，真不值錢呢！』
+	PRINTFORMW %SAVESTR:ARG%拚命地侍奉著，聽到這話，心裡想死的心都有了，淚水在眼眶中打轉。
+	PRINTFORMW 侍奉結束之後，%SAVESTR:ARG%還被迫要說出淫穢的話語。她忍無可忍地大哭著，宣佈自己喜歡舔肛。
+	
+	IF TALENT:ARG:17
+		;低姿態
+		PRINTFORMW 自尊心低下的%SAVESTR:ARG%，拚命地說著自己是舔肛用奴隸。
+		Y += 10
+	ENDIF
+	
+	IF TALENT:ARG:62
+		;反感污臭
+		PRINTFORMW %SAVESTR:ARG%因為舔肛而噁心地吐了。
+		Y += 10
+	ENDIF
+	
+	PRINTFORML 苦痛點數+{MON_NUM * 10}
+	PRINTFORML 恐怖點數+{MON_NUM * 10}
+	JUEL:ARG:9 += MON_NUM * 10
+	JUEL:ARG:10 += MON_NUM * 10
+ELSE
+	PRINTW 『這個爲了保命就來者不拒的妓女！』
+	PRINTFORMW %SAVESTR:ARG%屁股翹起，用屈辱的姿勢承受著不知多少個魔族男人的肉棒。沐浴在他們的精液和罵聲之中。
+	PRINTFORMW 『說！說我是個相對於做冒險者，更喜歡做妓女的淫亂賤婊！』
+	PRINTFORMW %SAVESTR:ARG%在激烈的抽插中，不斷地重複著屈辱的臺詞。
+	
+	IF TALENT:ARG:17
+		;低姿態
+		PRINTFORMW %SAVESTR:ARG%拚命地重複著淫亂的話語乞求饒命，美麗的臉龐在恐懼和淫媚中扭曲了……
+		PRINTFORML 屈服點數+{MON_NUM * 10}
+		JUEL:ARG:6 += MON_NUM * 10
+	ENDIF
+	
+	IF ABL:ARG:21 > 0
+		;抖M氣質
+		PRINTFORMW 說著過激的言語，%SAVESTR:ARG%的心裡產生了情慾。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@GIRL_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	IF TALENT:ARG:100
+		;嬌小
+		IF RAND:3 == 0
+			PRINTW 『嘻嘻，真是好孩子呢』
+		ELSEIF RAND:2 == 0
+			PRINTW 『讓姐姐來教你一些好事！』
+		ELSE
+			PRINTW 『哎呀？勃起了么？』
+		ENDIF
+	ELSE
+		PRINTW 『可悲的人呢，勃起了么？』
+	ENDIF
+	
+	MON_NUM = E:(B + 99)
+	
+	IF MON_NUM == 1
+		;一人
+		PRINTFORMW 『獨佔你了！難道這是第一次？』
+		PRINTFORMW %SAVESTR:ARG%被魔界的女人口交著，
+		PRINTFORM 紫色的長舌頭，在%SAVESTR:ARG%的
+		IF TALENT:ARG:318 == 1
+			PRINT 巨根
+		ELSEIF TALENT:ARG:318 == 2
+			PRINT 短小包莖
+		ELSEIF TALENT:ARG:318 == 3
+			PRINT 包莖
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINT 馬陰莖
+		ELSE
+			;0もしくはイレギュラー
+			PRINT 陰莖
+		ENDIF
+		PRINTFORMW 上舔舐著，吸取著精氣。
+		IF TALENT:ARG:318 == 1
+			PRINTW 『好大，下巴都要脫落了♪』
+		ELSEIF TALENT:ARG:318 == 2
+			PRINTW 『冒險者大人的這裡，像小孩子一樣♪』
+		ELSEIF TALENT:ARG:318 == 3
+			PRINTW 『讓我幫你把包皮里的污垢弄乾凈吧』
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINTW 『呵呵，被誰改造的？』
+		ELSE
+			;0もしくはイレギュラー
+			PRINTW 『加油哦！不要一下子就射了哦♪』
+		ENDIF
+		PRINTFORML 恥情點數+{MON_NUM * 10}
+		PRINTFORML 屈服點數+{MON_NUM * 10}
+		PRINTFORML 絕頂經驗+{MON_NUM}
+		PRINTFORML 射精經驗+{MON_NUM}
+		
+		JUEL:ARG:8 += MON_NUM * 10
+		JUEL:ARG:6 += MON_NUM * 10
+		EXP:ARG:2 += MON_NUM
+		EXP:ARG:3 += MON_NUM
+		
+	ELSEIF RAND:3 == 0
+		PRINTFORMW 『大家一起來幫他含，一下就射的話，就要好好處罰你喔！』
+		PRINTFORMW %SAVESTR:ARG%被魔界的女人口交著，
+		PRINTFORM 紫色的長舌頭，在%SAVESTR:ARG%的
+		IF TALENT:ARG:318 == 1
+			PRINT 巨根
+		ELSEIF TALENT:ARG:318 == 2
+			PRINT 短小包莖
+		ELSEIF TALENT:ARG:318 == 3
+			PRINT 包莖
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINT 馬陰莖
+		ELSE
+			;0もしくはイレギュラー
+			PRINT 陰莖
+		ENDIF
+		PRINTFORMW 上舔舐著，吸取著精氣。
+		IF TALENT:ARG:318 == 1
+			PRINTW 『好大，下巴都要脫落了♪』
+		ELSEIF TALENT:ARG:318 == 2
+			PRINTW 『冒險者大人的這裡，小孩子一樣♪』
+		ELSEIF TALENT:ARG:318 == 3
+			PRINTW 『讓我幫你把包皮里的污垢弄乾凈吧』
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINTW 『呵呵，被誰改造的？』
+		ELSE
+			;0もしくはイレギュラー
+			PRINTW 『加油哦！不要一下子就射了哦♪』
+		ENDIF
+		
+		PRINTFORML 恥情點數+{MON_NUM * 10}
+		PRINTFORML 屈服點數+{MON_NUM * 10}
+		PRINTFORML 絕頂經驗+{MON_NUM}
+		PRINTFORML 射精經驗+{MON_NUM}
+		
+		JUEL:ARG:8 += MON_NUM * 10
+		JUEL:ARG:6 += MON_NUM * 10
+		EXP:ARG:2 += MON_NUM
+		EXP:ARG:3 += MON_NUM
+		
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 『讓魔界的女人來教你什麼才是女人的滋味……試過一次你就不會再想和你的同胞做的了。』
+		PRINTFORMW %SAVESTR:ARG%被魔界的女性跨坐在身上，吸取著精氣。
+		
+		IF TALENT:ARG:318 == 1
+			;巨根
+			PRINTW 『哎呀，好大♪』
+		ELSEIF TALENT:ARG:318 == 2
+			;短小包莖
+			PRINTW 『小的都不知道你進來了沒有……♪』
+		ELSEIF TALENT:ARG:318 == 4
+			;馬ペニス
+			PRINTW 『好，好厲害……好大，好棒』
+		ELSE
+			;普通・包莖
+			PRINTW 『加油哦！不要一下子就射了哦♪』
+		ENDIF
+		
+		PRINTFORML 恥情點數+{MON_NUM * 15}
+		PRINTFORML 屈服點數+{MON_NUM * 15}
+		PRINTFORML 性交經驗+{MON_NUM}
+		PRINTFORML 絕頂經驗+{MON_NUM}
+		PRINTFORML 射精經驗+{MON_NUM}
+		
+		JUEL:ARG:8 += MON_NUM * 15
+		JUEL:ARG:6 += MON_NUM * 15
+		EXP:ARG:5 += MON_NUM
+		EXP:ARG:2 += MON_NUM
+		EXP:ARG:3 += MON_NUM
+		
+	ELSE
+		PRINTFORMW 『胸部，味道好嗎？舔個沒完呢～』
+		PRINTFORMW %SAVESTR:ARG%被魔界的女性一邊餵奶，一邊被擼著。
+		PRINTFORM 紫色的手，溫柔地在%SAVESTR:ARG%的
+		IF TALENT:ARG:318 == 1
+			PRINT 巨根
+		ELSEIF TALENT:ARG:318 == 2
+			PRINT 短小包莖
+		ELSEIF TALENT:ARG:318 == 3
+			PRINT 包莖
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINT 馬陰莖
+		ELSE
+			;0もしくはイレギュラー
+			PRINT 陰莖
+		ENDIF
+		PRINTFORMW 上愛撫著。
+		IF TALENT:ARG:318 == 1
+			PRINTW 『好大啊……來享受快樂吧♪』
+		ELSEIF TALENT:ARG:318 == 2
+			PRINTW 『帶皮的短小雞雞♪變得黏糊糊的～』
+		ELSEIF TALENT:ARG:318 == 3
+			PRINTW 『幫你剝皮除垢哦～』
+		ELSEIF TALENT:ARG:318 == 4
+			;自然発生はしない
+			PRINTW 『呵呵，被誰改造的？』
+		ELSE
+			;0もしくはイレギュラー
+			PRINTW 『加油哦！不要一下子就射了哦♪』
+		ENDIF
+		
+		PRINTFORML 恥情點數+{MON_NUM * 5}
+		PRINTFORML 屈服點數+{MON_NUM * 15}
+		PRINTFORML 絕頂經驗+{MON_NUM}
+		PRINTFORML 射精經驗+{MON_NUM}
+		
+		JUEL:ARG:8 += MON_NUM * 5
+		JUEL:ARG:6 += MON_NUM * 15
+		EXP:ARG:2 += MON_NUM
+		EXP:ARG:3 += MON_NUM
+	ENDIF
+	
+	WAIT
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 『完全沉迷其中了呀』
+		DATAFORM 『歡迎光臨……呵呵、又來啦』
+		DATAFORM 『已經、忘不掉了對吧』
+		DATAFORM 『已經上癮了……對吧%UNICODE(0x2661) *1%』
+		DATAFORM 『小貓咪、歡迎到來%UNICODE(0x2661) *1%』
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 『哎呀、又來了呀』
+		DATAFORM 『故意輸的？　啊哈哈』
+		DATAFORM 『對暗黑世界、有興趣？』
+		DATAFORM 『好弱啊。認真的嗎？』
+		DATAFORM 冒險者默默服從著魔族女人們的要求……
+		DATAFORM 魔族女人們、緩緩地向冒險者靠近、冒險者將目光撇到了一邊
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『是異性戀也無所謂哦～』
+		DATAFORM 『這就讓你嚐嚐%UNICODE(0x2661) *1%』
+		DATAFORM 『在你壞掉之前可不會停哦』
+		DATAFORM 『你不知道？黑暗世界的女人，無論男女都不會放過哦！』
+		DATAFORM 『這就讓你的身體變得再也不需要男人吧』
+		DATAFORM 『因為同爲女性才知道全部舒服的地方啊』
+		DATAFORM 『讓你知道未嘗過的快樂～』
+		DATAFORM 『魔王大人，偶爾也會也想一個百合奴隸吧？』
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	IF RAND:2 == 0
+		IF RAND:2 == 0
+			PRINTFORMW 『真是較真。這樣的孩子反而容易覺醒後面的快感呢～』
+		ELSE
+			PRINT 『這邊的穴
+			IF RAND:2 == 0
+				PRINT 才有的
+			ELSE
+				PRINT 也有的
+			ENDIF
+			PRINTW 箇中滋味 好好感・受・吧』
+		ENDIF
+		
+		PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量保護著，不過沒能防住肛門。
+		IF RAND:2 == 0
+			PRINTFORMW 『放鬆一些。以後還會經常被這麼玩的啦～』
+		ELSE
+			PRINTW 『舒服的話就好好發出聲音來才好哦？』
+		ENDIF
+		PRINTFORMW %SAVESTR:ARG%肛門裡的皺褶，被魔族女性仔細地舔舐著。
+	ELSE
+		
+	ENDIF
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 肛門經驗+{MON_NUM * 5}
+	EXP:ARG:1 += MON_NUM * 5
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	IF RAND:3 == 0
+		PRINTL 『弄得好的話就好好獎勵你』
+	ELSEIF RAND:3 == 0
+		PRINTL 『那樣子弄，完全不舒服嘛』
+	ELSE
+		PRINTL 『再好好努力哦』
+	ENDIF
+	PRINTFORML %SAVESTR:ARG%被強迫著舔舐魔族女人的陰部。
+	PRINTL 她像狗一樣的趴在地上，拚命地侍奉著自己的女主人。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTL 百合經驗+1
+	EXP:ARG:40 += 1
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:5 == 0
+	PRINTW 『你的新職業就是舔舐奴隸了哦！原冒險者大人♪』
+	PRINTFORMW %SAVESTR:ARG%全裸著像狗一樣地侍奉著魔族女性，把全部{MON_NUM}人都舔滿足的話，就饒她一命。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 百合經驗+{MON_NUM}
+	EXP:ARG:40 += MON_NUM
+ELSEIF RAND:4 == 0
+	PRINTW 『哎呀，這麼粗的也沒問題嗎？』
+	PRINTFORMW %SAVESTR:ARG%成爲了魔族女人們的玩具，私處和肛門被插入了粗大的假陽具。
+	PRINTFORMW 空閑的嘴巴也被強行要求舔舐，愛液噴到了臉上。
+	PRINTFORMW 不知不覺間，大家都興奮了，就在外頭，以%SAVESTR:ARG%為中心開始了亂交派對。
+	PRINTFORMW %SAVESTR:ARG%和{MON_NUM}個魔族女孩肉體碰撞著，相互在對方身上貪求著快樂，愛液匯聚成了一小水潭。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 百合經驗+{MON_NUM}
+	EXP:ARG:40 += MON_NUM
+	EXP:ARG:0 += MON_NUM
+	EXP:ARG:1 += MON_NUM
+ELSEIF RAND:3 == 0
+	PRINTW 『想尿尿了呢～』
+	PRINTFORMW %SAVESTR:ARG%有討厭的預感。
+	PRINTFORMW 『對了，要把我的尿喝光哦！不然不會放過你的。要是灑出來了，從今往後就把你當成女子便器了哦♪』
+	PRINTFORMW %SAVESTR:ARG%的嘴巴被魔族女性壓在陰部處，對著臉撒起尿來。
+	PRINTFORMW 尿液無情地從嘴裡不斷灌入……
+	PRINTFORMW 魔族女人們，看著一邊哭泣一邊喝尿的%SAVESTR:ARG%笑了。不斷用侮辱的語言刺激著她。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 恥情點數+{MON_NUM * 10}
+	PRINTFORML 屈服點數+{MON_NUM * 10}
+	PRINTFORML 百合經驗+{MON_NUM}
+	EXP:ARG:40 += MON_NUM
+	JUEL:ARG:8 += MON_NUM * 10
+	JUEL:ARG:6 += MON_NUM * 10
+ELSEIF RAND:2 == 0
+	PRINTW 『快點，在大家面前自慰哦！』
+	PRINTFORMW %SAVESTR:ARG%在眾目睽睽之下被迫自慰著。
+	PRINTFORMW 『這樣的自慰可是女人的專利哦。從今往後就當百合奴隸吧，原冒險者大人♪』
+	PRINTFORMW %SAVESTR:ARG%的周圍，魔族女孩們正以奇妙的方式交合著。
+	PRINTFORMW 在她感覺自己性癖都在扭曲的時候，魔族女孩們高潮了。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 恥情點數+{MON_NUM * 10}
+	PRINTFORML 屈服點數+{MON_NUM * 10}
+	PRINTL 自慰經驗+1
+	PRINTL 調教自慰經驗+1
+	PRINTL 絕頂經驗+1
+	PRINTFORML 百合經驗+{MON_NUM}
+	EXP:ARG:40 += MON_NUM
+	JUEL:ARG:8 += MON_NUM * 10
+	JUEL:ARG:6 += MON_NUM * 10
+	EXP:ARG:10 += 1
+	EXP:ARG:11 += 1
+	EXP:ARG:2 += 1
+ELSE
+	PRINTW 『也想強姦一次女人呢～♪』
+	PRINTFORMW %SAVESTR:ARG%的屁股被抬高，以屈辱的姿態，迎接著身後假陽具的激烈抽插。
+	PRINTFORMW 『哈哈～好姐妹啊～被女人侵犯，興奮起來了嗎？』
+	PRINTFORMW %SAVESTR:ARG%被女人侵犯著，在這異常的性愛中，心裡有什麼萌芽了。
+	
+	IF ABL:ARG:22 > 0 || TALENT:ARG:81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:ARG%為心中萌發的感情而感到興奮……
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 私處經驗+{MON_NUM}
+	EXP:ARG:0 += MON_NUM
+	PRINTFORML 百合經驗+{MON_NUM}
+	EXP:ARG:40 += MON_NUM
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@BEAST_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『咕嚕咕嚕嚕』
+	RETURN 0
+ENDIF
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 冒險者從魔獸的發臭的氣息中感受到了愛意
+		DATAFORM 魔獸慢慢地靠近了冒險者、爬到了土下座著的冒險者身上……
+		DATAFORM 冒險者對逐漸熟悉了與獸相交的自己驚詫不已
+		DATAFORM 被魔獸的眼睛凝視著、冒險者只能伏下身子、將腰抬了起來
+		DATAFORM 冒險者已經無法從野獸粗暴的交尾中、脫身了……
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 冒險者漸漸習慣了魔獸的發臭的氣息……
+		DATAFORM 魔獸靜靜的、像確認什麼似的盯著冒險者
+		DATAFORM 冒險者這次也在與魔獸交尾的想像中、感受著奇妙的背德感
+		DATAFORM 魔獸的眼睛、像是在期待著什麼似的、漸漸被慾望的顏色扭曲了
+		DATAFORM 冒險者想起了幾次獸交的經歷、股間濕了起來……
+		DATAFORM 魔獸靜靜的靠近冒險者、冷眼下看著一蹶不振的冒險者
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『咕嚕咕嚕嚕』
+		DATAFORM 冒險者吃不消野獸的臭味。
+		DATAFORM 冒險者還未能接受自己被野獸撲倒的事實。
+		DATAFORM 『嘎哦～嗚～～』
+		DATAFORM 冒險者因野獸的粗暴而感到恐懼。
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 『噢！』
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量守衛著，魔獸轉而尋找其它洞穴。
+	PRINTFORMW 「啊！嗚！不要啊……啊啊啊！」
+	PRINTFORMW %SAVESTR:ARG%的肛門被野獸的陰莖蹂躪了……
+	
+	IF TALENT:ARG:314 == 2
+		;人狼
+		PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和野獸做愛……
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	PRINTFORMW 獸姦經驗+{MON_NUM}
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	EXP:ARG:56 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	PRINTW 野獸壓在冒險者的身上。
+	PRINTFORMW %SAVESTR:ARG%的私處被野獸野蠻地侵犯了，高聲尖叫著。
+	PRINTW 不一會兒，野獸在她體內射出了精液……
+	
+	IF TALENT:ARG:314 == 2
+		;人狼
+		PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和野獸做愛……
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTW 私處經驗+1
+	EXP:ARG:0 += 1
+	PRINTFORMW 獸姦經驗+1
+	EXP:ARG:56 += 1
+	WAIT
+	RETURN 0
+ENDIF
+
+PRINTW 野獸們，開始輪番獸姦冒險者。
+PRINTFORMW %SAVESTR:ARG%無法面對自己被野獸輪姦的事實，保持著母狗的姿態，呆若木雞……
+
+IF TALENT:ARG:314 == 2
+	;人狼
+	PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和野獸做愛……
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+ENDIF
+
+PRINTFORML 苦痛點數+{MON_NUM * 10}
+PRINTFORML 恐怖點數+{MON_NUM * 10}
+PRINTFORML 私處經驗+{MON_NUM}
+EXP:ARG:0 += MON_NUM
+JUEL:ARG:9 += MON_NUM * 10
+JUEL:ARG:10 += MON_NUM * 10
+PRINTFORMW 獸姦經驗+{MON_NUM}
+EXP:ARG:56 += MON_NUM
+RETURN 0
+
+;--------------------------------------------
+@BRAIN_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 冒險者拚命地乞求著饒命。
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 冒險者幾經食腦魔腦改造后、不僅不抵抗了、還滿是媚態地糾纏在一起……
+		DATAFORM 食腦魔在媚態的食糧跟前、發出了奇妙的笑聲
+		DATAFORM 冒險者沉浸在大腦在改造所致的異次元的快樂中、空洞的雙眼裡閃爍著期待的神色……
+		DATAFORM 食腦魔舔了舔舌頭。看來這份食糧、給它帶來了捕食的喜悅
+		DATAFORM 冒險者對即將開始的異次元的快樂興奮不已、甚至已經失禁了
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 冒險者在食腦魔的腦改造后、逐漸感到習慣了……
+		DATAFORM 食腦魔在玩壞了的食糧跟前、發出了令人不寒而慄的笑聲
+		DATAFORM 冒險者感到自己的大腦、已經到達了無可挽回的地步
+		DATAFORM 食腦魔在戰慄的食糧跟前、舔了舔舌頭。冒險者默默地看著這一切……
+		DATAFORM 冒險者想起了食腦魔所帶來的異次元地快樂、咬緊了牙關……
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 冒險者對食腦魔早有耳聞，嚇得屁滾尿流了。
+		DATAFORM 冒險者狂亂地掙扎著，企圖逃避食腦魔。
+		DATAFORM 冒險者拚命地乞求著饒命。
+		DATAFORM 冒險者直接精神崩潰，癡癡地笑著。
+		DATAFORM 冒險者因為過度的恐懼而失禁了。
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 食腦魔咬住冒險者的頭，開始支配她的精神。
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量保護著，不過食腦魔對這些事完全沒興趣。
+	PRINTFORMW 「啊…啊…啊…啊…啊……」
+	PRINTFORMW %SAVESTR:ARG%眼珠上翻，伸出舌頭，脫糞了。
+	PRINTFORML 肛門經驗+{MON_NUM * 10}
+	EXP:ARG:1 += MON_NUM * 10
+	WAIT
+	RETURN 0
+ENDIF
+
+
+IF MON_NUM == 1
+	PRINTL 「啊…啊…啊……嗚，喔！……啊……」
+	PRINTFORML %SAVESTR:ARG%的頭蓋骨被食腦魔用堅硬的觸手貫通了，開始直接吸啜腦髓。
+	PRINTL 她的四肢狂亂地揮動，失禁，死掉了……
+	BASE:ARG:0 = 0
+	PRINTFORML 異常經驗+1
+	EXP:ARG:50 += 1
+	WAIT
+	RETURN 0
+ENDIF
+
+IF RAND:40 == 0
+	PRINTL 「啊…啊…啊……嗚，喔！……啊……」
+	PRINTFORML %SAVESTR:ARG%的頭蓋骨被食腦魔用堅硬的觸手貫通了，開始直接吸啜腦髓。
+	PRINTL 她的四肢狂亂地揮動，失禁，死掉了……
+	BASE:ARG:0 = 0
+	PRINTFORML 異常經驗+1
+	EXP:ARG:50 += 1
+ELSE
+	PRINTW 食腦魔的觸手纏繞著冒險者，她死命地掙扎，卻無法掙脫。
+	PRINTFORMW 食腦魔的觸手，直接突入到%SAVESTR:ARG%的腦子裡，往腦髓注入媚藥成分。
+	PRINTFORMW %SAVESTR:ARG%被過度的快感弄失禁了，成了廢人。
+	PRINTFORMW 幸好，軀幹還是完好的。
+	PRINTFORML 異常經驗+1
+	EXP:ARG:50 += 1
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@HORSE_RYOU(ARG)
+#DIM MON_NUM
+;--------------------------------------------
+
+;男人の場合
+IF TALENT:ARG:122
+	PRINTW 『唔哦哦！』
+	RETURN 0
+ENDIF
+
+IF CFLAG:ARG:131 > 5
+	;隷屬狀態
+	PRINTDATAW
+		DATAFORM 冒險者不僅不再抵抗與馬的交尾、甚至帶著期待的眼神伸手觸控著馬的陰莖……
+		DATAFORM 馬湊近了敗倒的冒險者、將勃起的陰莖伸到了眼前
+		DATAFORM 冒險者意識到了自己變得毫不牴觸與馬相交的事實、露出了令人作嘔的笑容……
+		DATAFORM 馬粗暴地對待冒險者、冒險者也好不掙扎的接受了……
+		DATAFORM 冒險者對馬的粗暴行徑、在心中感到了一絲悸動……
+	ENDDATA
+ELSEIF CFLAG:ARG:131 > 3
+
+	;強畏怖狀態
+	PRINTDATAW
+		DATAFORM 冒險者放棄了抵抗、輕輕戳了戳勃起的馬陰莖……
+		DATAFORM 馬看著放棄抵抗的冒險者、輕蔑地笑了起來
+		DATAFORM 冒險者回想起與馬相交的自己、驚詫不已
+		DATAFORM 馬大聲嘶吼著、冒險者膽怯不已、手中的武器落在了地上……
+		DATAFORM 冒險者腦中銘刻下了馬的粗暴行徑、變得無法抵抗了……
+	ENDDATA
+ELSE
+	PRINTDATAW
+		DATAFORM 『唔哦哦！』
+		DATAFORM 冒險者吃不消馬的臭味。
+		DATAFORM 冒險者還未能接受自己被馬撲倒的事實。
+		DATAFORM 『吁！』
+		DATAFORM 冒險者因馬的粗暴而感到恐懼。
+	ENDDATA
+ENDIF
+
+MON_NUM = E:(B + 99)
+
+IF TALENT:ARG:273
+	;處女封印
+	PRINTFORMW 養馬人給馬的陰莖施加了縮小的魔法，讓它變小至適應肛門的大小。
+	PRINTFORMW %SAVESTR:ARG%的純潔被神聖力量保護著，不過沒能防住肛門。
+	PRINTFORMW 『你很有素質嘛～看在這個份上，就用魔法讓你好受些。』
+	PRINTFORMW %SAVESTR:ARG%不得不用肛門承受著獸姦……
+	
+	IF TALENT:ARG:314 == 2
+		;人狼
+		PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和馬做愛……
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 肛門經驗+{MON_NUM}
+	PRINTFORML 精液經驗+{MON_NUM}
+	PRINTFORMW 獸姦經驗+{MON_NUM}
+	EXP:ARG:1 += MON_NUM
+	EXP:ARG:20 += MON_NUM
+	EXP:ARG:56 += MON_NUM
+	WAIT
+	RETURN 0
+ENDIF
+
+IF MON_NUM == 1
+	PRINTW 馬壓在冒險者的身上。
+	PRINTFORMW %SAVESTR:ARG%的私處被馬野蠻地侵犯了，高聲尖叫著。
+	PRINTW 不一會兒，馬在她體內射出了精液……
+	
+	IF TALENT:ARG:314 == 2
+		;人狼
+		PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和馬做愛……
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:ARG:5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTW 私處經驗+1
+	EXP:ARG:0 += 1
+	PRINTFORMW 獸姦經驗+1
+	EXP:ARG:56 += 1
+	RETURN 0
+ENDIF
+
+PRINTW 好幾匹馬，開始輪番獸姦冒險者。
+PRINTFORMW %SAVESTR:ARG%無法面對自己被馬輪姦的事實，保持著母狗的姿態，呆若木雞……
+
+IF TALENT:ARG:314 == 2
+	;人狼
+	PRINTFORMW 身為狼人的%SAVESTR:ARG%貌似不太反感和馬做愛……
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:ARG:5 += MON_NUM * 10
+ENDIF
+
+PRINTFORML 苦痛點數+{MON_NUM * 10}
+PRINTFORML 恐怖點數+{MON_NUM * 10}
+PRINTFORML 私處經驗+{MON_NUM}
+EXP:ARG:0 += MON_NUM
+JUEL:ARG:9 += MON_NUM * 10
+JUEL:ARG:10 += MON_NUM * 10
+PRINTFORMW 獸姦經驗+{MON_NUM}
+EXP:ARG:56 += MON_NUM
+RETURN 0
+
+
+
+
+
+
+
+
+
+
+;--------------------------------------------
+@PC_RYOU, ARG:0, ARG:1
+#DIM MON_NUM
+;ARG:0 = 魔王側
+;ARG:1 = 勇者側
+;ＰＣ陵辱
+;--------------------------------------------
+PRINTL  
+DRAWLINE
+PRINTL  
+
+PRINTL [0] - 旁觀凌辱
+PRINTL [1] - 不要凌辱
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= 2
+	GOTO INPUT_LOOP
+ENDIF
+SIF RESULT == 1
+	RETURN 0
+
+;武器チェック
+W:0 = CFLAG:(ARG:0):550
+;素手の場合劍を裝備
+IF W:0 <= 0
+	W:0 = 40
+	CFLAG:(ARG:0):550 = W:0
+ENDIF
+CALL EQUIP_DATABASE
+Y = 10
+;武器分岐
+IF W:1 == 49
+	;觸手
+	PRINTFORMW %SAVESTR:(ARG:0)%用觸手把%SAVESTR:(ARG:1)%綁了起來。
+	
+	IF TALENT:(ARG:1):273
+		;處女封印
+		PRINTFORMW %SAVESTR:(ARG:1)%的純潔被神聖力量保護著，不過沒能防住肛門。
+		PRINTFORMW %SAVESTR:(ARG:0)%操縱著油膩膩的觸手，開始侵犯%SAVESTR:(ARG:1)%的肛門……
+		
+		IF ABL:(ARG:1):22 > 0 || TALENT:(ARG:1):81
+			;百合氣質・雙性戀
+			PRINTFORMW %SAVESTR:(ARG:1)%感到心中有什麼在蠢動著。
+			PRINTFORML 欲情點數+{MON_NUM * 10}
+			JUEL:(ARG:1):5 += MON_NUM * 10
+		ENDIF
+		
+		PRINTFORML 肛門經驗+10
+		PRINTFORML 苦痛點數+80
+		PRINTFORML 恐怖點數+80
+		PRINTFORML 百合經驗+5
+		PRINTFORML 觸手經驗+1
+		EXP:(ARG:1):1 += 10
+		JUEL:(ARG:1):9 += 80
+		JUEL:(ARG:1):10 += 80
+		EXP:(ARG:0):40 += 5
+		EXP:(ARG:1):40 += 5
+		EXP:(ARG:1):55 += 1
+		WAIT
+		RETURN 0
+	ENDIF
+	
+	PRINTFORMW 無法動彈的%SAVESTR:(ARG:1)%被吊在半空中。
+	PRINTFORMW %SAVESTR:(ARG:0)%用兇惡的觸手，捅入了%SAVESTR:(ARG:1)%的私處里……
+	
+	IF ABL:(ARG:1):22 > 0 || TALENT:(ARG:1):81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:(ARG:1)%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:(ARG:1):5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 苦痛點數+80
+	PRINTFORML 恐怖點數+80
+	PRINTFORML 百合經驗+1
+	PRINTFORML 私處經驗+10
+	PRINTFORML 觸手經驗+1
+	EXP:(ARG:1):0 += 10
+	EXP:(ARG:0):40 += 1
+	EXP:(ARG:1):40 += 1
+	JUEL:(ARG:1):9 += 80
+	JUEL:(ARG:1):10 += 80
+	EXP:(ARG:1):55 += 1
+	IF EXP:(ARG:1):0 > 0 && TALENT:(ARG:1):0 == 1
+		TALENT:(ARG:1):0 = 0
+		PRINTL 【處女喪失】
+		;初體験の相手を記録（初期値が0のため、+1して記録）
+		CFLAG:(ARG:1):15 = NO:(ARG:0) + 1
+		CSTR:(ARG:1):3 = %SAVESTR:(ARG:0)%
+	ENDIF
+	
+	WAIT
+	RETURN 0
+	
+ENDIF
+
+IF RAND:5 == 0
+	PRINTFORMW %SAVESTR:(ARG:0)%看著%SAVESTR:(ARG:1)%，開始舔舐她的身體。
+ELSEIF RAND:4 == 0
+	PRINTFORMW %SAVESTR:(ARG:0)%像對食物一樣，用舌頭撥弄%SAVESTR:(ARG:1)%。
+ELSEIF RAND:3 == 0
+	PRINTFORMW %SAVESTR:(ARG:0)%對%SAVESTR:(ARG:1)%愛撫著。
+ELSEIF RAND:2 == 0
+	PRINTFORMW %SAVESTR:(ARG:0)%讓%SAVESTR:(ARG:1)%跪下。
+ELSE
+	PRINTFORMW %SAVESTR:(ARG:0)%讓%SAVESTR:(ARG:1)%擺出母狗一樣的姿勢。
+ENDIF
+CALL MONSTER_DATA
+
+
+
+
+IF TALENT:(ARG:1):273
+	;處女封印
+	PRINTFORMW %SAVESTR:(ARG:1)%的純潔被神聖力量保護著，不過沒能堵住肛門。
+	PRINTFORMW %SAVESTR:(ARG:0)%拿出假陽具，開始侵犯%SAVESTR:(ARG:1)%的肛門……
+	
+	IF ABL:(ARG:1):22 > 0 || TALENT:(ARG:1):81
+		;百合氣質・雙性戀
+		PRINTFORMW %SAVESTR:(ARG:1)%感到心中有什麼在蠢動著。
+		PRINTFORML 欲情點數+{MON_NUM * 10}
+		JUEL:(ARG:1):5 += MON_NUM * 10
+	ENDIF
+	
+	PRINTFORML 肛門經驗+10
+	PRINTFORML 苦痛點數+50
+	PRINTFORML 恐怖點數+50
+	PRINTFORML 百合經驗+5
+	EXP:(ARG:1):1 += 10
+	JUEL:(ARG:1):9 += 50
+	JUEL:(ARG:1):10 += 50
+	EXP:(ARG:0):40 += 5
+	EXP:(ARG:1):40 += 5
+	WAIT
+	RETURN 0
+ENDIF
+
+REPEAT 3
+	IF RAND:7 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%強迫%SAVESTR:(ARG:1)%舔她，
+		PRINTFORMW %SAVESTR:(ARG:1)%全裸地像狗一樣趴跪舔舐著，
+		PRINTFORMW 對舌頭的動作不滿意，%SAVESTR:(ARG:0)%直接抓著冒險者的頭，用性器摩擦她的臉來取樂。
+		
+		IF TALENT:(ARG:1):11
+			;反抗心
+			PRINTFORMW %SAVESTR:(ARG:1)%用反抗的目光瞪著%SAVESTR:(ARG:0)%，不過考慮到生命安危，還是服從了。
+		ELSEIF TALENT:(ARG:1):17
+			;低姿態
+			PRINTFORMW %SAVESTR:(ARG:1)%謙卑地用狗一樣的神態舔舐著%SAVESTR:(ARG:0)%的私處。
+		ENDIF
+		
+		PRINTFORML 百合經驗+1
+		EXP:(ARG:0):40 += 1
+		EXP:(ARG:1):40 += 1
+	ELSEIF RAND:6 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%拿來小臂般粗的巨型假陽具。
+		PRINTFORMW %SAVESTR:(ARG:1)%的前後兩穴都被巨型假陽具插入了，%SAVESTR:(ARG:0)%用手撫摸著入口周邊。
+		PRINTFORMW 被污物及愛液弄髒了的巨型假陽具，%SAVESTR:(ARG:1)%還被要求用舌頭漂亮地清潔乾淨。
+		
+		IF TALENT:(ARG:1):12
+			;剛強
+			PRINTFORMW %SAVESTR:(ARG:1)%咬牙切齒忍受著屈辱。
+		ELSEIF TALENT:(ARG:1):26
+			;悲觀的
+			PRINTFORMW %SAVESTR:(ARG:1)%眼中含淚，不斷重複著謝罪的話語。
+		ENDIF
+		
+		PRINTFORML 私處經驗+10
+		PRINTFORML 肛門經驗+10
+		PRINTFORML 百合經驗+1
+		EXP:(ARG:0):40 += 1
+		EXP:(ARG:1):40 += 1
+		EXP:(ARG:1):0 += 10
+		EXP:(ARG:1):1 += 10
+		IF EXP:(ARG:1):0 > 0 && TALENT:(ARG:1):0 == 1
+			TALENT:(ARG:1):0 = 0
+			PRINTL 【處女喪失】
+			CFLAG:(ARG:1):15 = 101
+		ENDIF
+	ELSEIF RAND:5 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%叫來了打雜的獸人們，站成一排。
+		PRINTFORMW %SAVESTR:(ARG:1)%被下了用嘴滿足全員的命令。
+		PRINTFORMW 然後，%SAVESTR:(ARG:1)%全裸地四肢著地侍奉著。
+		IF TALENT:(ARG:0):121 == 1
+			PRINTFORMW 之後，被從后侵犯了，自己的陰莖也老實地勃起。
+		ELSE
+			PRINTFORMW 之後，被從后侵犯了。
+		ENDIF
+		PRINTFORMW %SAVESTR:(ARG:1)%承受著來自私處的刺激繼續侍奉著，獸人們則毫不留情地藉機辱罵著她。
+		PRINTFORMW 『哈哈，%SAVESTR:(ARG:0)%大人，下次還有這種樂子也要叫上咱們啊！喂！再認真點！！』
+		
+		IF TALENT:(ARG:1):13
+			;坦率
+			PRINTFORMW %SAVESTR:(ARG:1)%老實地遵循著命令，舔舐著獸人們骯髒的陰莖。
+		ELSEIF TALENT:(ARG:1):62
+			;反感污臭
+			PRINTFORMW 嗅覺靈敏的%SAVESTR:(ARG:1)%有意無意地迴避著獸人骯髒的陰莖，又被罵了。
+		ENDIF
+		
+		PRINTFORML 恥情點數+100
+		PRINTFORML 屈服點數+100
+		PRINTFORML 百合經驗+1
+		PRINTFORML 口交經驗+10
+		PRINTFORML 精液經驗+10
+		PRINTFORML 私處經驗+10
+		EXP:(ARG:1):0 += 10
+		EXP:(ARG:0):40 += 1
+		EXP:(ARG:1):40 += 1
+		EXP:(ARG:1):20 += 10
+		EXP:(ARG:1):22 += 10
+		JUEL:(ARG:1):8 += 100
+		JUEL:(ARG:1):6 += 100
+		;初吻
+		SIF CFLAG:16 == -1
+			CFLAG:16 = 995
+		IF EXP:(ARG:1):0 > 0 && TALENT:(ARG:1):0 == 1
+			TALENT:(ARG:1):0 = 0
+			PRINTL 【處女喪失】
+			;初體験の相手を記録（初期値が0のため、+1して記録）
+			CFLAG:(ARG:1):15 = NO:(ARG:0) + 1
+			CSTR:(ARG:1):3 = %SAVESTR:(ARG:0)%
+		ENDIF
+
+	ELSEIF RAND:4 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%叫來了手下。
+		IF TALENT:(ARG:0):121 == 1
+			PRINTFORMW %SAVESTR:(ARG:1)%的肛門，被陰莖用背面座位侵犯著，自己的陰莖也老 實地勃起了。
+		ELSE
+			PRINTFORMW %SAVESTR:(ARG:1)%的肛門，被陰莖用背面座位侵犯著。
+		ENDIF
+		PRINTFORMW 在這種情況下，被下達了當眾自慰的命令。
+		
+		IF TALENT:(ARG:1):35
+			;害羞
+			PRINTFORMW %SAVESTR:(ARG:1)%面紅耳赤，迴避了大家的熾熱視線，開始自慰了。
+		ELSEIF TALENT:(ARG:1):60
+			;容易自慰
+			PRINTFORMW %SAVESTR:(ARG:1)%沒怎麼抵抗就開始自慰了，拚命地反覆求饒著。
+		ENDIF
+		
+		PRINTFORML 恥情點數+200
+		PRINTFORML 屈服點數+200
+		PRINTL 自慰經驗+1
+		PRINTL 調教自慰經驗+1
+		PRINTFORML 百合經驗+1
+		PRINTFORML 肛門經驗+10
+		EXP:(ARG:0):40 += 1
+		EXP:(ARG:1):40 += 1
+		EXP:(ARG:1):1 += 10
+		JUEL:(ARG:1):8 += 200
+		JUEL:(ARG:1):6 += 200
+		EXP:(ARG:1):10 += 1
+		EXP:(ARG:1):11 += 1
+	ELSEIF RAND:3 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%抓住%SAVESTR:(ARG:1)%的頭髮，
+		IF TALENT:(ARG:0):121 == 1
+			PRINTFORMW 將她的臉強行壓到自己的陰莖上。
+		ELSE
+			PRINTFORMW 將她的臉強行壓到自己的陰部上。
+		ENDIF
+		
+		IF TALENT:(ARG:1):11
+			;反抗心
+			PRINTFORMW %SAVESTR:(ARG:1)%用反抗的目光瞪著%SAVESTR:(ARG:0)%，不過考慮到生命安危，還是服從了。
+		ELSEIF TALENT:(ARG:1):17
+			;低姿態
+			PRINTFORML %SAVESTR:(ARG:1)%謙卑地用狗一樣的神態舔舐著%SAVESTR:(ARG:0)%的
+			IF TALENT:(ARG:0):121 == 1
+				PRINT 陰莖
+			ELSE
+				PRINT 私處
+			ENDIF
+			PRINTFORMW 。
+		ENDIF
+		
+		PRINTFORML 恥情點數+150
+		PRINTFORML 屈服點數+150
+		PRINTFORML 百合經驗+1
+		
+		IF TALENT:(ARG:0):121 == 1
+			PRINTFORML 口交經驗+10
+			PRINTFORML 精液經驗+10
+			EXP:(ARG:1):20 += 10
+			EXP:(ARG:1):22 += 10
+		ENDIF
+		
+		JUEL:(ARG:1):8 += 150
+		JUEL:(ARG:1):6 += 150
+		EXP:(ARG:0):40 += 1
+		EXP:(ARG:1):40 += 1
+	ELSEIF RAND:2 == 0
+		PRINTFORMW %SAVESTR:(ARG:0)%用繩子將%SAVESTR:(ARG:1)%緊緊捆住
+		IF RAND:3 == 0
+			PRINTFORM 向伏在地上的%SAVESTR:(ARG:1)%的背上
+			IF RAND:2 == 0
+				PRINTFORMW 用鞭子不停地抽打著、
+				PRINTFORMW 在%SAVESTR:(ARG:1)%的背上留下了數道血痕
+			ELSE
+				PRINTFORMW 將點燃的蠟燭傾倒了上去
+				PRINTFORMW 過熱的刺痛讓%SAVESTR:(ARG:1)%的身體不住地抽搐著、身上更是被滴上了更多的蠟
+			ENDIF
+			PRINTFORML 恥情點數+200
+			PRINTFORML 屈服點數+200
+			PRINTFORML 緊縛經驗+5
+			PRINTFORML 百合經驗+1
+			JUEL:(ARG:1):8 += 200
+			JUEL:(ARG:1):6 += 200
+			EXP:(ARG:1) :51 += 5
+			IF TALENT:122 == 0 && TALENT:PLAYER:122 == 0
+				EXP:(ARG:0):40 += 1
+				EXP:(ARG:1):40 += 1
+			ENDIF
+		ELSE
+			PRINTFORMW %SAVESTR:(ARG:1)%的陰道與肛門被%SAVESTR:(ARG:0)%用擴張模具強行插入
+			PRINTFORMW %SAVESTR:(ARG:1)%在%SAVESTR:(ARG:0)%放棄之前不停地侵犯著、將%SAVESTR:(ARG:0)%的屁股打得又紅又腫
+			PRINTFORML 私處經驗+10
+			PRINTFORML 肛門經驗+10
+			PRINTFORML 百合經驗+10
+			PRINTL 緊縛經驗+5
+			EXP:(ARG:0):40 += 10
+			EXP:(ARG:1):40 += 10
+			EXP:(ARG:1):0 += 10
+			EXP:(ARG:1):1 += 10
+			EXP:(ARG:1) :51 += 5
+			IF EXP:(ARG:1):0 > 0 && TALENT:(ARG:1):0 == 1
+				TALENT:(ARG:1):0 = 0
+				PRINTL 【處女喪失】
+				CFLAG:(ARG:1):15 = 101
+			ENDIF
+		ENDIF
+		IF ABL:(ARG):21 >= 3
+			PRINTFORMW %SAVESTR:(ARG:1)%心中萌生的情緒%SAVESTR:(ARG:1)%興奮了起來……
+			PRINTFORML 欲情點數+{MON_NUM * 10}
+			JUEL:(ARG:1):5 += MON_NUM * 10
+		ENDIF	
+	ELSE
+		PRINTFORMW %SAVESTR:(ARG:0)%召集了夢魔以及魔族女孩們，開始了百合亂交派對。
+		PRINTFORMW 大家都在盡情交歡著，不過有一人卻四腳趴地
+		PRINTFORMW 做著%SAVESTR:(ARG:0)%的人肉座椅，%SAVESTR:(ARG:1)%在派對中不被當人看。
+		PRINTFORMW %SAVESTR:(ARG:1)%的後面，私處和肛門也正被假陽具狠狠侵犯著。
+		PRINTFORMW 在她面前則是一個接著一個不停地有人來要求舔陰，
+		PRINTFORMW 坐在這樣的椅子上，%SAVESTR:(ARG:0)%滿意地自慰著……
+		
+		PRINTFORML 私處經驗+10
+		PRINTFORML 肛門經驗+10
+		PRINTFORML 百合經驗+10
+		EXP:(ARG:0):40 += 10
+		EXP:(ARG:1):40 += 10
+		EXP:(ARG:1):0 += 10
+		EXP:(ARG:1):1 += 10
+		IF EXP:(ARG:1):0 > 0 && TALENT:(ARG:1):0 == 1
+			TALENT:(ARG:1):0 = 0
+			PRINTL 【處女喪失】
+			CFLAG:(ARG:1):15 = 101
+		ENDIF
+	ENDIF
+	WAIT
+	PRINTL  
+REND
+
+IF ABL:(ARG:1):22 > 0 || TALENT:(ARG:1):81
+	;百合氣質・雙性戀
+	PRINTFORMW %SAVESTR:(ARG:1)%感到心中有什麼在蠢動著。
+	PRINTFORML 欲情點數+{MON_NUM * 10}
+	JUEL:(ARG:1):5 += MON_NUM * 10
+ENDIF
+
+WAIT
+PRINTL  
+
+RETURN 0
+
+;--------------------------------
+@VICTORY_RYOUZYOKU, ARG = -1
+#DIM MON_COUNT
+;--------------------------------
+;勇者が魔界のなんかにあてられて間違いを起こします
+;人間タイプ限定・低確率
+
+SIF ARG < 0
+	ARG = A
+
+;善惡值が低くないとダメ
+SIF CFLAG:ARG:151 > -50
+	RETURN 0
+
+SIF RAND:12 == 0
+	RETURN 0
+
+
+B = RAND:3 * 100
+
+C = B + 7
+IF E:C > 0
+	LOCAL:1 = E:B
+	PRINTFORMW 冒險者被魔界的瘴氣侵襲著，玩弄起%MONSTERNAME(LOCAL:1)%來。（善惡值:-10）
+	CALL KARMA, ARG, -10
+ENDIF
+
+;まずはペニスを使った凌辱を先行実裝
+
+IF E:C == 1
+	;カタコト
+;	CALL ORC_RYOU_YUSYA,ARG
+;ELSEIF E:C == 2
+	;史萊姆
+	CALL SLIME_RYOU_YUSYA,ARG
+;ELSEIF E:C == 3
+	;昆蟲
+;	CALL INSECT_RYOU_YUSYA,ARG
+;ELSEIF E:C == 4
+	;蔦觸手
+;	CALL IVY_RYOU_YUSYA,ARG
+;ELSEIF E:C == 5
+	;觸手
+;	CALL SYOKUSYU_RYOU_YUSYA,ARG
+;ELSEIF E:C == 6
+	;妖精
+;	CALL FAILY_RYOU_YUSYA,ARG
+;ELSEIF E:C == 7
+	;巨人
+;	CALL GIANT_RYOU_YUSYA,ARG
+ELSEIF E:C == 8
+	;男
+;	CALL MAN_RYOU_YUSYA,ARG
+ELSEIF E:C == 9
+	;女
+	CALL GIRL_RYOU_YUSYA,ARG
+;ELSEIF E:C == 10
+	;獣
+;	CALL BEAST_RYOU_YUSYA,ARG
+;ELSEIF E:C == 11
+	;腦奸
+;	CALL BRAIN_RYOU_YUSYA,ARG
+;ELSEIF E:C == 12
+	;馬
+;	CALL HORSE_RYOU_YUSYA,ARG
+ENDIF
+PRINTL  
+
+
+RETURN 0
+
+@ORC_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@SLIME_RYOU_YUSYA(ARG)
+#DIM PLAY
+
+PLAY = RAND:10 + 5
+
+IF TALENT:ARG:121 == 1 || TALENT:ARG:122 == 1 || TALENT:ARG:326 == 1
+	PRINTFORMW %SAVESTR:ARG%無法抑制自己的慾望，沉醉在被黏液凌辱肉棒的快感中……
+	
+	PRINTFORML 欲情點數+{PLAMON_NUM * 10}
+	JUEL:ARG:5 += PLAMON_NUM * 10
+	
+ELSE
+
+ENDIF
+
+RETURN 0
+
+@INSECT_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@IVY_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@SYOKUSYU_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@FAILY_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@GIANT_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@MAN_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@GIRL_RYOU_YUSYA(ARG)
+#DIM PLAY
+
+PLAY = RAND:10 + 5
+
+IF TALENT:ARG:121 == 1 || TALENT:ARG:122 == 1 || TALENT:ARG:326 == 1
+	PRINTFORMW %SAVESTR:ARG%無法抑制自己的慾望，沉醉在被女魔族凌辱肉棒的快感中……
+	
+	PRINTFORML 欲情點數+{PLAMON_NUM * 10}
+	JUEL:ARG:5 += PLAMON_NUM * 10
+	
+ELSE
+
+ENDIF
+
+RETURN 0
+
+@BEAST_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@BRAIN_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+@HORSE_RYOU_YUSYA(ARG)
+
+RETURN 0
+
+;==================================================================================
+@DUNGEON_RYOUZYOKU_ESCAPE,ARG
+#DIM SIDEA
+#DIM SIDEB
+#DIM FEAR
+;----------------------------------------------------------------------------------
+IF CFLAG:ARG:533 == ARG
+	SIDEA = CFLAG:ARG:531
+	SIDEB = CFLAG:ARG:532
+ELSE
+	SIDEA = CFLAG:(CFLAG:ARG:533):531
+	SIDEB = CFLAG:(CFLAG:ARG:533):532
+	SIF SIDEA == ARG
+		SIDEA = CFLAG:ARG:533
+	SIF SIDEB == ARG
+		SIDEB = CFLAG:ARG:533
+ENDIF
+FEAR = CFLAG:ARG:131
+SIF FEAR < 2
+	FEAR++
+	
+SIF !SIDEA && !SIDEB
+	RETURN 0
+	
+;分析隊伍狀態	
+CALL CHECK_STATUS, ARG, 1
+
+IF SIDEA && SIDEB
+	PRINTFORMW %SAVESTR:SIDEA%與%SAVESTR:SIDEB%發現了奄奄一息的%SAVESTR:ARG%
+ELSEIF SIDEA && !SIDEB
+	PRINTFORMW %SAVESTR:SIDEA%發現了奄奄一息的%SAVESTR:ARG%
+ELSEIF !SIDEA && SIDEB
+	PRINTFORMW %SAVESTR:SIDEB%發現了奄奄一息的%SAVESTR:ARG%
+ENDIF
+
+IF RESULT:7 > 9
+	PRINTFORML %SAVESTR:SIDEA%與%SAVESTR:SIDEB%的狀況實在不容樂觀
+	PRINTFORMW 只能眼睜睜地看著%SAVESTR:ARG%被帶往了地下城深處…
+ELSEIF CFLAG:ARG:131 > 5
+	PRINTFORML 但%SAVESTR:ARG%似乎並沒有脫身念頭…
+	IF CFLAG:SIDEA:131 <= 3 && CFLAG:SIDEB:131 <= 3
+		PRINTFORML %SAVESTR:SIDEA%與%SAVESTR:SIDEB%只好悻悻離去…
+	ELSE
+		IF CFLAG:SIDEA:131 > 3 && CFLAG:SIDEB:131 <= 3
+			PRINTFORML %SAVESTR:SIDEA%看著%SAVESTR:ARG%的樣子、吞了吞口水
+			PRINTFORML 露出了若有所思的神情、似乎已經出神了
+			PRINTFORMW %SAVESTR:SIDEB%只得帶著%SAVESTR:SIDEA%悻悻離去…
+		ELSEIF CFLAG:SIDEB:131 > 3 && CFLAG:SIDEA:131 <= 3
+			PRINTFORML %SAVESTR:SIDEB%看著%SAVESTR:ARG%的樣子、吞了吞口水
+			PRINTFORML 露出了若有所思的神情、似乎已經出神了
+			PRINTFORMW %SAVESTR:SIDEA%只得帶著%SAVESTR:SIDEB%悻悻離去…
+		ENDIF
+	ENDIF
+ELSEIF CFLAG:ARG:131 > 3
+	IF CFLAG:SIDEA:131 <= 3 && CFLAG:SIDEB:131 <= 3
+		PRINTFORML %SAVESTR:SIDEA%與%SAVESTR:SIDEB%伺機而動
+		IF RAND:FEAR == 0
+			PRINTFORMW 終於尋到機會將%SAVESTR:ARG%救下並逃出了地下城
+			CFLAG:(CFLAG:ARG:533):507 = 1
+			BASE:ARG:0 += 100
+			BASE:ARG:1 += 100
+			CFLAG:ARG:1 = 2
+		ELSE
+			PRINTFORMW 但%SAVESTR:ARG%很快就被魔族們帶往了地下城深處…
+		ENDIF
+	ELSE
+		PRINTFORML %SAVESTR:SIDEA%與%SAVESTR:SIDEB%伺機而動
+		IF CFLAG:SIDEA:131 > 3 && CFLAG:SIDEB:131 <= 3
+			PRINTFORML %SAVESTR:SIDEA%看著%SAVESTR:ARG%的樣子、吞了吞口水
+			PRINTFORML 露出了若有所思的神情、似乎已經出神了
+			IF RAND:FEAR == 0
+				PRINTFORML 終於尋到機會將%SAVESTR:ARG%救下並逃出了地下城
+				CFLAG:(CFLAG:ARG:533):507 = 1
+				BASE:ARG:0 += 100
+				BASE:ARG:1 += 100
+				CFLAG:ARG:1 = 2
+			ELSE
+				PRINTFORML 但%SAVESTR:ARG%很快就被魔族們帶往了地下城深處…
+			ENDIF
+		ELSEIF CFLAG:SIDEB:131 > 3 && CFLAG:SIDEA:131 <= 3
+			PRINTFORML %SAVESTR:SIDEB%看著%SAVESTR:ARG%的樣子、吞了吞口水
+			PRINTFORML 露出了若有所思的神情、似乎已經出神了
+			IF RAND:FEAR == 0
+				PRINTFORMW 終於尋到機會將%SAVESTR:ARG%救下並逃出了地下城
+				CFLAG:(CFLAG:ARG:533):507 = 1
+				BASE:ARG:0 += 100
+				BASE:ARG:1 += 100
+				CFLAG:ARG:1 = 2
+			ELSE
+				PRINTFORMW 但%SAVESTR:ARG%很快就被魔族們帶往了地下城深處…
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	IF RAND:FEAR == 0
+		PRINTFORMW 終於尋到機會將%SAVESTR:ARG%救下並逃出了地下城
+		CFLAG:(CFLAG:ARG:533):507 = 1
+		BASE:ARG:0 += 100
+		BASE:ARG:1 += 100
+		CFLAG:ARG:1 = 2
+	ENDIF
+ENDIF
+			

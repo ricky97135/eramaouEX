@@ -1,0 +1,1064 @@
+﻿@EVENTTURNEND
+#LATER
+;エンディングチェック
+
+;グッドエンド
+@ENDING_1
+
+DRAWLINE
+PRINTL ┌─────────────────────────────┐
+PRINTL ｜　　　　　　　　魔王終於再次掌握了世界　　　　　　　　　　｜
+PRINTL ｜　魔物們衝入皇宮，將還在熟睡中的年幼公主拖下床，抓了起來　｜
+PRINTL ｜　　　　　　而且，魔王還對人類提出了這樣的要求　　　　　　｜
+PRINTL ｜　　　　　命令人類繼續派出勇者到地下城來討伐自己　　　　　｜
+PRINTL ｜　　　　　因為這樣很有趣，哈哈哈哈。魔王這麼說著　　　　　｜
+PRINTL ｜　　　　這些女孩實際上已經不是勇者，而是魔王的祭品　　　　｜
+PRINTL └─────────────────────────────┘
+PRINTL 
+PRINTL 
+
+ADDCHARA 35
+CALL ADDCHARA_EX, CHARANUM-1
+A = CHARANUM - 1
+CALL CHAR_INIT
+
+WAIT
+DRAWLINE
+PRINTL 人間界已經陷落了，不過世上還有很多其它地方，要繼續遊戲嗎？
+
+PRINTL [0] - 世界這麼大，我想再去看看！
+PRINTL [1] - 我已經……不想做魔王了……
+$INPUT_LOOP
+INPUT
+IF RESULT == 1
+	QUIT
+ELSEIF RESULT != 0
+	GOTO INPUT_LOOP
+ENDIF
+FLAG:82 = 1
+PRINTW *人類皇族公主菲婭，被你抓獲了*
+RETURN 0
+
+;魔王城陥落
+@ENDING_2
+
+DRAWLINE
+PRINTL ┌─────────────────────────────┐
+PRINTL ｜　　　　　　新的女勇者，終於攻陷了魔王的地下城　　　　　　｜
+PRINTL ｜　　　　　　魔王將打倒自己的勇者的模樣銘記於心　　　　　　｜
+PRINTL ｜　　　帶著一絲不易察覺的微笑，再次陷入了封印的沉睡之中　　｜
+PRINTL └─────────────────────────────┘
+
+PRINTFORMW *勇者%SAVESTR:TARGET%封印了魔王，被歌頌為傳說中的勇者*
+PRINTL  
+PRINTL -------------------------------GAMEOVER---------------------------------
+INPUT
+QUIT
+
+;エルフの領域を制覇
+@ENDING_3
+DRAWLINE
+PRINTL ┌─────────────────────────────┐
+PRINTL ｜　　　　　　　　魔王終於征服了精靈族的領域　　　　　　　　｜
+PRINTL ｜　　　　於是，魔王向精靈族的長老提出了這樣的要求　　　　　｜
+PRINTL ｜　　　　　　　　要求獻上秘藏的精靈族聖女　　　　　　　　　｜
+PRINTL └─────────────────────────────┘
+
+WAIT
+DRAWLINE
+
+FLAG:87 = 1
+CALL CHAR_GIFT, 1
+FLAG:87 = 2
+
+RETURN 0
+
+;ドラゴンの山を制覇
+@ENDING_4
+DRAWLINE
+PRINTL ┌─────────────────────────────┐
+PRINTL ｜　　　　　　　　　魔王終於征服了龍族的山脈　　　　　　　　｜
+PRINTL ｜　　　　　於是，魔王向龍族的長老提出了這樣的要求　　　　　｜
+PRINTL ｜　　　　　　　要求獻上有著最悠久血統的龍族公主　　　　　　｜
+PRINTL └─────────────────────────────┘
+
+WAIT
+DRAWLINE
+
+FLAG:89 = 1
+CALL CHAR_GIFT, 5
+FLAG:89 = 2
+
+RETURN 0
+
+
+
+;天界の領域を制覇
+@ENDING_5
+DRAWLINE
+PRINTL ┌─────────────────────────────┐
+PRINTL ｜　　　　　　　　　　魔王終於征服了天界　　　　　　　　　　｜
+PRINTL ｜　　　　　　　　於是，魔王向天界提出了要求　　　　　　　　｜
+PRINTL ｜　　　　　　　命令獻上被選為下一代主神的天使　　　　　　　｜
+PRINTL └─────────────────────────────┘
+
+WAIT
+DRAWLINE
+
+FLAG:91 = 1
+CALL CHAR_GIFT, 6
+FLAG:91 = 2
+
+RETURN 0
+
+;ゲーム時間は長い
+@ENDING_N
+			DRAWLINE
+			PRINTFORMW 自從魔王被解開封印已經過了整整500天。
+			FORCEWAIT
+			PRINTFORMW 儘管各界源源不斷地派遣勇者討伐魔王，
+			PRINTFORMW 但都要麼成爲了魔王的收藏品，
+			PRINTFORMW 要麼被倒賣到大陸各個齷齪的角落，
+			PRINTFORMW 要麼成爲了魔王力量的一部分，幫助魔王為禍人間。
+			PRINTFORML 
+			PRINTFORMW 這塊大陸的人們漸漸也習慣於魔王地下城的存在，想要尋找財富或者冒險...
+			PRINTFORMW 或者...期待著女性最本能的渴望．．．
+			PRINTFORMW ...各種心思的女孩子們，依然在源源不斷地走進這個魔窟。
+			PRINTFORMW ...
+			PRINTFORMW ...
+			PRINTFORMW 大概，已經不會有盡頭了吧。
+			PRINTFORMW 達成了【Normal End】。
+			PRINTFORMW [1] 結束遊戲		[2] 繼續遊戲
+			
+			CALL ENDINGINPUT,(EX_FLAG:2801 + 1000)
+
+;---------------------------------------------------------
+@CHAR_GIFT, ARG
+#DIM CHARA, 1
+#DIM NO_CHARA
+#DIM PERSONAL
+#DIM HAIRCOLOR
+#DIM L_LINECOUNT, 5
+;---------------------------------------------------------
+
+IF ARG == 5
+	NO_CHARA = 32
+	LOCALS:10 = 龍族公主%CSVNAME(32)%被龍族長老作為貢品獻了上來………
+	LOCALS:20 = 要收下龍族公主作為貢品嗎？
+	LOCALS:30 = 去要公主
+	LOCALS:40 = 龍族
+ELSEIF ARG == 1
+	NO_CHARA = 31
+	LOCALS:10 = 精靈族聖女%CSVNAME(31)%被精靈族作為貢品獻了上來………
+	LOCALS:20 = 要收下精靈族聖女作為貢品嗎？
+	LOCALS:30 = 去要聖女
+	LOCALS:40 = 精靈族
+ELSEIF ARG == 6
+	NO_CHARA = 33
+	LOCALS:10 = 天使族的下任主神%CSVNAME(33)%被天使族作為貢品獻了上來………
+	LOCALS:20 = 要收下天使族下任主神作為貢品嗎？
+	LOCALS:30 = 去要主神候補
+	LOCALS:40 = 天使族
+ELSE
+	THROW INVALID ARGUMENT
+ENDIF
+
+
+;新增預設角色
+L_LINECOUNT:0 = LINECOUNT
+$INPUT_LOOP_0
+CLEARLINE LINECOUNT-L_LINECOUNT:0
+ADDCHARA NO_CHARA
+CALL ADDCHARA_EX, CHARANUM-1
+A = CHARANUM - 1
+
+CALL CHAR_INIT
+
+PRINTL *****************************************
+PRINTVL LOCALS:10
+PRINTL *****************************************
+PRINTW
+CALL SHOW_CHARA_INFO, A, -2
+A = CHARANUM - 1
+PRINTVL LOCALS:20
+PRINTL [0] 收下她吧  [1] 另外挑選
+INPUT
+
+IF RESULT == 0
+	RETURN
+ELSE
+	CALL PARTY_CHAR_DEL, A
+	DELCHARA A
+	CALL NAME_RESET
+ENDIF
+
+PERSONAL = 160
+;キャラのNOを選定
+$INPUT_LOOP_1
+CHARA = RAND(1, 17)
+ADDCHARA CHARA
+CALL ADDCHARA_EX, CHARANUM-1
+A = CHARANUM - 1
+
+TALENT:A:300 = HAIRCOLOR
+SIF TALENT:A:300 == 0
+	TALENT:A:300 = 1
+
+L_LINECOUNT:2 = LINECOUNT
+$INPUT_LOOP_2
+CLEARLINE LINECOUNT-L_LINECOUNT:2
+PRINTL 請設定偏好的性格和髮色。
+PRINTFORML [0] 性格 ：  %TALENTNAME:PERSONAL%
+PRINTFORML [1] 髮色 ：  %GET_LOOK_INFO(A,"頭髮顏色")%
+DRAWLINE
+PRINTL [100] 決定
+
+INPUT
+
+IF RESULT == 0
+	PRINTL 請選擇偏好的性格。
+	PRINTL [0] - 慈愛　　[1] - 自信家　[2] - 懦弱　　
+	PRINTL [3] - 高貴　　[4] - 冷靜　　[5] - 惡女　　
+	PRINTL [6] - 智慧　　[7] - 庇護者　
+	INPUT
+	IF RESULT >= 8
+		PERSONAL = 160
+		GOTO INPUT_LOOP_2
+	ELSEIF RESULT == 0
+		PERSONAL = 160
+	ELSEIF RESULT == 1
+		PERSONAL = 161
+	ELSEIF RESULT == 2
+		PERSONAL = 162
+	ELSEIF RESULT == 3
+		PERSONAL = 163
+	ELSEIF RESULT == 4
+		PERSONAL = 164
+	ELSEIF RESULT == 5
+		PERSONAL = 166
+	ELSEIF RESULT == 6
+		PERSONAL = 172
+	ELSEIF RESULT == 7
+		PERSONAL = 173
+	ELSEIF RESULT < 0
+		PERSONAL = 160
+		GOTO INPUT_LOOP_2
+	ENDIF
+	GOTO INPUT_LOOP_2
+
+ELSEIF RESULT == 1
+	PRINTL 請選擇髮色。
+	PRINTL [1] 金髮  [2]栗發  [3]黒發  [4]紅髮  [5]銀髮  
+	PRINTL [6] 青發  [7]綠髮  [8]紫發  [9]白髮  [10]暗金髮
+	INPUT
+	IF RESULT >= 1 && RESULT <= 10 || RESULT == 11
+		TALENT:A:300 = RESULT
+		HAIRCOLOR = RESULT
+	ENDIF
+	GOTO INPUT_LOOP_2
+ELSEIF RESULT == 100
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+
+CALL CHAR_MAKE, PERSONAL, ARG
+CFLAG:RESULT:1 = 0
+A = RESULT
+
+;種族年齢再設定
+IF GETBIT(FLAG:5,12) || GETBIT(FLAG:5,13)
+	CALL RACE_AGE_GENERATE, CFLAG:A:451, TALENT:A:314
+	CFLAG:A:452 = RESULT
+ENDIF
+
+PRINTL *****************************************
+PRINTFORML %LOCALS:40%挑選少女%SAVESTR:A%作為貢品………
+PRINTL *****************************************
+PRINTW
+CALL SHOW_CHARA_INFO, A, -2
+PRINTL 要收下這名少女作為貢品嗎？
+PRINTFORML [0] 就是她了  [1] 再換一個  [2] %LOCALS:30%
+INPUT
+
+IF RESULT == 0
+	RETURN 0
+ELSEIF RESULT == 2
+	A = CHARANUM - 1
+	CALL PARTY_CHAR_DEL, A
+	DELCHARA A	
+	CALL NAME_RESET
+	GOTO INPUT_LOOP_0
+ELSE
+	A = CHARANUM - 1
+	CALL PARTY_CHAR_DEL, A
+	DELCHARA A
+	CALL NAME_RESET
+	GOTO INPUT_LOOP_1
+ENDIF
+
+
+
+@ENDCHECK
+
+;主線劇情的檢定，顯示等。使用EX_FLAG:2801-2820
+;初始化部分在初始奴隸選擇之後 預設全0
+;每日循環BEGINSHOP之前進行此檢定
+;801為主線劇情，2-15為分劇情，816之後預留
+;在GET_SPECIALTALENT 42行和128行插入檢定程序的分支程式
+;801-812儲存數據時，百分位 = 1 或 0，0代表首次到達該階段 可以顯示對應劇情，1則代表已經顯示過
+
+CALL ENDRESET
+
+CALL ENDCHECKMAIN
+
+LOCAL:1 = EX_FLAG:2801 % 100
+LOCAL:2 = EX_FLAG:2802 % 100
+LOCAL:3 = EX_FLAG:2803 % 100
+LOCAL:4 = EX_FLAG:2804 % 100
+;【瑪奧】
+LOCAL:5 = EX_FLAG:2805 % 100
+;【莉莉】
+LOCAL:6 = EX_FLAG:2806 % 100
+;【菲婭】
+LOCAL:7 = EX_FLAG:2807 % 100
+;【瓊】
+LOCAL:8 = EX_FLAG:2808 % 100
+;【普林希斯】
+LOCAL:9 = EX_FLAG:2809 % 100
+;【嘉德】
+LOCAL:10 = EX_FLAG:2810 % 100
+;【黑方片】
+LOCAL:11 = EX_FLAG:2811 % 100
+;【白梅花】
+LOCAL:12 = EX_FLAG:2812 % 100
+;【金紅桃】
+LOCAL:13 = EX_FLAG:2813 % 100
+;【銀黑桃】
+LOCAL:14 = EX_FLAG:2814 % 100
+;【葵希羅】
+LOCAL:15 = FLAG:2815 % 100
+
+
+CALL ENDCHECKCHARA
+
+IF EX_FLAG:2801 != 99
+	FOR LOCAL,2,16
+		SIF EX_FLAG:(2800+LOCAL)%10 == 0
+			TRYCALLFORM END{LOCAL}_{EX_FLAG:(2800+LOCAL)/10}
+	NEXT
+ENDIF
+
+SIF EX_FLAG:2801 == 99 && DAY:0 == 500
+	CALL ENDING_N
+
+IF EX_FLAG:2803 != 0
+	TRYCALL END31
+ENDIF
+
+@ENDLEGACY
+SELECTCASE LOCAL:1
+	CASE 0
+		SELECTCASE LOCAL:5
+			CASE 1
+				IF EX_FLAG:2805 < LOCAL:5 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入瑪奧戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 解放我的女人哦！來吧！（此線劇情尚未做好）	[2] 呃，據說還有個姐姐？ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2805 + 5000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2805 < LOCAL:5 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入瑪奧淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 鬼畜村妹！我喜歡！（此線劇情尚未做好）	[2] 我要等莉莉！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2805 + 5000)
+				ENDIF
+			CASEELSE
+		ENDSELECT
+		
+		SELECTCASE LOCAL:6
+			CASE 1
+				IF EX_FLAG:2806 < LOCAL:6 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入莉莉戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 巨乳我喜歡！來吧！（此線劇情尚未做好）	[2] 土裡土氣，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2806 + 6000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2806 < LOCAL:6 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入莉莉淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 哈哈！讓你這村姑領教終極的快樂吧！（此線劇情尚未做好）	[2] 不是我的菜！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2806 + 6000)
+				ENDIF
+			CASEELSE
+		ENDSELECT		
+
+		SELECTCASE LOCAL:7
+			CASE 1
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 菲婭在床上迷糊的看著四周……似乎還沒有對自己身上發生的事情有所認知……
+					FORCEWAIT
+					PRINTFORMW 一下子處在這麼陌生的環境的話，這也是當然的吧，
+					PRINTFORMW 已經將幼女的人生完全掌握的%NAME:MASTER%，在水晶球中俯視著影像。
+					PRINTFORMW 接下來……要怎麼處置她好呢？
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「啊，魔王大人～♪」
+					PRINTFORMW 看見%NAME:MASTER%的菲婭，啪嗒啪嗒的迎了過來。
+					PRINTFORMW 「吶吶，今天也要一起玩嗎？」
+					PRINTFORMW [1] 點頭 [2] 搖頭
+					CALL ENDINCONSQSELECT,7
+					EX_FLAG:2807 += 100
+
+				ENDIF
+			CASE -1
+				DRAWLINE
+				PRINTFORMW 菲婭的身體狀況看起來不是很好的樣子……
+				FORCEWAIT
+				PRINTFORMW 是昨晚有些太激烈了嗎，
+				PRINTFORMW 精神狀況看起來也很差，即使是叫她也沒什麼迴應。
+				PRINTFORMW 似乎是刺激過大了的樣子，產生了精神創傷……
+				PRINTFORMW ～Bad Ending～
+				PRINTFORMW 請溫柔的循序漸進的來吧？
+				EX_FLAG:2807 -= 1
+			CASE 3
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入菲婭戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 菲婭！！菲婭！！	[2] 不好蘿莉這口！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2807 + 7000)
+				ENDIF
+			CASE 13
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入菲婭淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 菲婭！！菲婭！！	[2] 不好蘿莉這口！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2807 + 7000)
+					EX_FLAG:2807 += 1000
+				ENDIF
+			CASEELSE
+		ENDSELECT		
+
+		SELECTCASE LOCAL:8
+			CASE 1
+				IF EX_FLAG:2808 < LOCAL:8 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入瓊戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 精靈妹子大好！（此線劇情尚未做好）	[2] 才不要尖耳朵的！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2808 + 8000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2808 < LOCAL:8 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入瓊淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 精靈妹子大好！（此線劇情尚未做好）	[2] 才不要尖耳朵的！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2808 + 8000)
+				ENDIF
+			CASEELSE
+		ENDSELECT			
+		
+		SELECTCASE LOCAL:9
+			CASE 1
+				IF EX_FLAG:2809 < LOCAL:9 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入普林希斯戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 我就是馴龍高手！（此線劇情尚未做好）	[2] 會噴火的妹子！怕怕！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2809 + 9000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2809 < LOCAL:9 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入普林希斯淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 我就要當龍騎士！（此線劇情尚未做好）	[2] 會噴火的妹子！怕怕！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2809 + 9000)
+				ENDIF
+			CASEELSE
+		ENDSELECT		
+
+		SELECTCASE LOCAL:10
+			CASE 1
+				IF EX_FLAG:2810 < LOCAL:10 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入嘉德戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 病嬌大好！（此線劇情尚未做好）	[2] 病嬌怕怕！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2810 + 10000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2810 < LOCAL:10 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入嘉德淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 來一場天地間的愛戀！（此線劇情尚未做好）	[2] 這麼難調教，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2810 + 10000)
+				ENDIF
+			CASEELSE
+		ENDSELECT		
+
+		SELECTCASE LOCAL:11
+			CASE 1
+				IF EX_FLAG:2811 < LOCAL:11 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入黑方片戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 肌肉女，實戰利器！（此線劇情尚未做好）	[2] 比我還壯，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2811 + 11000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2811 < LOCAL:11 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入黑方片淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 肌肉女，實戰利器！（此線劇情尚未做好）	[2] 比我還壯，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2811 + 11000)
+				ENDIF
+			CASEELSE
+		ENDSELECT		
+
+		SELECTCASE LOCAL:12
+			CASE 1
+				IF EX_FLAG:2812 < LOCAL:12 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入白梅花戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 扶你！扶我！扶她靈！（此線劇情尚未做好）	[2] 無法忍受帶把的！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2812 + 12000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2812 < LOCAL:12 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入白梅花淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 扶你！扶我！扶她靈！（此線劇情尚未做好）	[2] 無法忍受帶把的！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2812 + 12000)
+				ENDIF
+			CASEELSE
+		ENDSELECT	
+
+		SELECTCASE LOCAL:13
+			CASE 1
+				IF EX_FLAG:2813 < LOCAL:13 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入金紅桃戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 金髮巨乳好！（此線劇情尚未做好）	[2] 狂王二手貨，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2813 + 13000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2813 < LOCAL:13 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入金紅桃淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 金髮巨乳好！（此線劇情尚未做好）	[2] 狂王二手貨，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2813 + 13000)
+				ENDIF
+			CASEELSE
+		ENDSELECT	
+
+		SELECTCASE LOCAL:14
+			CASE 1
+				IF EX_FLAG:2814 < LOCAL:14 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入銀黑桃戀慕線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 女忍！爽！（此線劇情尚未做好）	[2] 整天鬼鬼祟祟的妹子，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2814 + 14000)
+				ENDIF
+			CASE 2
+				IF EX_FLAG:2814 < LOCAL:14 * 100 
+					DRAWLINE
+					PRINTFORMW 要進入銀黑桃淫亂線嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+					PRINTFORMW [1] 女忍！爽！（此線劇情尚未做好）	[2] 整天鬼鬼祟祟的妹子，才不要！ [3] 啊？讓我先存個檔！
+					CALL ENDINGINPUT,(EX_FLAG:2814 + 14000)
+				ENDIF
+			CASEELSE
+		ENDSELECT			
+	CASE 1
+		IF EX_FLAG:2801 < LOCAL:1 * 100 
+			DRAWLINE
+			PRINTFORMW 自從魔王被解開封印已經過了整整500天。
+			FORCEWAIT
+			PRINTFORMW 儘管各界源源不斷地派遣勇者討伐魔王，
+			PRINTFORMW 但都要麼成爲了魔王的收藏品，
+			PRINTFORMW 要麼被倒賣到大陸各個齷齪的角落，
+			PRINTFORMW 要麼成爲了魔王力量的一部分，幫助魔王為禍人間。
+			PRINTFORML 
+			PRINTFORMW 這塊大陸的人們漸漸也習慣於魔王地下城的存在，想要尋找財富或者冒險...
+			PRINTFORMW 或者...期待著女性最本能的渴望．．．
+			PRINTFORMW ...各種心思的女孩子們，依然在源源不斷地走進這個魔窟。
+			PRINTFORMW ...
+			PRINTFORMW ...
+			PRINTFORMW 大概，已經不會有盡頭了吧。
+			PRINTFORMW 達成了【Normal End】。
+			PRINTFORMW [1] 結束遊戲		[2] 繼續遊戲
+			
+			CALL ENDINGINPUT,(EX_FLAG:2801 + 1000)
+		ENDIF
+	CASE 2
+		SELECTCASE LOCAL:7
+			CASE 4
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「魔王大人，今天也是個好天氣呢～」
+					FORCEWAIT
+					PRINTFORMW 菲婭看著窗外，輕輕的朝著%NAME:MASTER%打著招呼，
+					PRINTFORMW 清晨的風吹起菲婭的髮梢，帶著衣角一起搖動著。
+					PRINTFORMW 「昨天晚上……夢到魔王大人了呢……」
+					PRINTFORMW 「誒？夢的內容嗎？」
+					PRINTFORMW 「啊～是秘密喲～秘密～❤」
+					PRINTFORMW 菲婭調皮的笑了一下，小臉變得更紅了，
+					PRINTFORMW ……大概也能想到是什麼樣的吧。
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 5
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「魔王大人……那個……菲婭……試著做了點心……」
+					FORCEWAIT
+					PRINTFORMW 「可以的話……那個……」
+					PRINTFORMW 菲婭有些扭捏的端著盤子，裡面放著心型的小甜餅，
+					PRINTFORMW 雖然顯得有些簡陋，不過對於她來說大概也是很難得才做出來的吧。
+					PRINTFORMW 「怎，怎麼樣……味道……？」
+					PRINTFORMW ……實在不能稱得上是好吃，要怎麼回答她呢？
+					PRINTFORMW [3] 好吃！ [4] 不怎麼好吃
+					CALL ENDINCONSQSELECT,7
+					EX_FLAG:2807 += 100
+
+
+				ENDIF
+			CASE 6
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「魔王大人～❤」
+					FORCEWAIT
+					PRINTFORMW 菲婭撲過來，緊緊的抱著%NAME:MASTER%，深深的吸了一口氣。
+					PRINTFORMW 「嗯～魔王大人的味道～」
+					PRINTFORMW 菲婭開心的蹭了蹭%NAME:MASTER%，彷彿可以看得見愛心冒出來一樣，
+					PRINTFORMW 自從被抓到這裡來已經有了相當一段時間了，
+					PRINTFORMW 雖然最初還是很牴觸，但是現在已經完全離不開%NAME:MASTER%了。
+					PRINTFORMW 「吶吶，魔王大人，如果有時間的話，還要和菲婭一起玩哦～」
+					PRINTFORMW 「因為菲婭，最喜歡魔王大人了～」
+					PRINTFORMW 「已經……沒有魔王大人就沒辦法活下去了呢……❤」
+					PRINTFORMW 菲婭的小眼睛裡，滿滿的是幸福的表情，
+					PRINTFORMW 銀色的戒指，在纖細的手指上閃閃發光。雖然只是訂婚的戒指，但對她來說一定比任何東西都重要吧。
+					PRINTFORMW 接下來，要和她結婚嗎？
+					PRINTFORMW 【要繼續進行菲婭線的話，請和菲婭舉行婚禮吧】
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 7
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					PRINTFORMW 「魔王大人。」
+					FORCEWAIT
+					PRINTFORMW 菲婭穿著很正式的衣服，有些意外。
+					PRINTFORMW 「那個……菲婭考慮了很久，雖然菲婭還很不成熟……但是……果然還是想為魔王大人做些什麼。」
+					PRINTFORMW 「所以……最少……能為魔王大人儘自己的一份力……這樣就滿足了呢。」
+					PRINTFORMW 已經被%NAME:MASTER%支配了的國家，很容易就承認了原本是就是公主的菲婭。
+					PRINTFORMW 正式成爲了魔界的公主的菲婭，雖然還是個孩子，多少也能為%NAME:MASTER%提供一點幫助吧？
+					PRINTFORMW 和菲婭的關係更加增進了一層。
+					PRINTFORMW  
+					PRINTFORMW 菲婭獲得了素質【魔界公主】
+					PRINTFORMW 從地上掠奪的資金增加了，而且可以獲得兵員了。
+					EX_FLAG:2807 += 100
+					TALENT:GETCHARA(35):1254 = 1 
+				ENDIF
+			CASE 8
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「啊，魔王大人～～」
+					FORCEWAIT
+					PRINTFORMW 菲婭慌忙的站了起來，迎接%NAME:MASTER%。，
+					PRINTFORMW 雖然年齡還小……但是畢竟以前也算是王族吧，
+					PRINTFORMW 從那之後已經過去了10天，偶爾看見菲婭在正式場合，還是稍微有那麼點樣子的。
+					PRINTFORMW 「哈嗚嗚，感覺一開始幫魔王大人就忙了好多……也沒有時間和魔王大人玩了～菲婭，好傷心的說～」
+					PRINTFORMW 菲婭緊緊抱著%NAME:MASTER%，和以前一樣撒著嬌，
+					PRINTFORMW ……果然還只是個孩子啊。
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 9
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「呼……呼……」
+					FORCEWAIT
+					PRINTFORMW 菲婭輕輕吹著還在冒著熱氣的奶茶，旁邊的女僕站在一旁服侍著。
+					PRINTFORMW 「啊，魔王大人～沒想到會到菲婭這裡來呢……嗚哇哇～好開心～」
+					PRINTFORMW 看見%NAME:MASTER%的菲婭，小臉上流露出幸福的表情。
+					PRINTFORMW 「啊啊，這個是……加了牛奶的紅茶……不知道合不合魔王大人的口味呢……那個……如果要其他的話……那個……」
+					PRINTFORMW 剛剛好像還有點優雅感覺的菲婭，轉眼間又變得有些慌亂起來，
+					PRINTFORMW 稍微休息一下也沒什麼不好？，
+					PRINTFORMW 和菲婭度過了一段有點溫馨的休息時間。
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 10
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 最近菲婭似乎在偷偷摸摸做什麼的樣子。
+					FORCEWAIT
+					PRINTFORMW 「誒？那個……是秘密喲☆」
+					PRINTFORMW 「嗚嗚，稍微任性一次啦……那，那個，如果準備好了的話，那個時候再告訴魔王大人～」
+					PRINTFORMW 「因為是為魔王大人準備的呢……誒嘿嘿～」
+					PRINTFORMW 菲婭在臉上親了一下，啪嗒啪嗒的跑開了，
+					PRINTFORMW 看起來還沒有意識到自己已經把正在準備什麼東西的事情暴露出來這件事，
+					PRINTFORMW 總之先這樣放著不管吧。
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 11
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 路過菲婭的房間的時候，聽見了悅耳的琴聲，
+					FORCEWAIT
+					PRINTFORMW 出於好奇，朝裡面看了一眼，
+					PRINTFORMW 菲婭的小手，正在鋼琴上飛快的舞動著，
+					PRINTFORMW 閉著眼睛演奏著的她，似乎完全沒有注意到這邊，
+					PRINTFORMW 突然的不和諧的音符中斷了演奏，
+					PRINTFORMW 「啊啊……這個程度……還遠遠不行呢……嗚……要繼續加油……」
+					PRINTFORMW 琴聲再一次響起來了，
+					PRINTFORMW ……就暫時不要打攪她了吧。
+					EX_FLAG:2807 += 100
+				ENDIF	
+			CASE 12
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 走進菲婭房間的時候，感覺氣氛有些不一樣，
+					FORCEWAIT
+					PRINTFORMW 和平時可愛的感覺不同，顯得看起來正式很多，
+					PRINTFORMW 菲婭坐在鋼琴面前，指尖流露出悅耳的音符來，
+					PRINTFORMW 看來是經過相當的練習了吧，彈奏的非常熟練，看來，最近幾個月似乎一直都在準備的就是這個了。
+					PRINTFORMW 雖然平時怎麼看都是小孩子，但是正式起來的話，果然還是看得出一點貴族的感覺。
+					PRINTFORMW 該怎麼說呢……不愧是公主嗎？  
+					PRINTFORMW 「魔王大人……那個……怎麼樣……？」
+					PRINTFORMW 「這個呢……是隻彈給喜歡的人聽的曲子哦」
+					PRINTFORMW 「拚命，拚命練習了很久，才終於能流利的彈奏出來了呢……」
+					PRINTFORMW 「這個是……只為魔王大人……只有魔王大人才可以聽的哦」
+					PRINTFORMW 菲婭靠在%NAME:MASTER%的懷裡，閉著眼睛輕輕摩蹭著
+					PRINTFORMW 「一開始來到這裡的時候，覺得很可怕……不知道怎麼辦才好……」
+					PRINTFORMW 「但是……能遇上魔王大人……菲婭……真的很開心呢……」
+					PRINTFORMW 「不管是碰上可怕的事情也好……碰見過分的人也好……只要心裡想著魔王大人……就覺得沒有什麼事情好怕的……」
+					PRINTFORMW 「今後……要一直，一直～和魔王大人在一起～」
+					PRINTFORMW 「因為魔王大人，是菲婭最最喜歡的人了吶～」
+					PRINTFORMW …………
+					PRINTFORMW ……
+					PRINTFORMW 自從地上世界被完全征服已經過去了相當一段時間了，
+		        	PRINTFORMW 漸漸安定下來的世界，開始收拾起戰爭的殘骸，開始重新建設起文明來。
+					PRINTFORMW 在那之中，引領著人們的，正是小小的菲婭。
+					PRINTFORMW 雖然年齡尚小，但藉著菲婭的人望，原本混亂的王國漸漸聚攏起來，開始建設起新的秩序，
+					PRINTFORMW 騎士們擁立著原來的公主，在%NAME:MASTER%的統治下開始了新的紀元。
+					PRINTFORMW 在廢墟上展開的花朵，比原先開放的更加燦爛，
+					PRINTFORMW 而在史書上由歷史學家們所記錄的，也大多是讚頌著%NAME:MASTER%的話語，
+					PRINTFORMW 當然，那都是後話了，
+					PRINTFORMW 現在的%NAME:MASTER%，大概正在和菲婭享受著快樂的時光吧？
+					PRINTFORMW ～菲婭 魔界公主Ending～
+					EX_FLAG:2807 += 100
+					EX_FLAG:2801 = 10
+				ENDIF	
+			;下面是淫亂線的劇情 別混了喲
+			CASE 14
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「啊，魔王大人～」
+					FORCEWAIT
+					PRINTFORMW 「今天……要來和菲婭做H的事情嗎？」
+					PRINTFORMW 「從早上起來開始……就覺得肚子癢癢的……想要和魔王大人做H的事情想要的不得了呢....」
+					PRINTFORMW 「所以……那個……絕對要和菲婭H哦……」
+					PRINTFORMW 在路上的時候，被滿臉緋紅色的菲婭叫住了，
+					PRINTFORMW 看這個樣子，大概內褲已經濕透了吧……
+					PRINTFORMW 要不要今天……就好好的玩弄她一下？
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 15
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「嗯……啾……呼哈……」
+					FORCEWAIT
+					PRINTFORMW 鬆開菲婭的小嘴，唾液在二人的嘴唇之間拉出數條透明的絲線，
+					PRINTFORMW 早餐的時候說想坐在%NAME:MASTER%的懷裡，回過神來就變成這樣的情況了。
+					PRINTFORMW 雙手在菲婭的衣服里滑動著，感受著細嫩的身體，
+					PRINTFORMW 雖然只是個小孩子，總覺得有種奇妙的誘惑力，
+					PRINTFORMW 度過了一段粉紅色的早餐時間……
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 16
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「誒嘿嘿……肚子裡面……還是黏糊糊的呢，感覺好舒服～」
+					FORCEWAIT
+					PRINTFORMW 「不管自己怎麼弄，都沒有被魔王大人H的舒服呢～」
+					PRINTFORMW 菲婭依偎在%NAME:MASTER%的懷裡，泛著粉紅色的小臉上流露出和年齡不符的色慾，
+					PRINTFORMW 在她的身體上發泄了多少次呢？這種問題早就記不清了，反正也不需要答案吧，
+					PRINTFORMW 對於身心都已經完全離不開%NAME:MASTER%的菲婭來說，
+					PRINTFORMW 只要能和%NAME:MASTER%做H的事情就是最大的滿足了，
+					PRINTFORMW 要說為什麼的話，因為對於菲婭來說，%NAME:MASTER%就是菲婭一切吧。
+					EX_FLAG:2807 += 100
+				ENDIF
+			CASE 17
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「啊啊，魔王大人～」
+					FORCEWAIT
+					PRINTFORMW 遠遠的就被菲婭看見，啪嗒啪嗒的跑了過來，
+					PRINTFORMW ……總感覺氣質好像有些不一樣了？
+					PRINTFORMW 「吶吶，魔王大人，菲婭呢，從今天開始學習魔法了哦～」
+					PRINTFORMW 「上次做了H的事情以後，一直在想要怎麼才能讓自己和魔王大人變得更加舒服呢～」
+					PRINTFORMW 「嗯……雖然想了很久都沒有答案，不過也很想為魔王大人做點什麼……」
+					PRINTFORMW 「要是菲婭做好了什麼事情，想要被魔王大人用H的事情獎勵呢，誒嘿嘿～」
+					PRINTFORMW 和菲婭的關係更加增進了一層。
+					PRINTFORMW 
+					PRINTFORMW 菲婭獲得了素質【魔女】
+					PRINTFORMW 攻擊力和防禦力增加了！
+					EX_FLAG:2807 += 100
+					TALENT:GETCHARA(35):1253 = 1 
+					CFLAG:GETCHARA(35):11 += 200
+					CFLAG:GETCHARA(35):12 += 200					
+				ENDIF
+			CASE 18
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「魔王大人……❤」
+					FORCEWAIT
+					PRINTFORMW 菲婭趴在%NAME:MASTER%的身上，任由%NAME:MASTER%的雙手玩弄著自己。
+					PRINTFORMW 「嗯啾……菲婭……今天也有好好的努力呢……」
+					PRINTFORMW 「想要魔王大人的獎勵……舒服的獎勵呢❤」
+					PRINTFORMW 一邊說著，菲婭脫下了中間已經黏糊糊的胖次，
+					PRINTFORMW 撫摸著菲婭身體的%NAME:MASTER%，一轉身將菲婭壓在身下，開始聳動起來……
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 19
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 在走廊上走的時候，看見菲婭從旁邊飛了過去，
+					FORCEWAIT
+					PRINTFORMW 看來已經能夠很熟練的使用魔法了呢。
+					PRINTFORMW 看見%NAME:MASTER%的菲婭，朝這邊轉了過來，輕輕的落在%NAME:MASTER%的面前。
+					PRINTFORMW 「吶吶，魔王大人，菲婭現在，已經學會飛了呢～」
+					PRINTFORMW 「像這樣子……這樣子動，也沒問題呢～」
+					PRINTFORMW 一邊說著，菲婭半空中在擺出幾個姿勢來，
+					PRINTFORMW 看起來很熟練的樣子，一定是經過了相當的練習了吧，
+					PRINTFORMW 雖然只是小孩子，意外的在這方面有天賦的樣子，
+					PRINTFORMW 今後也能成為有用的傢伙吧。
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 20
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「啊，魔王大人，那個……菲婭稍微出去一下哦～」
+					FORCEWAIT
+					PRINTFORMW 菲婭一邊這麼說著，一邊飛走了，
+					PRINTFORMW 最近總覺得菲婭在揹著自己做些什麼，不找她的時候，常常一整天都不見人，
+					PRINTFORMW 問手下的女僕，也總是表示一大早就出去了，
+					PRINTFORMW 屋子裡面多了許多奇怪的素材，
+					PRINTFORMW 大概是在為魔藥之類的東西收集材料吧，
+					PRINTFORMW 雖說如此……似乎有些太頻繁了的樣子……下次得說教一下才行。
+					EX_FLAG:2807 += 100
+				ENDIF		
+			CASE 21
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「誒？菲婭在做什麼嗎？」
+					FORCEWAIT
+					PRINTFORMW 好不容易在菲婭正準備出門的時候抓了個正著。
+					PRINTFORMW 「誒嘿嘿～魔王大人這麼想知道的話……」
+					PRINTFORMW 「誒多……是秘密喲☆」
+					PRINTFORMW 「嗯……但是絕對不是什麼壞的東西喲～」
+					PRINTFORMW 「雖然稍微有點任性，但是拜託了呢～」
+					PRINTFORMW 這麼說著的菲婭，在%NAME:MASTER%的臉上啾了一下。
+					PRINTFORMW 「因為是爲了菲婭最喜歡的魔王大人呀～❤」
+					EX_FLAG:2807 += 100
+				ENDIF	
+			CASE 22
+				IF EX_FLAG:2807 < LOCAL:7 * 100 
+					DRAWLINE
+					PRINTFORMW 「吶吶，魔王大人❤」
+					FORCEWAIT
+					PRINTFORMW 菲婭輕輕飄了過來坐到了%NAME:MASTER%的床邊，小手裡拿著透明的小瓶子，
+					PRINTFORMW 瓶子裡面裝著粉紅色的液體，還在時不時的冒著泡泡，
+					PRINTFORMW 一眼就能看出是某種魔藥吧。
+					PRINTFORMW 雖然乍一看覺得有點危險，但是直覺卻令人覺得是一種很色氣的藥水……
+					PRINTFORMW 剛想問的時候，菲婭就已經先開口了。
+					PRINTFORMW 「這個呢……是被稱作愛的魔藥的東西呢。」
+					PRINTFORMW 「誒嘿嘿，據說可以讓喜歡的人永遠都不會分開來的魔力呢❤」
+					PRINTFORMW 「雖然花了很多功夫，不過終於還是完成了～」
+					PRINTFORMW 「所以……那個……」
+					PRINTFORMW 菲婭期待的看著這邊……
+					PRINTFORMW [5] 喝掉 [6] 不喝 [7] 喂菲婭喝
+					CALL ENDINCONSQSELECT,7
+					PRINTFORMW 一番激烈的運動以後，菲婭依偎在%NAME:MASTER%身旁，
+					PRINTFORMW 小小的身體上還殘留著%NAME:MASTER%施暴的痕跡，時不時因為高潮的餘韻而微微顫抖一下。
+					PRINTFORMW 「誒嘿嘿……這樣子……魔王大人和菲婭……就永遠都不分開了呢❤」
+					PRINTFORMW 「菲婭……好幸福……能夠遇到魔王大人，是菲婭一生最幸運的事情喲……」
+					PRINTFORMW 「因為魔王大人，是菲婭最最喜歡的人了吶～」
+					PRINTFORMW 「所以……再來一次吧……？❤」
+					PRINTFORMW …………
+					PRINTFORMW ……
+					PRINTFORMW 自從地上世界被完全征服已經過去了相當一段時間了，
+					PRINTFORMW 動亂已經漸漸安定下來，人們開始重新建設起新的秩序來，
+					PRINTFORMW 但是仍然有些企圖反抗%NAME:MASTER%統治的愚蠢的傢伙們，
+					PRINTFORMW 既然有反抗的人，自然也會有鎮壓的人，
+					PRINTFORMW 在那之中，有一個在天空中飛舞著的小小的身影，
+					PRINTFORMW 在自己出生的這片大地上自由的飛翔著，維護著自己心愛的人的統治，
+					PRINTFORMW 那是曾經是王國的公主的，菲婭，不過她現在的身份，是%NAME:MASTER%手下的大魔女，
+					PRINTFORMW 在她和許多人的努力下，%NAME:MASTER%建立起了穩固的統治，
+					PRINTFORMW 時代翻開了新的一輪篇章，
+					PRINTFORMW 當然，那都是後話了，
+					PRINTFORMW 現在的%NAME:MASTER%，大概正在和菲婭享受著快樂的時光吧？
+					PRINTFORMW ～菲婭 魔女Ending～
+					EX_FLAG:2807 += 100
+					EX_FLAG:2801 = 10
+				ENDIF	
+			CASEELSE
+		ENDSELECT		
+
+		
+	CASE 3
+		IF EX_FLAG:2805 > 1 && EX_FLAG:2806 > 1 && EX_FLAG:2805 < 300
+			DRAWLINE
+			PRINTFORMW 可以達成姐妹雙飛end，要進入嗎？（劇情選擇是不可逆的，選擇之後就無法進入其它人的故事線了）
+			PRINTFORMW [1] 來來來！（此線劇情尚未做好）	[2] 才不要！ [3] 啊？讓我先存個檔！
+			CALL ENDINGINPUT,16000
+		ENDIF
+	CASEELSE
+
+ENDSELECT
+
+
+
+@ENDINGINPUT,ARG
+
+
+LOCAL = ARG / 1000
+
+$ENDDINGSELECT
+
+INPUT
+SELECTCASE LOCAL
+	CASE 1
+		SELECTCASE RESULT
+	
+			CASE 1
+				QUIT
+			CASE 2
+				PRINTW 魔王的傳說，還將繼續......
+			CASEELSE
+				GOTO ENDDINGSELECT
+
+		ENDSELECT
+	CASE 7
+	;白告（菲亞）
+		SELECTCASE RESULT
+	
+			CASE 1
+				SIF EX_FLAG:2807 == 3
+					PRINTW 菲婭公主線start~
+				SIF EX_FLAG:2807 == 13
+					PRINTW 菲婭魔女線start~
+				EX_FLAG:2807 += 100
+				EX_FLAG:2801 += 2
+			CASE 2
+				PRINTW 嘛...那祝你其他線好運咯
+				EX_FLAG:2807 += 100		
+			CASE 3
+				PRINTW 嗯，那就給你先存個檔，明天再問吧
+			CASEELSE
+				GOTO ENDDINGSELECT	
+			ENDSELECT
+	CASE 16
+	;雙飛end
+		SELECTCASE RESULT
+	
+			CASE 1
+				PRINTW 此處劇情尚未做好
+				EX_FLAG:2805 += 100
+			CASE 2
+				PRINTW 你跳過了本故事線
+				EX_FLAG:2805 += 100				
+			CASE 3
+				PRINTW 好的，明天見
+			CASEELSE
+				GOTO ENDDINGSELECT
+		ENDSELECT
+	CASEELSE
+		SELECTCASE RESULT
+	
+			CASE 1
+				PRINTW 此處劇情尚未做好
+				FLAG:(2800 + LOCAL) += 100
+				EX_FLAG:2801 += 2
+				SIF LOCAL == (5 || 6)
+					EX_FLAG:2801 += 1
+					;為姐妹雙飛end特殊處理
+			CASE 2
+				PRINTW 你跳過了本故事線
+				FLAG:(2800 + LOCAL) += 100				
+			CASE 3
+				PRINTW 好的，明天見
+			CASEELSE
+				GOTO ENDDINGSELECT
+
+		ENDSELECT
+
+ENDSELECT
+@ENDINCONSQSELECT,ARG
+INPUT
+SELECTCASE ARG
+	CASE 7
+		SELECTCASE RESULT
+			CASE 1
+					PRINTFORMW 「哇～魔王大人最好了～那，菲婭先去房間里了哦～♪」
+					PRINTFORMW 菲婭蹦蹦跳跳的走掉了，看起來很開心的樣子，
+					PRINTFORMW 看起來已經完全適應這裡的生活了。
+			
+			CASE 2
+					PRINTFORMW 「啊唔唔……魔王大人今天很忙嗎……這樣啊……」
+					PRINTFORMW 「那，菲婭會乖乖的等著的哦……」
+					PRINTFORMW 看起來已經完全適應這裡的生活了。
+			CASE 3
+					PRINTFORMW 「……啊～那樣的話太好了」
+					PRINTFORMW 菲婭看起來很開心的樣子。
+			CASE 4
+					PRINTFORMW 「這，這樣啊……雖然努力的練習過了……果然還是不行嗎……」
+					PRINTFORMW 菲婭看起來很沮喪的樣子。			
+			CASE 5
+					PRINTFORMW 藥水並不多，只一小口就全部喝乾凈了，
+					PRINTFORMW 並沒有覺得有什麼不適，……總覺得身體熱了起來，
+					PRINTFORMW 大概是搞成了媚藥一類的東西吧，不過，也沒什麼不好的
+					PRINTFORMW %NAME:MASTER%就這樣順勢的，把菲婭按倒在床上，扯開了衣服，露出了幼小的身體……			
+			CASE 6
+					PRINTFORMW 「不，不要喝嗎……？」
+					PRINTFORMW 「誒？即使不用這種東西，菲婭也是魔王大人的……怎，怎麼這樣……這種事……太犯規了啦……」
+					PRINTFORMW 聽見話語的菲婭愣了一下，豆大的淚珠涌出了眼眶，順著白皙的臉頰滑了下來，
+					PRINTFORMW 小小的身體撲在%NAME:MASTER%的身上，大聲的哭了起來，
+					PRINTFORMW %NAME:MASTER%輕撫著菲婭的頭，安慰著，
+					PRINTFORMW 雖然有點不像自己的風格，不過偶爾這樣也不壞呢……			
+			CASE 7
+					PRINTFORMW 打開瓶子以後，趁著菲婭不注意，統統的都讓她喝了下去。
+					PRINTFORMW 「咕咳咳……？！魔，魔王大人……突然就這麼粗暴的……」
+					PRINTFORMW 「呼啊啊……身體……怎麼……好熱呢……❤」
+					PRINTFORMW 看著面板泛著粉紅色的菲婭，只是把她攬到懷裡這樣的動作，就使菲婭嬌喘連連，
+					PRINTFORMW 大概是搞成了媚藥一類的東西吧，只是普通的撫摸，就讓內褲已經徹底濕透了，敏感度也增加了的樣子，
+					PRINTFORMW %NAME:MASTER%就這樣順勢的讓菲婭趴在自己身上，扯開了衣服，露出了幼小的身體……
+			CASEELSE
+		ENDSELECT
+	CASEELSE
+ENDSELECT
+
+@ENDCONSEQUENCE,ARG
+
+LOCAL = ARG / 1000
+;-------------------------------------
+@BEDROOM_BATTLE_MALE,ARG:0
+;-------------------------------------
+#DIM MODE
+#DIM SWITCH
+MODE = 0
+SWITCH = 0
+SIF TALENT:0:122 == 0
+	MODE = 0
+SIF TALENT:0:122
+	MODE = 2
+SIF ABL:0:11 > 8
+	MODE += 1
+SELECTCASE MODE
+	CASE 0
+		PRINTFORM %SAVESTR:0%從睡夢中醒了過來。
+	CASE 1
+		PRINTFORM %SAVESTR:0%察覺到了%SAVESTR:(ARG:0)%的氣息。
+	CASE 2
+		PRINTFORM %SAVESTR:0%察覺到了%SAVESTR:(ARG:0)%的氣息。
+	CASE 3
+		PRINTFORM %SAVESTR:0%察覺到了%SAVESTR:(ARG:0)%的氣息。
+	CASEELSE
+ENDSELECT

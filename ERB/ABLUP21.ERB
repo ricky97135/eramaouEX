@@ -1,0 +1,533 @@
+﻿;受虐狂ッ気のLvUP処理とその可否判定
+;eratohoA ver1,204のスクリプトをベースに処理を簡略化
+;eraIM@Sから導入しました(eramaou)
+
+;-------------------------------------------------
+;受虐狂ッ気のLvUP
+;-------------------------------------------------
+@ABLUP21
+DRAWLINE
+;PRINTL 奴隸的M氣質提升了。
+;PRINTL M氣質越高，越容易在痛苦和屈辱的行為中獲得快感。
+;CUSTOMDRAWLINE ‥
+;受虐狂ッ気はLv5が上限
+;[膽怯][文靜][把柄][受虐狂]が付いている場合はLv10まで開放
+IF ABL:21 >= 5 && (TALENT:10 == 0 && TALENT:14 == 0 && TALENT:37 == 0 && TALENT:88 == 0)
+	PRINTW 需要特殊素質才能繼續提升
+	RETURN 0
+;抖S氣質＋抖M氣質は21以上にならない
+ELSEIF ABL:20 + ABL:21 >= 20
+	PRINTFORMW 抖S氣質({ABL:20})＋抖M氣質({ABL:21})上限為20
+	RETURN 0
+ELSEIF ABL:21 >= 10
+	PRINTW 已達最高級
+	RETURN 0
+ENDIF
+
+;苦痛＋欲情で上げる場合に必要な苦痛點數
+A = 0
+;必要な欲情點數
+B = 0
+;必要な被虐快樂經驗回數
+C = 0
+;苦痛＋屈服で上げる場合に必要な苦痛點數
+D = 0
+;必要な屈服點數
+E = 0
+;必要な異常經驗回數
+F = 0
+;必要な絕頂經驗回數
+G = 0
+
+;條件別にＯＫかダメかを記録する
+;苦痛＋欲情點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+I = 0
+;苦痛＋屈服點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+J = 0
+
+CALL DECIDE_ABLUP21
+
+;慾望が抖M氣質＋１レベルでないといけない
+PRINTFORML %ABLNAME:11%LV{ABL:21+1}以上(現在LV{ABL:11})且
+
+;ＬＶ３から４、４から５に上げるときは異常經驗必要（素質：[開放][倒錯的][受虐狂]なら無視できる）
+SIF F > 0
+	PRINTFORML %EXPNAME:50%{F}以上(現在{EXP:50})且
+
+IF B > 0
+	PRINTFORM [0] - %PALAMNAME:9%點數×{JUEL:9}/{A} ……
+	PRINTV GET_ABLUP_STATE(I)
+	PRINTL 
+	;欲情點數
+	PRINTFORML 　　　%PALAMNAME:5%點數×{JUEL:5}/{B}
+	;被虐快樂經驗
+	SIF C > 0
+		PRINTFORML 　　　%EXPNAME:30%　{EXP:30}/{C}
+ENDIF
+
+IF D > 0
+	PRINTFORM [1] - %PALAMNAME:9%點數×{JUEL:9}/{D} ……
+	PRINTV GET_ABLUP_STATE(J)
+	PRINTL 
+	;屈服點數
+	PRINTFORML 　　　%PALAMNAME:6%點數×{JUEL:6}/{E}
+	;被虐快樂經驗
+	SIF C > 0
+		PRINTFORML 　　　%EXPNAME:30%　{EXP:30}/{C}
+	;絕頂經驗
+	SIF G > 0
+		PRINTFORML 　　　%EXPNAME:2%　{EXP:2}/{G}
+ENDIF
+
+PRINTL [100] - 停止
+
+INPUT
+IF (RESULT < 0 || RESULT > 1) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF J == 256 && RESULT == 1
+	RESTART
+ELSEIF J != 0 && RESULT == 1
+	PRINTL 未滿足條件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:21 += 1
+
+IF RESULT == 0
+	JUEL:9 -= A
+	JUEL:5 -= B
+ELSEIF RESULT == 1
+	JUEL:9 -= D
+	JUEL:6 -= E
+ENDIF
+
+PRINTFORML %ABLNAME:21%變為LV{ABL:21}。
+
+RETURN 0
+
+
+;-------------------------------------------------
+@CORE_ABLUP21
+;-------------------------------------------------
+ABL:21 ++
+
+IF I == 0
+	JUEL:9 -= A
+	JUEL:5 -= B
+ELSEIF J == 0
+	JUEL:9 -= D
+	JUEL:6 -= E
+ENDIF
+
+
+;-------------------------------------------------
+;抖M氣質のLvUP可否判定
+;-------------------------------------------------
+@DECIDE_ABLUP21
+;[膽怯][文靜][把柄][受虐狂]が付いている場合はLv10まで開放
+SIF ABL:21 >= 5 && (TALENT:10 == 0 && TALENT:14 == 0 && TALENT:37 == 0 && TALENT:88 == 0)
+	RETURN 0
+;抖S氣質＋抖M氣質は21以上にならない
+SIF ABL:20 + ABL:21 >= 20
+	RETURN 0
+;受虐狂ッ気はLv10が上限
+SIF ABL:21 >= 10
+	RETURN 0
+
+;苦痛＋欲情で上げる場合に必要な苦痛點數
+A = 0
+;必要な欲情點數
+B = 0
+;必要な被虐快樂經驗回數
+C = 0
+;苦痛＋屈服で上げる場合に必要な苦痛點數
+D = 0
+;必要な屈服點數
+E = 0
+;必要な異常經驗回數
+F = 0
+
+;條件別にＯＫかダメかを記録する
+;苦痛＋欲情點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+I = 0
+;苦痛＋屈服點數による可否（I=0:可、I&1:點數不足、I&2:経験不足、I&4:能力不足）
+J = 0
+
+IF ABL:21 == 0
+	A = 100
+	B = 100
+	C = 0
+	D = 100
+	E = 100
+ELSEIF ABL:21 == 1
+	A = 500
+	B = 500
+	C = 0
+	D = 500
+	E = 300
+ELSEIF ABL:21 == 2
+	A = 1200
+	B = 1000
+	C = 0
+	D = 1500
+	E = 1000
+ELSEIF ABL:21 == 3
+	A = 0
+	B = 0
+	C = 30
+	D = 2800
+	E = 6000
+ELSEIF ABL:21 == 4
+	A = 0
+	B = 0
+	C = 80
+	D = 4300
+	E = 12000
+ELSEIF ABL:21 == 5
+	A = 0
+	B = 0
+	C = 150
+	D = 6000
+	E = 24000
+ELSEIF ABL:21 == 6
+	A = 0
+	B = 0
+	C = 200
+	D = 8000
+	E = 38000
+ELSEIF ABL:21 == 7
+	A = 0
+	B = 0
+	C = 300
+	D = 11000
+	E = 56000
+ELSEIF ABL:21 == 8
+	A = 0
+	B = 0
+	C = 450
+	D = 15000
+	E = 86000
+ELSEIF ABL:21 == 9
+	A = 0
+	B = 0
+	C = 600
+	D = 20000
+	E = 120000
+ENDIF
+
+;戒備森嚴
+IF TALENT:27
+	IF ABL:21 == 3
+		TIMES C , 1.50
+		TIMES D , 1.50
+		TIMES E , 1.50
+	ELSEIF ABL:21 == 4
+		TIMES C , 2.00
+		TIMES D , 2.00
+		TIMES E , 2.00
+	ELSEIF ABL:21 == 5
+		TIMES C , 2.50
+		TIMES D , 2.50
+		TIMES E , 2.50
+	ELSEIF ABL:21 >= 6
+		TIMES C , 3.00
+		TIMES D , 3.00
+		TIMES E , 3.00
+	ENDIF
+ENDIF
+
+;ＬＶ３から４、４から５、７から８に上げるときは異常經驗必要（素質：[開放][倒錯的][受虐狂]なら無視できる）
+SIF (ABL:21 == 3 || ABL:21 == 4 || ABL:21 == 7) && TALENT:33 == 0 && TALENT:80 == 0 && TALENT:88 == 0
+	F = ABL:21 - 2
+
+;必要な絕頂經驗數は全レベル1
+G = 1
+
+;膽怯
+IF TALENT:10
+	TIMES A , 1.10
+	TIMES B , 1.10
+	TIMES C , 1.10
+	TIMES D , 1.10
+	TIMES E , 1.10
+ENDIF
+;反抗心
+IF TALENT:11
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+;剛強
+IF TALENT:12
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+;囂張
+IF TALENT:16
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+
+;高姿態
+IF TALENT:15
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+;低姿態
+ELSEIF TALENT:17
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+	TIMES D , 0.90
+	TIMES E , 0.90
+ENDIF
+
+;克制
+IF TALENT:20
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+;冷漠
+IF TALENT:21
+	TIMES A , 1.10
+	TIMES B , 1.10
+	TIMES C , 1.10
+	TIMES D , 1.10
+	TIMES E , 1.10
+ENDIF
+;感情淡薄
+IF TALENT:22
+	TIMES A , 1.50
+	TIMES B , 1.50
+	TIMES C , 1.50
+	TIMES D , 1.50
+	TIMES E , 1.50
+ENDIF
+;保守的
+IF TALENT:24
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+;悲觀的
+IF TALENT:26
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+	TIMES D , 0.90
+	TIMES E , 0.90
+ENDIF
+
+;看重貞操
+IF TALENT:30
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+;看輕貞操
+ELSEIF TALENT:31
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+	TIMES D , 0.90
+	TIMES E , 0.90
+ENDIF
+
+;壓抑
+IF TALENT:32
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+;開放
+ELSEIF TALENT:33
+	TIMES A , 0.60
+	TIMES B , 0.60
+	TIMES C , 0.60
+	TIMES D , 0.60
+	TIMES E , 0.60
+ENDIF
+
+;抵抗
+IF TALENT:34
+	TIMES A , 2.00
+	TIMES B , 2.00
+	TIMES C , 2.00
+	TIMES D , 2.00
+	TIMES E , 2.00
+ENDIF
+
+;害羞
+IF TALENT:35
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+	TIMES D , 0.90
+	TIMES E , 0.90
+;不知羞恥
+ELSEIF TALENT:36
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+
+;害怕疼痛
+IF TALENT:40
+	TIMES A , 1.10
+	TIMES B , 1.10
+	TIMES C , 1.10
+	TIMES D , 1.10
+	TIMES E , 1.10
+;不懼疼痛
+ELSEIF TALENT:41
+	TIMES A , 0.95
+	TIMES B , 0.95
+	TIMES C , 0.95
+	TIMES D , 0.95
+	TIMES E , 0.95
+ENDIF
+
+;接受快感
+IF TALENT:70
+	TIMES A , 0.90
+	TIMES B , 0.90
+	TIMES C , 0.90
+	TIMES D , 0.90
+	TIMES E , 0.90
+;否定快感
+ELSEIF TALENT:71
+	TIMES A , 1.10
+	TIMES B , 1.10
+	TIMES C , 1.10
+	TIMES D , 1.10
+	TIMES E , 1.10
+ENDIF
+
+;淫亂
+IF TALENT:76
+	TIMES A , 0.80
+	TIMES B , 0.80
+	TIMES C , 0.80
+	TIMES D , 0.80
+	TIMES E , 0.80
+ENDIF
+;倒錯的
+IF TALENT:80
+	TIMES A , 0.75
+	TIMES B , 0.75
+	TIMES C , 0.75
+	TIMES D , 0.75
+	TIMES E , 0.75
+ENDIF
+;施虐狂
+IF TALENT:83
+	TIMES A , 1.20
+	TIMES B , 1.20
+	TIMES C , 1.20
+	TIMES D , 1.20
+	TIMES E , 1.20
+ENDIF
+;受虐狂
+IF TALENT:88
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+	TIMES D , 0.50
+	TIMES E , 0.50
+ENDIF
+;瘋狂
+IF TALENT:123
+	TIMES A , 0.80
+	TIMES B , 0.80
+	TIMES C , 0.80
+	TIMES D , 0.80
+	TIMES E , 0.80
+ENDIF
+;崩壞
+IF TALENT:9
+	TIMES A , 2.00
+	TIMES B , 2.00
+	TIMES C , 2.00
+	TIMES D , 2.00
+	TIMES E , 2.00
+ENDIF
+
+;慾望が抖M氣質＋１レベルでないといけない
+IF ABL:11 < ABL:21+1
+	;慾望が不足
+	I |= 4
+	J |= 4
+ENDIF
+
+;異常經驗が不足
+IF EXP:50 < F
+	I |= 2
+	J |= 2
+ENDIF
+
+;欲情＋苦痛點數で上げる場合
+IF B > 0
+	;苦痛點數が不足
+	SIF JUEL:9 < A
+		I |= 1
+	;欲情點數が不足
+	SIF JUEL:5 < B
+		I |= 1
+	;被虐快樂經驗が不足
+	SIF EXP:30 < C
+		I |= 2
+ELSE
+	I = 256
+ENDIF
+
+;苦痛＋屈服點數で上げる
+IF D > 0
+	;苦痛點數が不足
+	SIF JUEL:9 < D
+		J |= 1
+	;屈服點數が不足
+	SIF JUEL:6 < E
+		J |= 1
+	;被虐快樂經驗が不足
+	SIF EXP:30 < C
+		J |= 2
+	;絕頂經驗が不足
+	SIF EXP:2 < G
+		J |= 2
+ELSE
+	J = 256
+ENDIF
+
+IF I == 0 || J == 0
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;
+;
+;

@@ -1,0 +1,3700 @@
+﻿;eraWIZから導入しました
+;eramaouにていろいろ追加
+
+@LOOK_SET, ARG
+;ARG	種族設定
+#DIM MARRY
+;頭髮顏色
+;設定済みフラグ
+;(stick修改)10、11、48註釋掉，強制每個人物產生髮色，修正人物無髮色的問題
+IF TALENT:TARGET:300 > 0
+		;設定済み
+ELSE
+	Q = RAND:100
+	
+	; 0- 4 粉髪  5%
+	; 5-14 紫髪 10%
+	;15-20 白髮  6%
+	;21-30 青髪 10%
+	;31-40 緑髪 10%
+	;41-50 栗毛 10%
+	;51-60 金色 10%
+	;61-79 黒髪 19%
+	;80-89 赤毛 10%
+	;90-94 暗金色 5%
+	;95-99 銀髪  5%
+	SELECTCASE RAND:100
+	CASE 0 TO 4
+		;粉髪
+		TALENT:TARGET:300 = 11	
+	CASE 5 TO 14
+		;紫色
+		TALENT:TARGET:300 = 8
+	CASE 15 TO 20
+		;白髪
+		TALENT:TARGET:300 = 9
+	CASE 21 TO 30
+		;青髪
+		TALENT:TARGET:300 = 6
+	CASE 31 TO 40
+		;緑髪
+		TALENT:TARGET:300 = 7
+	CASE 41 TO 50
+		;栗毛
+		TALENT:TARGET:300 = 2
+	CASE 51 TO 60
+		;金色
+		TALENT:TARGET:300 = 1
+	CASE 61 TO 79
+		;黒髪
+		TALENT:TARGET:300 = 3
+	CASE 80 TO 89
+		;赤毛
+		TALENT:TARGET:300 = 4
+	CASE 90 TO 94
+		;暗金色
+		TALENT:TARGET:300 = 10
+	CASE 95 TO 99
+		;銀髪
+		TALENT:TARGET:300 = 5
+	ENDSELECT
+ENDIF
+
+;頭髮狀態
+Q = RAND:12
+IF Q <= 6
+	;直毛
+	TALENT:TARGET:301 = 1
+ELSEIF Q == 7
+	;カール
+	TALENT:TARGET:301 = 2
+ELSEIF Q == 8
+	;內カール
+	TALENT:TARGET:301 = 3
+ELSEIF Q == 9
+	;外カール
+	TALENT:TARGET:301 = 4
+ELSEIF Q == 10
+	;癖毛
+	TALENT:TARGET:301 = 5
+ELSE
+	;ウェーブ
+	TALENT:TARGET:301 = 6
+ENDIF
+
+;頭髮長度　ボーイッシュなら常にショート
+
+Q = RAND:6
+IF Q <= 1 || TALENT:TARGET:135
+	;ショート
+	TALENT:TARGET:302 = 1
+ELSEIF Q == 4
+	;セミロング
+	TALENT:TARGET:302 = 101
+ELSE
+	;ロング
+	TALENT:TARGET:302 = 201
+ENDIF
+
+;頭髮修剪方式
+
+Q = RAND:6
+IF Q >= 2
+	;ベーシック
+	TALENT:TARGET:303 = 1
+ELSEIF Q == 3
+	;切り揃え
+	TALENT:TARGET:303 = 2
+ELSEIF Q == 4
+	;レイヤー
+	TALENT:TARGET:303 = 3
+ELSE
+	;シャギー
+	TALENT:TARGET:303 = 4
+ENDIF
+
+;髪型
+;長さによって出來る髪形と出來ない髪形がある
+;0,無  1,自然  2,中分  3,不均分  
+;4,長束髮  5,馬尾  6,側馬尾  
+;7,垂髮辮  8,雙馬尾  9,頂束髮  
+;10,側束髮  11,魚骨辮  12,卷髮  
+IF TALENT:302 >= 1 && TALENT:302 <= 100
+	Q = RAND:3
+ELSEIF TALENT:302 >= 101 && TALENT:302 <= 200
+	Q = RAND:10
+ELSE
+	Q = RAND:12
+ENDIF
+Q += 1
+TALENT:304 = Q
+
+;目
+Q = RAND:100
+; 0-10 切れ長 11%
+;11-20 大きい 10%
+;21-25 神秘的  5%
+;26-35 釣り目  5%
+;36-40 潤み目  5%
+;41-45 たれ目  5%
+;46-48 三白眼  3%
+;49-99 普通   56%
+IF Q <= 10
+	;切れ長
+	TALENT:TARGET:305 = 1
+ELSEIF Q <= 20
+	;大きい
+	TALENT:TARGET:305 = 2
+ELSEIF Q <= 25
+	;神秘的
+	TALENT:TARGET:305 = 3
+ELSEIF Q <= 35
+	;釣り目
+	TALENT:TARGET:305 = 4
+ELSEIF Q <= 40
+	;潤み目
+	TALENT:TARGET:305 = 5
+ELSEIF Q <= 45
+	;たれ目
+	TALENT:TARGET:305 = 8
+ELSEIF Q <= 48
+	;三白眼
+	TALENT:TARGET:305 = 7
+ELSE
+	;標準
+	TALENT:TARGET:305 = 6
+ENDIF
+
+;瞳色
+Q = RAND:100
+IF Q <= 40
+	;碧
+	TALENT:TARGET:306 = 1
+ELSEIF Q <= 60
+	;ブラウン
+	TALENT:TARGET:306 = 2
+ELSEIF Q <= 80
+	;黒
+	TALENT:TARGET:306 = 6
+ELSEIF Q <= 97
+	;グレー
+	TALENT:TARGET:306 = 3
+ELSEIF Q <= 98
+	;ゴールド
+	TALENT:TARGET:306 = 4
+ELSE
+	;クリムゾン
+	TALENT:TARGET:306 = 5
+ENDIF
+
+;唇
+Q = RAND:6
+IF Q == 0
+	;肉感的
+	TALENT:TARGET:307 = 1
+ELSEIF Q == 1
+	;薄い
+	TALENT:TARGET:307 = 2
+ELSEIF Q == 2
+	;瑞々しい
+	TALENT:TARGET:307 = 3
+ELSE
+	;標準
+	TALENT:TARGET:307 = 4
+ENDIF
+
+;體型
+Q = RAND:3
+IF Q == 0
+	;豐滿
+	TALENT:TARGET:308 = 300
+ELSEIF Q == 1
+	;骨感
+	TALENT:TARGET:308 = 1
+ELSE
+	;標準
+	TALENT:TARGET:308 = 150
+ENDIF
+
+;乳頭
+Q = RAND:6
+IF Q == 0
+	;ピンク
+	TALENT:TARGET:309 = 1
+ELSEIF Q == 1
+	;褐色
+	TALENT:TARGET:309 = 2
+ELSEIF Q == 2
+	;陥沒
+	TALENT:TARGET:309 = 4
+ELSE
+	;標準
+	TALENT:TARGET:309 = 3
+ENDIF
+
+;陰毛
+Q = RAND:150
+IF Q <= 20
+	;無
+	TALENT:TARGET:311 = 1
+ELSEIF Q <= 45
+	;産毛
+	TALENT:TARGET:311 = 20	
+ELSEIF Q <= 70
+	;薄い
+	TALENT:TARGET:311 = 50
+ELSEIF Q <= 100
+	;標準
+	TALENT:TARGET:311 = 100
+ELSEIF Q <= 130
+	;濃い
+	TALENT:TARGET:311 = 150
+ELSE
+	;剛毛
+	TALENT:TARGET:311 = 201
+ENDIF
+TALENT:TARGET:310 = TALENT:TARGET:311
+
+;ペニス
+;有無にかかわらず設定は入れておく
+Q = RAND:150
+IF Q <= 50
+	;普通
+	TALENT:TARGET:318 = 0
+ELSEIF Q <= 100 || (TALENT:TARGET:135 && Q <= 50)
+	;包莖
+	TALENT:TARGET:318 = 3
+ELSEIF Q <= 130 || (TALENT:TARGET:135 && Q <= 100)
+	;短小包莖
+	TALENT:TARGET:318 = 2
+ELSE
+	;巨根
+	TALENT:TARGET:318 = 1
+ENDIF
+
+;包莖・短小包莖は早漏を得ることがあるように
+SIF (TALENT:TARGET:318 == 2 || TALENT:TARGET:318 == 3) && RAND:10 == 0
+	TALENT:TARGET:早泄 = 1
+
+;魅力點
+$CHARMPOINT
+Q = RAND:28
+Q += 1
+
+;貧乳は美乳になれない
+IF (TALENT:TARGET:109) && (Q == 12)
+	GOTO CHARMPOINT
+
+;ドワーフにくびれはない
+;ELSEIF (TALENT:TARGET:153) && (Q == 13)
+;	GOTO CHARMPOINT
+ENDIF
+
+;自前のペニス持ちなら追加のふたなり獲得チャンス
+IF Q == 24
+	SIF RAND:40 == 0 && TALENT:TARGET:122 == 0
+		TALENT:TARGET:121 = 1
+	;ふたなりになれなければチャームポイント決め直し
+	SIF TALENT:TARGET:121 == 0 && TALENT:TARGET:122 == 0
+		GOTO CHARMPOINT
+ENDIF
+
+TALENT:TARGET:312 = Q
+
+
+;癖
+$HABIT
+Q = RAND:34
+Q += 1
+
+;話せないなら決め臺詞はありえない
+IF (TALENT:TARGET:167) && (Q == 25)
+	GOTO HABIT
+ENDIF
+
+TALENT:TARGET:313 = Q
+
+;----------------------------------------------------------------------------------------------
+;種族。eramaou追加。TALENT節約のためここに
+;---------------------------------------------------------------------------------------------
+$RACE
+;仕様上二つの種族を持てないけど二つ以上の種族特性持ってるのは流石におかしいよね…
+;でも【人狼】【エルフ】とか持ってたらハーフって解釈も可能だし新たな屬性が開花しそうだけど
+;最終的に某パンスト太郎になるのでやめました
+;7,8,9番は後天的なので追加する場合12番以降使ってください
+;人間50％、ホビット、ドワーフ、エルフ10％ずつ
+;人浪5％吸血鬼5％無頭騎士5％ドラゴン4％天使１％
+
+;精英は種族隨機作成を行わないように修正。
+IF TALENT:220 != 1
+Q = RAND:200
+IF (ARG == 0 && Q <= 99) || ARG == -1
+	;人間
+	TALENT:TARGET:314 = 0
+ELSEIF (ARG == 0 && Q <= 119) || ARG == 10
+	;ホビット
+	TALENT:TARGET:314 = 10
+	TALENT:TARGET:100 = 1
+	SIF TALENT:TARGET:122 == 0
+		TALENT:TARGET:109 = 1
+	;ドワーフとホビットには巨乳と大柄は付かない（絶壁と爆乳、超乳も付かない）
+	TALENT:TARGET:116 =0
+	TALENT:TARGET:114 =0
+	TALENT:TARGET:119 =0
+	TALENT:TARGET:110 =0
+	TALENT:TARGET:99 =0
+	;ホビットは陰毛が無毛になりやすい
+	IF RAND:10 <= 3
+		TALENT:A:311 = 1
+		TALENT:A:310 = TALENT:A:311
+	ENDIF
+ELSEIF (ARG == 0 && Q <= 139) || ARG == 11
+	;ドワーフ
+	TALENT:TARGET:314 = 11
+	TALENT:TARGET:100 = 1
+	SIF TALENT:TARGET:122 == 0
+		TALENT:TARGET:109 = 1
+	;ドワーフとホビットには巨乳と魁梧は付かない（絕壁と爆乳、超乳も付かない）
+	TALENT:TARGET:116 =0
+	TALENT:TARGET:114 =0
+	TALENT:TARGET:119 =0
+	TALENT:TARGET:110 =0
+	TALENT:TARGET:99 =0
+	;ドワーフは陰毛が剛毛になりやすい
+	IF RAND:10 <= 3
+		TALENT:A:311 = 201
+		TALENT:A:310 = TALENT:A:311
+	ENDIF
+ELSEIF (ARG == 0 && Q <= 159) || ARG == 1
+	;エルフ
+	TALENT:TARGET:314 = 1
+	;エルフは善惡值が高い
+	CALL karma, TARGET, 20
+ELSEIF (ARG == 0 && Q <= 169) || ARG == 2
+	;人狼
+	TALENT:TARGET:314 = 2
+	TALENT:TARGET:124 = 1
+	;人狼は善惡值が低い
+	CALL karma, TARGET, -20
+ELSEIF (ARG == 0 && Q <= 179) || ARG == 3
+	;吸血鬼
+	TALENT:TARGET:314 = 3
+	;吸血鬼は善惡值が低い
+	CALL karma, TARGET, -40
+ELSEIF (ARG == 0 && Q <= 189) || ARG == 4
+	;無頭騎士
+	TALENT:TARGET:314 = 4
+	;暗之能力者になるチャンス
+	SIF RAND:40 == 0
+		TALENT:TARGET:279 = 1
+	;無頭騎士は善惡值が低い
+	CALL karma, TARGET, -40
+ELSEIF (ARG == 0 && Q <= 197) || ARG == 5
+	;ドラゴン
+	TALENT:TARGET:314 = 5
+	;角
+	TALENT:TARGET:264 = 1
+ELSEIF ARG
+	;その他指定の種族
+	TALENT:TARGET:314 = ARG
+ELSE
+	;天使
+	TALENT:TARGET:314 = 6
+	;光之能力者になるチャンス
+	SIF RAND:40 == 0
+		TALENT:TARGET:278 = 1
+	;天使は善惡值が高い
+	CALL karma, TARGET, 40
+ENDIF
+;精英の場合はこちら
+ELSE
+	TALENT:314 = 9
+	IF TALENT:319 == 1
+		;亜人
+		SIF RAND:4 == 0
+			TALENT:472 = 1
+		;亜人は陰毛が剛毛になりやすい
+		IF RAND:10 <= 3
+			TALENT:311 = 201
+			TALENT:310 = TALENT:311
+		ENDIF
+	ELSEIF TALENT:319 == 2
+		;史萊姆
+		TALENT:261 = 1
+		SIF RAND:4 == 0
+			TALENT:471 = 1
+		;史萊姆は無毛
+		TALENT:311 = 1
+		TALENT:310 = TALENT:311
+	ELSEIF TALENT:319 == 3
+		;昆蟲
+		;昆蟲は戰術を持つ。成長の早さと強靭さのイメージ
+		TALENT:240 = 1
+		SIF RAND:4 == 0
+			TALENT:474 = 1
+	ELSEIF TALENT:319 == 4
+		;植物
+		;植物はたまに觸手を持つ。
+		SIF RAND:10 == 0
+			TALENT:262 = 1
+		SIF RAND:4 == 0
+			TALENT:473 = 1
+	ELSEIF TALENT:319 == 5 || TALENT:319 == 11
+		;觸手＆腦奸
+		TALENT:262 = 1
+		SIF RAND:4 == 0
+			TALENT:476 = 1
+	ELSEIF TALENT:319 == 6
+		;妖精
+		TALENT:263 = 1
+		TALENT:99 = 0
+		TALENT:100 = 0
+		SIF RAND:4 == 0
+			TALENT:478 = 1
+		;妖精の大半は幼稚である
+		SIF RAND:4 != 0
+			TALENT:132 = 1
+		;妖精は陰毛が無毛になりやすい
+		IF RAND:10 <= 3
+			TALENT:311 = 1
+			TALENT:310 = TALENT:311
+		ENDIF
+	ELSEIF TALENT:319 == 7
+		;巨人
+	ELSEIF TALENT:319 == 8 || TALENT:319 == 9
+		;男＆女魔族
+		TALENT:245 = 1
+		TALENT:246 = 1
+		TALENT:247 = 1
+		IF RAND:4 == 0
+			IF TALENT:319 == 8
+				TALENT:485 = 1
+			ELSE
+				TALENT:481 = 1
+			ENDIF
+		ENDIF
+	ELSEIF TALENT:319 == 10 || 12
+		;獣＆馬
+		TALENT:244 = 0
+		TALENT:253= 0
+		TALENT:255 = 0
+		TALENT:137 = 1
+		TALENT:258 = 1
+		TALENT:124 = 1
+		SIF RAND:4 == 0
+			TALENT:479 = 1
+	ENDIF
+ENDIF
+
+;(stick修改)後代跳過經歷與成為勇者理由產生，不管是否產生實際也只顯示為不明，同時帶來女兒變成人妻及出現性經驗問題
+;2016/11/1 後代的經歷與理由與精英同款產生
+;IF EX_TALENT:TARGET:2
+;	GOTO LOVE
+;ENDIF
+
+;勇者の前の生活
+$BORN
+Q = RAND:21
+Q += 1
+
+;配下の場合、特別な元職業
+SIF TALENT:220 == 1 || EX_TALENT:2
+	Q = 90 + RAND:4
+;法術を知らない場合修道女にはなれない
+SIF Q == 2 && TALENT:242 == 0
+	GOTO BORN
+;妓女・物乞い・奴隷の場合、経験がつく
+IF Q == 5 || Q == 7 || Q == 20
+    IF TALENT:122 && TALENT:1
+		;童貞オトコの場合
+		LOCAL = RAND:20 + 1
+		EXP:1 += LOCAL
+		EXP:5 += LOCAL
+		SIF Q != 20
+			EXP:74 += LOCAL
+	ELSEIF TALENT:122
+		;オトコの場合
+		LOCAL = RAND:40 + 1
+		EXP:1 += LOCAL
+		EXP:5 += LOCAL
+		SIF Q != 20
+			EXP:74 += LOCAL
+	ELSEIF TALENT:0 == 1
+    	;處女の場合
+		LOCAL = RAND:40 + 1
+		EXP:1 += LOCAL
+		EXP:5 += LOCAL
+		SIF Q != 20
+			EXP:74 += LOCAL
+	ELSEIF RAND:5 == 0
+		;非處女でアナルも使用している
+		LOCAL:0 = RAND:40 + 1
+		LOCAL:1 = RAND:40 + 1
+		EXP:0 += LOCAL:0
+		EXP:1 += LOCAL:1
+		EXP:5 += (EXP:0 + EXP:1)
+		SIF Q != 20
+			EXP:74 += EXP:5
+	ELSE
+		;非處女でVのみ
+		LOCAL = RAND:40 + 1
+		EXP:0 += LOCAL
+		EXP:5 += LOCAL
+		SIF Q != 20
+			EXP:74 += LOCAL
+	ENDIF
+	
+	;妓女と奴隷は、刺青を入れられていることがある
+	IF RAND:15 == 0 && Q != 7
+		LOCAL = RAND:8 + 10
+		LOCALS:10 '= "淫亂" , "母豬" , "蛇" , "蜘蛛女郎" , "薔薇" , "肉便器" , "便女" , "陰莖圖畫" , "性器標誌" , "骷髏"
+		CSTR:LOCAL = %LOCALS:LOCAL%
+	ENDIF
+	
+	;非處女の場合、生育經驗がつくことがある
+	SIF TALENT:0 == 0 && RAND:15 == 0
+		EXP:60 += RAND:3
+	;そして善惡值が低い
+	CALL karma, TARGET, -30
+ELSEIF Q == 2 || Q == 8 || Q == 11 || Q == 12 || Q == 13
+	;修道女・貴族・巫女・聖女・予言者は善惡值が高い
+	CALL karma, TARGET, 30
+	;光之能力者になるチャンス
+	SIF RAND:40 == 0
+		TALENT:TARGET:278 = 1
+ELSEIF Q == 6
+	;盜人は善惡值が低い
+	CALL karma, TARGET, -40
+ELSEIF Q == 21 
+	;主婦は経験がつく
+	LOCAL:0 = RAND:20 + 10
+	EXP:0 += LOCAL:0
+	EXP:5 += LOCAL:0
+	
+	;主婦は確定で子持ち
+	
+	;子供の數が合わなくなっちゃうのでオミットしてしまいました
+	;すまない…
+	;その代わり主婦確定子持ちは受け継ぐぜお前の意思…
+	
+	;EXP:60 = 0
+	;EXP:60 += RAND:3
+	;處女を失う
+	TALENT:0 = 0
+	;私處封印も失う
+	TALENT:273 = 0
+	;必ず人妻がつく
+	TALENT:157 = 1
+ENDIF
+TALENT:TARGET:315 = Q
+
+;勇者になった理由
+$REASON
+Q = RAND:20
+Q += 1
+
+;配下の場合、特別な理由
+SIF TALENT:220 == 1 || EX_TALENT:2
+	Q = 90 + RAND:4
+SIF Q >103 && EX_TALENT:2
+	Q = 93
+IF Q == 1 || Q == 3 || Q == 4 || Q == 7 || Q == 16 || Q == 17
+	;運命・啓示・使命・故郷・平和・正義は善惡值が高い
+	CALL karma, TARGET, 20
+ELSEIF Q == 2 || Q == 11 || Q == 13
+	;金・自暴自棄・命令は善惡值が低い
+	CALL karma, TARGET, -20
+ENDIF
+TALENT:TARGET:316 = Q
+
+;喜歡的東西
+$LOVE
+Q = RAND:20
+Q += 1
+IF Q == 4 || Q == 8 || Q == 9 || Q == 10 || Q == 11
+	;戀人・家族・使命・故郷・憧れは善惡值が高い
+	CALL karma, TARGET, 20
+ELSEIF Q == 5 || Q == 13 || Q == 14
+	;金・裝飾品・寶石は善惡值が低い
+	CALL karma, TARGET, -20
+ENDIF
+TALENT:TARGET:317 = Q
+
+
+;家族構成
+;0=秘密
+;            1の位 = 1のとき、家族構成設定あり
+;           10の位 = 勇者以前の結婚歴（回數）
+;          100の位 = 勇者以前に生んだ娘
+;        1,000の位 = 勇者以前に生んだ息子
+;       10,000の位 = 結婚相手との関係
+;（0=未婚 1=結婚 2=離婚 3=現在の伴侶と重婚 4=現在の伴侶と契り、離婚を宣言）
+;（5=死別）
+;      100,000の位 = 姉の數
+;    1,000,000の位 = 兄の數
+;   10,000,000の位 = 妹の數
+;  100,000,000の位 = 弟の數
+;1,000,000,000の位 = 自分と結婚相手の性別
+;（自分相手 0=女男 1=女ふた 2=女女 3=ふた女 4=ふた男 5=ふたふた）
+;（6=男女 7=男ふた 8=男男）
+
+SIF TALENT:220 == 0
+	TALENT:TARGET:320 = 1
+
+;結婚相手の設定
+$FAMILY
+LOCAL = 0
+MARRY = 0
+IF TALENT:157 == 1
+	;人妻
+	IF RAND:20 == 0
+		;バツ2
+		LOCAL += 30
+	ELSEIF RAND:10 == 0
+		;バツ1
+		LOCAL += 20
+	ELSE
+		;初婚
+		LOCAL += 10
+	ENDIF
+	;現在の狀況…結婚
+	LOCAL += 10000
+	MARRY = 1
+ELSEIF RAND:20 == 0 && EX_TALENT:TARGET:2 == 0
+	;離婚または未亡人
+	IF RAND:10 == 0
+		;バツ2
+		LOCAL += 20
+	ELSE
+		;バツ1
+		LOCAL += 10
+	ENDIF
+	
+	;現在の狀況
+	IF RAND:2 == 0
+		;離婚
+		LOCAL += 20000
+	ELSE
+		;死別（未亡人）
+		LOCAL += 50000
+	ENDIF
+	MARRY = 1
+ENDIF
+
+;子供の設定
+;非処女限定
+IF TALENT:315 == 21 && TALENT:0 == 0
+	;主婦
+	;最大4人の子供がいる
+	FOR LOCAL:1,0,4
+		IF RAND:2 == 0
+			;娘
+			LOCAL += 100
+		ELSE
+			;息子
+			LOCAL += 1000
+		ENDIF
+		;ループ抜けの位置が違うので、一人は確定する
+		SIF RAND:2 == 0
+			BREAK
+	NEXT
+ELSEIF LOCAL >= 10 && TALENT:0 == 0
+	;結婚経験がある
+	;最大4人の子供がいる
+	FOR LOCAL:1,0,4
+		;ループを抜け、子供がいなかったり4人以下だったりする
+		SIF RAND:2 == 0
+			BREAK
+		IF RAND:2 == 0
+			;娘
+			LOCAL += 100
+		ELSE
+			;息子
+			LOCAL += 1000
+		ENDIF
+		
+	NEXT
+ELSEIF RAND:20 == 0 && TALENT:0 == 0
+	;未婚の母
+	;最大2人の子供がいる
+	LOCAL:2 = 2
+	;娼婦は4人もいる可能性
+	SIF TALENT:315 == 5
+		LOCAL:2 += 2
+	FOR LOCAL:1,0,LOCAL:2
+		;ループを抜け、子供がいなかったり4人以下だったりする
+		SIF RAND:2 == 0
+			BREAK
+		IF RAND:2 == 0
+			;娘
+			LOCAL += 100
+		ELSE
+			;息子
+			LOCAL += 1000
+		ENDIF
+		
+	NEXT
+ENDIF
+
+;兄弟姉妹の設定
+;最大4人の兄弟姉妹がいる
+FOR LOCAL:1,0,4
+	;ループを抜け、一人っ子だったり少なかったりする
+	SIF RAND:2 == 0
+		BREAK
+	IF RAND:4 == 0
+		;姉
+		LOCAL += 100000
+	ELSEIF RAND:3 == 0
+		;兄
+		LOCAL += 1000000
+	ELSEIF RAND:2 == 0
+		;妹
+		LOCAL += 10000000
+	ELSE
+		;弟
+		LOCAL += 100000000
+	ENDIF
+	
+NEXT
+
+;性別の設定（人妻の場合）
+IF TALENT:122 == 1 && MARRY == 1
+	;オトコ
+	IF RAND:20 == 0
+		;男男カップル
+		LOCAL += 8000000000
+		;BLっ気補正
+		ABL:斷背氣質 = 3
+	ELSEIF RAND:8 == 0
+		;男ふたカップル
+		LOCAL += 7000000000
+	ELSE
+		;男女カップル
+		LOCAL += 6000000000
+	ENDIF
+ELSEIF TALENT:121 == 1 && MARRY == 1
+	;ふたなり
+	IF RAND:10 == 0
+		;希少なふたなりのカップル
+		LOCAL += 5000000000
+		;百合氣質補正
+		ABL:百合氣質 = 3
+	ELSEIF RAND:2 == 0
+		;ふた男カップル
+		LOCAL += 4000000000
+	ELSE
+		;ふた女カップル
+		LOCAL += 3000000000
+		;百合氣質補正
+		ABL:百合氣質 = 3
+	ENDIF
+ELSEIF MARRY == 1
+	;女
+	IF RAND:20 == 0
+		;女女カップル
+		LOCAL += 2000000000
+		;百合氣質補正
+		ABL:百合氣質 = 3
+	ELSEIF RAND:8 == 0
+		;女ふたカップル
+		LOCAL += 1000000000
+		;百合氣質補正
+		ABL:百合氣質 = 3
+	ENDIF
+ENDIF
+
+;データ反映
+TALENT:TARGET:320 += LOCAL
+
+
+RETURN 1
+
+;-----------------------------------------------------------------
+@LOOK_CLEAR
+;-----------------------------------------------------------------
+REPEAT 314
+	SIF COUNT < 300
+		COUNT = 300
+	TALENT:COUNT = 0
+REND
+
+;-----------------------------------------------------------------
+@LOOK_INFO
+;-----------------------------------------------------------------
+;種族\ 現種族\ 原種族
+;[精靈]
+;[魔族·巨人：巨人族]
+;[魔族：小惡魔][原種族：人類]
+LOCALS =
+LOCALS:1 =
+LOCALS:2 =
+LOCALS:3 =
+
+LOCALS '= GET_LOOK_INFO(TARGET, "種族")
+
+;精英は2つ目の素質を持つ
+IF TALENT:精英
+	SIF TALENT:種族2 != 8 && TALENT:種族2 != 9
+		LOCALS:1 '= GET_LOOK_INFO(TARGET, "種族2")
+
+	LOCALS:2 '= CSVNAME(NO:TARGET)
+
+;魔族化済みで現種族が設定されていない場合設定しておく
+ELSEIF TALENT:種族 == 9
+	SIF !INRANGE(TALENT:現種族, 100, 220)
+		TALENT:現種族 = 132 ;インプ
+		
+	LOCALS:2 '= ITEMNAME:(TALENT:現種族)
+	LOCALS:3 '= GET_LOOK_INFO(TARGET, "原種族")
+	SIF TALENT:原種族 == 9
+		LOCALS:3 = 不明
+ENDIF
+	
+
+IF FLAG:5 & 2048
+	PRINT 「
+	SIF TARGET == 0
+		PRINTFORM 擁有
+	SETCOLORBYNAME LightSalmon
+	PRINTV LOCALS
+	IF STRLENS(LOCALS:1) > 0
+		PRINT ·
+		PRINTV LOCALS:1
+	ENDIF
+	RESETCOLOR
+	
+	IF STRLENS(LOCALS:2) > 0
+		PRINT ·
+		SETCOLORBYNAME LightSalmon
+		PRINTV LOCALS:2
+		RESETCOLOR
+	ENDIF
+	SIF TARGET == 0
+		PRINTFORM 肉體
+	PRINTFORM 的%SAVESTR:TARGET%
+
+	CALL GOBI_KOUJO, (MARK:屈服刻印 >= 3) ? 0 # 4
+	PRINT 」
+	
+	IF STRLENS(LOCALS:3) > 0
+		PRINTFORM 「成為魔族前的種族：
+		IF TALENT:TARGET:原種族 == 9
+			PRINT 不明
+			CALL GOBI_KOUJO, (TALENT:TARGET:愛慕 || TALENT:TARGET:淫亂) ? 0 # 3
+		ELSE
+			SETCOLORBYNAME LightSalmon
+			PRINTV LOCALS:3
+			RESETCOLOR
+			CALL GOBI_KOUJO, (MARK:屈服刻印 >= 3) ? 0 # 2
+		ENDIF
+		PRINT 」
+	ENDIF
+	PRINTL
+ELSE
+	PRINT [
+	PRINTV LOCALS
+	RESETCOLOR
+	IF STRLENS(LOCALS:1) > 0
+		PRINT ·
+		PRINTV LOCALS:1
+	ENDIF
+	IF STRLENS(LOCALS:2) > 0
+		PRINT ：
+		PRINTV LOCALS:2
+	ENDIF
+	PRINT ]
+	SIF STRLENS(LOCALS:3) > 0
+		PRINTFORML [原種族：%LOCALS:3%]
+ENDIF
+
+;頭髮顏色と性質
+IF TALENT:300 && TALENT:301
+	IF FLAG:5 & 2048
+		PRINT 「頭髮是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [髮色：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "頭髮顏色")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 的
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][頭髮狀態：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "頭髮狀態")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		;喜び
+		CALL GOBI_KOUJO, 1
+		PRINT 」
+	ELSE
+		PRINT ]
+	ENDIF
+ENDIF
+
+
+;頭髮長度・カット・髪型
+IF TALENT:302 && TALENT:303 && TALENT:304
+	IF FLAG:5 & 2048
+		PRINT 「留著
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [頭髮長度：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "頭髮長度")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 頭髮，
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][修剪：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "頭髮修剪方式")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 式的
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][髮型：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "髮型")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		;デフォ
+		CALL GOBI_KOUJO, 0
+		PRINTL 」
+	ELSE
+		PRINTL ]
+	ENDIF
+ENDIF
+
+;その他の外見
+IF TALENT:305 && TALENT:306 && TALENT:307
+	IF FLAG:5 & 2048
+		PRINT 「我的
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [眼形：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "目")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 是
+		;瞳
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][瞳色：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "瞳色")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 的
+		;デフォ
+		CALL GOBI_KOUJO, 0
+		;唇
+		PRINT 嘴唇是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][唇：
+	ENDIF
+	
+	PRINTFORM %GET_LOOK_INFO(TARGET, "唇")%
+	RESETCOLOR
+	
+	IF FLAG:5 & 2048
+		;喜び
+		CALL GOBI_KOUJO, 1
+		PRINTL 」
+	ELSE
+		PRINTL ]
+	ENDIF
+ENDIF
+IF TALENT:308 && TALENT:309 && TALENT:310
+	;體型
+	IF FLAG:5 & 2048
+		PRINT 「
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [體型：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "體型")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 的體型……
+		
+		;乳頭
+		PRINT 乳頭嘛……
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][乳頭：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "乳頭")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		;デフォ
+		CALL GOBI_KOUJO, 0
+		
+		;陰毛
+		PRINT 下面的毛毛……
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][陰毛：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "陰毛狀態")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		;害羞
+		CALL GOBI_KOUJO, 4
+	ENDIF
+	;ペニス
+	;扶她・男人のみ
+	IF TALENT:121 || TALENT:122
+		IF FLAG:5 & 2048
+			PRINT 小雞雞是……
+			SETCOLORBYNAME LightSalmon
+		ELSE
+			PRINT ][陰莖：
+		ENDIF
+		PRINTFORM %GET_LOOK_INFO(TARGET, "陰莖的狀態")%
+		RESETCOLOR
+		IF FLAG:5 & 2048
+			;怒り
+			CALL GOBI_KOUJO, 2
+		ENDIF
+	ENDIF
+	IF FLAG:5 & 2048
+		PRINTL 」
+	ELSE
+		PRINTL ]
+	ENDIF
+	
+ENDIF
+IF TALENT:312 && TALENT:313
+	;魅力點
+	IF FLAG:5 & 2048
+		PRINT 「
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [魅力點：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "魅力點")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 是我的魅力點
+		
+		;デフォ
+		CALL GOBI_KOUJO, 0
+		
+		;癖
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT ][癖好：
+	ENDIF
+	PRINTFORM %GET_LOOK_INFO(TARGET, "癖")%
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		PRINT 是我的習慣
+		;デフォ
+		CALL GOBI_KOUJO, 0
+		PRINTL 」
+	ELSE
+		PRINTL ]
+	ENDIF
+	
+ENDIF
+
+CALL FAMILY_PRINT_INFO(TARGET)
+
+; [IF_DEBUG]
+;IF TARGET != MASTER
+	; IF FLAG:5 & 2048
+		; PRINTFORM 「%SELF_CALL(TARGET)%
+        ; SETCOLORBYNAME LightSalmon
+	; ELSE
+		; PRINT [配偶者：
+	; ENDIF
+; ELSE
+	; IF FLAG:5 & 2048
+		; PRINT 「魔王
+		; SETCOLORBYNAME LightSalmon
+	; ELSE
+		; PRINT [魔王的配偶：
+	; ENDIF
+; ENDIF
+
+; PRINTFORM %GET_LOOK_INFO(TARGET, "婚史")%
+; RESETCOLOR
+; IF FLAG:5 & 2048 && CFLAG:601 != 0
+	; PRINT ，現在是
+	; SETCOLORBYNAME LightSalmon
+	; IF CFLAG:601 == 900
+		; PRINT 野狗
+	; ELSEIF CFLAG:601 == 901
+		; PRINTFORM %CALLNAME:MASTER%
+	;ELSEIF CFLAG:601 == 902
+		;IF CFLAG:606 == 200
+			;CALL SEARCH_FAMILY,TARGET,"LOVE"
+			;IF RESULT > 0
+				;PRINTFORM %SAVESTR:RESULT%
+			;ELSE
+				;PRINT 戀人
+			;ENDIF
+		;ELSE
+			;CALL NAME_LOVER, CFLAG:606, 1
+		;ENDIF	
+	; ELSEIF CFLAG:601 != 0
+	;	LOCAL = CFLAG:601
+	;	LOCAL %= 10
+	;	IF LOCAL == 9
+	;		CALL SEARCH_FAMILY,TARGET,"MARRIAGE"
+	;		IF RESULT > 0
+	;			PRINTFORM %SAVESTR:RESULT%
+	;		ELSE
+	;			PRINT 無
+	;		ENDIF
+	;	ELSE
+	;		PRINTFORM %ITEMNAME:(CFLAG:601)%
+	;	ENDIF
+	; ENDIF
+	; PRINT 的
+	; IF TALENT:122 == 1
+		; PRINT 丈夫
+	; ELSE
+		; PRINT 妻子
+	; ENDIF
+	; RESETCOLOR
+	; ;恥じらい
+	; CALL GOBI_KOUJO, 4
+; ELSEIF FLAG:5 & 2048 
+	; PRINT '
+; ELSEIF CFLAG:601 != 0
+	; PRINT ]
+; ELSE
+	; PRINT ]
+; ENDIF
+
+; IF TARGET != MASTER
+	; IF FLAG:5 & 2048
+		; PRINTFORM 家族構成是
+		; SETCOLORBYNAME LightSalmon
+	; ELSE
+		; PRINT [家族：
+	; ENDIF
+; ELSE
+	; IF FLAG:5 & 2048
+		; PRINT 家族構成是
+		; SETCOLORBYNAME LightSalmon
+	; ELSE
+		; PRINT [魔王家族構成：
+	; ENDIF
+; ENDIF
+
+; PRINTFORM %GET_LOOK_INFO(TARGET, "家族")%
+; RESETCOLOR
+; IF FLAG:5 & 2048
+	; ;喜び
+	; CALL GOBI_KOUJO, 1
+	
+	; PRINT 」
+; ELSE
+	; PRINT ]
+; ENDIF
+
+; IF CFLAG:TARGET:604 > 0 && CFLAG:TARGET:605 > 0
+	; LOCAL = CFLAG:TARGET:605
+	; LOCAL:1 = LOCAL % 10
+	; CALL SEARCH_FAMILY, TARGET
+	; LOCAL:2 = RESULT
+	; IF NO:TARGET != 0
+		; IF FLAG:5 & 2048
+			; PRINTFORM 「
+			; SETCOLORBYNAME LightSalmon
+		; ELSE
+			; PRINT [
+		; ENDIF
+		; SELECTCASE LOCAL:1
+		; CASE 1
+			; PRINT 兄
+		; CASE 2
+			; PRINT 姐
+		; CASE 3
+			; PRINT 弟
+		; CASE 4
+			; PRINT 妹
+		; CASE 5
+			; PRINT 父
+		; CASE 6
+			; PRINT 母
+		; CASE 7
+			; PRINT 兒子
+		; CASE 8
+			; PRINT 女兒
+		; CASEELSE
+			; PRINT 家族
+		; ENDSELECT
+		
+		; IF FLAG:5 & 2048
+			; RESETCOLOR
+			; PRINTFORM 
+			; SETCOLORBYNAME LightSalmon
+		; ELSE
+			; PRINT ：
+		; ENDIF
+		
+		; IF LOCAL:2 < 0
+			; IF CSTR:5 != ""
+				; PRINTFORM %CSTR:5%
+			; ELSE
+				; PRINT 下落不明
+			; ENDIF
+			; RESETCOLOR
+			; IF FLAG:5 & 2048
+				; ;情けない
+				; CALL GOBI_KOUJO, 5
+				; PRINTFORML 」
+			; ELSE
+				; PRINTL ]
+			; ENDIF
+		; ELSE
+			; PRINTFORM %SAVESTR:(LOCAL:2)%
+			; RESETCOLOR
+		
+			; IF FLAG:5 & 2048
+				; ;喜び
+				; CALL GOBI_KOUJO, 1
+				; PRINTFORML 」
+			; ELSE
+				; PRINTL ]
+			; ENDIF
+		; ENDIF
+		
+	; ELSE
+		; IF FLAG:5 & 2048
+			; PRINTFORM 「
+			; SETCOLORBYNAME LightSalmon
+		; ELSE
+			; PRINT [魔王的
+		; ENDIF
+		; SELECTCASE LOCAL:1
+		; CASE 1
+			; PRINT 兄
+		; CASE 2
+			; PRINT 姐
+		; CASE 3
+			; PRINT 弟
+		; CASE 4
+			; PRINT 妹
+		; CASE 5
+			; PRINT 父
+		; CASE 6
+			; PRINT 母
+		; CASE 7
+			; PRINT 兒子
+		; CASE 8
+			; PRINT 女兒
+		; CASEELSE
+			; PRINT 家族
+		; ENDSELECT
+		
+		; IF FLAG:5 & 2048
+			; PRINTFORM '
+			; SETCOLORBYNAME LightSalmon
+		; ELSE
+			; PRINT ：
+		; ENDIF
+		
+		; IF LOCAL:2 < 0
+			; IF CSTR:5 != ""
+				; PRINTFORM %CSTR:5%
+			; ELSE
+				; PRINT 下落不明
+			; ENDIF
+			; RESETCOLOR
+			; IF FLAG:5 & 2048
+				; ;情けない
+				; CALL GOBI_KOUJO, 5
+				; PRINTFORML 」
+			; ELSE
+				; PRINTL ]
+			; ENDIF
+		; ELSE
+			; PRINTFORM %SAVESTR:(LOCAL:2)%
+			; RESETCOLOR
+		
+			; IF FLAG:5 & 2048
+				; ;喜び
+				; CALL GOBI_KOUJO, 1
+				; PRINTFORML 」
+			; ELSE
+				; PRINTL ]
+			; ENDIF
+		; ENDIF
+	; ENDIF
+; ELSE
+	; PRINTL  
+; ENDIF
+; [ENDIF]
+
+IF NO:TARGET >= 200 && NO:TARGET != 222 && !EX_TALENT:2
+	IF FLAG:5 & 2048
+		PRINT 「來據點之前我是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [來到據點之前：
+	ENDIF
+ELSEIF TARGET != MASTER && EX_TALENT:2
+	IF FLAG:5 & 2048
+		PRINT 「我是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [出生是因為：
+	ENDIF
+ELSEIF TARGET != MASTER && TALENT:122 == 0
+	IF FLAG:5 & 2048
+		PRINT 「做勇者之前我是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為勇者之前：
+	ENDIF
+ELSEIF TARGET != MASTER && TALENT:122
+	IF FLAG:5 & 2048
+		PRINT 「做冒險者之前我是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為冒險者之前：
+	ENDIF
+ELSE
+	IF FLAG:5 & 2048
+		PRINT 「成為魔王之前我是
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為魔王之前：
+	ENDIF
+ENDIF
+
+PRINTFORM %GET_LOOK_INFO(TARGET, "成為勇者前的生活")%
+RESETCOLOR
+IF FLAG:5 & 2048
+	IF TALENT:315 == 8 || TALENT:315 == 12 || TALENT:315 == 19
+		;貴族・聖女・軍人は誇らしい
+		;喜び
+		CALL GOBI_KOUJO, 1
+	ELSEIF TALENT:315 == 5 || TALENT:315 == 20
+		;妓女・奴隷は恥ずかしい
+		;害羞
+		CALL GOBI_KOUJO, 4
+	ELSEIF TALENT:315 == 6
+		;盜人は逆切れ
+		;怒り
+		CALL GOBI_KOUJO, 2
+	ELSEIF TALENT:315 == 7 || TALENT:315 == 9
+		;物乞い・貧民は情けなくなる
+		;情けない
+		CALL GOBI_KOUJO, 5
+	ELSE
+		;デフォ
+		CALL GOBI_KOUJO, 0
+	ENDIF
+	PRINT 」
+ELSE
+	PRINT ]
+ENDIF
+
+
+IF NO:TARGET >= 200 && NO:TARGET != 222 && !EX_TALENT:2
+	IF FLAG:5 & 2048
+		PRINT 「迴應召喚是因為
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [迴應召喚的理由：
+	ENDIF
+ELSEIF TARGET != MASTER && EX_TALENT:2
+	IF FLAG:5 & 2048
+		PRINT 「選擇留下是因為
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [選擇留下的理由：
+	ENDIF
+ELSEIF TARGET != MASTER && TALENT:122 == 0
+	IF FLAG:5 & 2048
+		PRINT 「成為勇者是因為
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為勇者的契機：
+	ENDIF
+ELSEIF TARGET != MASTER && TALENT:122
+	IF FLAG:5 & 2048
+		PRINT 「成為冒險者是因為
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為冒險者的契機：
+	ENDIF
+ELSE
+	IF FLAG:5 & 2048
+		PRINT 「成為魔王是因為
+		SETCOLORBYNAME LightSalmon
+	ELSE
+		PRINT [成為魔王的契機：
+	ENDIF
+ENDIF
+
+PRINTFORM %GET_LOOK_INFO(TARGET, "成為勇者的契機")%
+RESETCOLOR
+IF FLAG:5 & 2048
+	IF TALENT:316 == 3 || TALENT:316 == 7 || TALENT:316 == 16 || TALENT:316 == 17
+		;啓示・故郷・平和・正義は誇らしい
+		;喜び
+		CALL GOBI_KOUJO, 1
+	ELSEIF TALENT:316 == 10 || TALENT:316 == 14
+		;罪・仕方なくは恥ずかしい
+		;害羞
+		CALL GOBI_KOUJO, 4
+	ELSEIF TALENT:316 == 8
+		;復讐
+		;怒り
+		CALL GOBI_KOUJO, 2
+	ELSEIF TALENT:316 == 2 || TALENT:316 == 13
+		;金のため・命令は情けなくなる
+		;情けない
+		CALL GOBI_KOUJO, 5
+	ELSE
+		;デフォ
+		CALL GOBI_KOUJO, 0
+	ENDIF
+	
+	PRINTL 」
+ELSE
+	PRINTL ]
+ENDIF
+
+
+;信仰。巫女、聖女、法術・咒術持ちは信仰を持っている
+;信仰は咒術と法術を優先
+IF (TALENT:242 == 1 || TALENT:250 == 1 || TALENT:315 == 11 || TALENT:315 == 12) && TARGET != MASTER
+	IF CFLAG:152 >= 10
+		IF FLAG:5 & 2048
+			PRINT 「信仰著
+			SETCOLORBYNAME LightSalmon
+		ELSE
+			PRINT [信仰：
+		ENDIF
+		IF TALENT:85 == 1
+			PRINTFORM 魔王大人%UNICODE(0x2661) *3%
+		ELSEIF CFLAG:0 != 0
+			PRINTFORM 無名的淫蕩女神%UNICODE(0x2661) *3%
+		;魔物用の信仰
+		ELSEIF TALENT:220 == 1
+			PRINTFORM 混沌的魔界女神
+		;咒術
+		ELSEIF TALENT:250 == 1
+			PRINTFORM 潛藏地底的死亡女神
+		;法術
+		ELSEIF TALENT:242 == 1
+			PRINTFORM 純潔的神聖女神
+		;巫女
+		ELSEIF TALENT:315 == 11
+			PRINTFORM 豐饒的大地女神
+		;聖女
+		ELSEIF TALENT:315 == 12
+			PRINTFORM 包容一切的大海女神
+		ENDIF
+		RESETCOLOR
+		IF FLAG:5 & 2048
+		;喜び
+			CALL GOBI_KOUJO, 1
+		
+			PRINTFORML （信仰値：{CFLAG:152}）」
+		ELSE
+			PRINTFORML （信仰値：{CFLAG:152}）]
+		ENDIF
+		;墮落した場合、以前の信仰を冒涜する
+		;プライド低い・冒涜者のみ
+		IF (TALENT:85 == 1 || CFLAG:0 != 0) && (TALENT:17 || TALENT:282)
+			IF FLAG:5 & 2048
+				PRINT 「
+				SETCOLORBYNAME LightSalmon
+			ELSE
+				PRINT [棄教：
+			ENDIF
+			;呪術
+			IF TALENT:250 == 1
+				PRINTFORM 潛藏地底的死亡女神是生性陰暗的變態母豬！
+			;法術
+			ELSEIF TALENT:242 == 1
+				PRINTFORM 純潔的神聖女神是騷浪賤婊子肉便器！
+			;巫女
+			ELSEIF TALENT:315 == 11
+				PRINTFORM 豐饒的大地女神是是用乳頭自慰的母牛！
+			;聖女
+			ELSEIF TALENT:315 == 12
+				PRINTFORM 包容一切的大海女神是把正太信者榨個乾淨的色情狂！
+			ENDIF
+			RESETCOLOR
+			;喜び
+			IF FLAG:5 & 2048
+				CALL GOBI_KOUJO, 1
+				
+				PRINTFORML 」
+			ELSE
+				PRINTFORML 是這樣吧]
+			ENDIF
+		ENDIF
+	ENDIF		
+ENDIF
+
+
+IF TALENT:TARGET:158
+	IF FLAG:5 & 2048
+		PRINTFORM 「%SELF_CALL(TARGET)%
+		SETCOLORBYNAME LightSalmon
+		PRINTFORM 不能正常的懷孕
+		
+	ELSE
+		PRINT [妊娠適性：
+		SETCOLORBYNAME LightSalmon
+		PRINTFORM 只能異種族
+	ENDIF
+	RESETCOLOR
+	IF FLAG:5 & 2048
+		;情けない
+		CALL GOBI_KOUJO, 5
+		PRINTFORM 」
+	ELSE
+		PRINT ]
+	ENDIF
+	
+ENDIF
+
+IF FLAG:5 & 2048
+	PRINT 「身上的錢么……
+ELSE
+	PRINT [所持金：
+ENDIF
+
+IF CFLAG:580 <= 0
+	PRINT 身無分文
+	;情けない
+	SIF FLAG:5 & 2048
+		CALL GOBI_KOUJO, 5
+ELSE
+	PRINTV CFLAG:580
+	;デフォ
+	SIF FLAG:5 & 2048
+		CALL GOBI_KOUJO, 0
+ENDIF
+
+IF CFLAG:582 < 0
+	IF FLAG:5 & 2048
+		PRINT 欠債……
+	ELSE
+		PRINT ][借金：
+	ENDIF
+	SETCOLORBYNAME LightGreen
+	PRINTFORM {0 - CFLAG:582}
+	RESETCOLOR
+	;情けない
+	SIF FLAG:5 & 2048
+		CALL GOBI_KOUJO, 5
+ENDIF
+
+IF FLAG:5 & 2048
+	PRINTL 」
+ELSE
+	PRINTL ]
+ENDIF
+
+;喜歡的東西は別関數
+
+CALL LOOK_INFO_LOVE
+
+RETURN 1
+
+;-----------------------------------------------------------------
+@LOOK_INFO_LOVE
+#DIM MAIN_LOVE,100
+#DIM LOVE_SORT,100
+#DIM LOVE_POOL,100
+#DIM LOVE_NUM
+#DIM LOVE_ID
+#DIM LOVE_COUNT
+#DIM HEART
+#DIM LOVER
+;-----------------------------------------------------------------
+;MAIN_LOVE:0  = デフォで喜歡的東西。TALENT:317への愛情度
+;MAIN_LOVE:1  = 你への愛情度
+;MAIN_LOVE:2  = 世界の人々への愛情度
+;MAIN_LOVE:3  = ペニスへの愛情度
+;MAIN_LOVE:4  = 自らのペニスへの愛情度
+;MAIN_LOVE:10 = C性感への愛情度
+;MAIN_LOVE:11 = V性感への愛情度
+;MAIN_LOVE:12 = A性感への愛情度
+;MAIN_LOVE:13 = B性感への愛情度
+;MAIN_LOVE:20 = 自慰への愛情度
+;MAIN_LOVE:21 = 性交への愛情度
+;MAIN_LOVE:22 = 売春への愛情度
+;MAIN_LOVE:30 = 奉仕への愛情度
+;MAIN_LOVE:31 = 精液への愛情度
+;MAIN_LOVE:32 = 同性愛行為への愛情度
+;MAIN_LOVE:33 = 受虐狂性感への愛情度
+;MAIN_LOVE:34 = 施虐狂性感への愛情度
+;MAIN_LOVE:35 = 露出趣味への愛情度
+;MAIN_LOVE:40 = 夫への愛情度
+;MAIN_LOVE:41 = 新しい結婚相手への愛情度
+;MAIN_LOVE:42 = 戀人への愛情度
+;MAIN_LOVE:50 = コンプレックスへの性的倒錯
+;MAIN_LOVE:51 = 母への愛情度
+;MAIN_LOVE:52 = 父への愛情度
+;MAIN_LOVE:53 = 少女への愛情度
+;MAIN_LOVE:54 = 少年への愛情度
+;MAIN_LOVE:60 = 野良犬への愛情度
+;MAIN_LOVE:61 = 獣姦行為への愛情度
+
+;LOVE_SORT  = 喜歡的東西の優先順位
+;LOVE_POOL  = 喜歡的東西相互作用修正値
+;LOVE_NUM   = 喜歡的東西の數
+;LOVE_ID    = 喜歡的東西のID
+;LOVE_COUNT = 喜歡的東西の優先順位ソート用カウント
+;HEART      = 桃心の數
+;LOVER      = 戀人
+
+;-------------------
+;仕様について
+;-------------------
+;各要素について素質や設定から點を集計し
+;點が大きい順に喜歡的東西を並べる
+
+;喜歡的東西を狙って上位に持ってこれるようにしたが
+;點が稼ぎにくい要素もあるので
+;そこら辺は長い目で調整したい
+
+;領域は0～100まで用意したので
+;要素を追加して色んな性癖を開拓させてあげたい
+;ただし多すぎるのも困るので
+;表示されるのは上位30個までとなっている
+
+;金紅桃は(點/5)-1個が表示される
+;金紅桃0個以下の場合は金紅桃無し。それほど好きではない
+;金紅桃は6個でMAX
+;ただし順位は點で細かく並べられる
+;點3以上から喜歡的東西が表示される
+
+LOVER = CFLAG:606
+
+;初期化
+FOR LOVE_ID, 0, 100
+	MAIN_LOVE:LOVE_ID = 0
+	LOVE_SORT:LOVE_ID = 0
+	LOVE_POOL:LOVE_ID = 0
+NEXT
+
+;初期値
+;最初から喜歡的東西は最初から好き
+MAIN_LOVE:0 = 15
+
+;判定処理
+
+;設定での処理
+
+;種族補正
+IF TALENT:314 == 1 || TALENT:314 == 6
+	;一般的に高潔な種族
+	;エルフ・天使
+	
+	;世界へのボーナス
+	MAIN_LOVE:2 += 1
+	;性交減少
+	MAIN_LOVE:21 -= 1
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;夫や戀人への愛情
+	MAIN_LOVE:40 += 1
+	MAIN_LOVE:42 += 1
+	;獣姦減少
+	MAIN_LOVE:61 -= 1
+	
+ELSEIF TALENT:314 == 3 || TALENT:314 == 4
+	;一般的に悪い種族
+	;吸血鬼・デュラハン
+	
+	;世界減少
+	MAIN_LOVE:2 -= 1
+	;性交ボーナス
+	MAIN_LOVE:21 += 1
+	;売春ボーナス
+	MAIN_LOVE:22 += 1
+	;夫や戀人減少
+	MAIN_LOVE:40 -= 1
+	MAIN_LOVE:42 -= 1
+	
+ELSEIF TALENT:314 == 2
+	;人狼
+	
+	;世界減少
+	MAIN_LOVE:2 -= 1
+	;夫や戀人への愛情
+	MAIN_LOVE:40 += 1
+	MAIN_LOVE:42 += 1
+	;新しい結婚相手ボーナス
+	MAIN_LOVE:41 += 1
+	;野良犬ボーナス
+	MAIN_LOVE:60 += 1
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 1
+	
+ELSEIF TALENT:314 == 3
+	;墮落した種族
+	;ダークエルフ・墮天使
+	
+	;世界減少
+	MAIN_LOVE:2 -= 2
+	;性交ボーナス
+	MAIN_LOVE:21 += 2
+	;売春ボーナス
+	MAIN_LOVE:22 += 2
+	;夫や戀人減少
+	MAIN_LOVE:40 -= 2
+	MAIN_LOVE:42 -= 1
+ENDIF
+
+;元の職業補正
+
+IF TALENT:315 == 2 || TALENT:315 == 12
+	;修道女・聖女
+	
+	;世界へのボーナス
+	MAIN_LOVE:2 += 3
+	;自慰減少
+	MAIN_LOVE:20 -= 1
+	;性交減少
+	MAIN_LOVE:21 -= 1
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;奉仕増加
+	MAIN_LOVE:30 += 1
+	
+ELSEIF TALENT:315 == 5
+	;妓女
+	
+	;性交ボーナス
+	MAIN_LOVE:21 += 2
+	;売春ボーナス
+	MAIN_LOVE:22 += 2
+	
+ELSEIF TALENT:315 == 6
+	;盜人
+	
+	;世界減少
+	MAIN_LOVE:2 -= 2
+	;奉仕減少
+	MAIN_LOVE:30 -=1
+	
+ELSEIF TALENT:315 == 7 || TALENT:315 == 9
+	;物乞い・貧民
+	
+	;世界へのボーナス
+	MAIN_LOVE:2 += 1
+	
+ELSEIF TALENT:315 == 8
+	;貴族
+	
+	;性交減少
+	MAIN_LOVE:21 -= 1
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;コンプレックス増加
+	MAIN_LOVE:50 += 1
+	
+ELSEIF TALENT:315 == 11
+	;巫女
+	
+	;性交減少
+	MAIN_LOVE:21 -= 2
+	
+ELSEIF TALENT:315 == 21
+	;主婦
+	
+	;性交増加
+	MAIN_LOVE:21 += 1
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;夫への愛情
+	MAIN_LOVE:40 += 2
+	
+ENDIF
+
+;理由補正
+IF TALENT:316 == 2 || TALENT:316 == 11
+	;不純な動機
+	;金のため・自暴自棄になって
+	
+	;世界減少
+	MAIN_LOVE:2 -= 1
+	;売春ボーナス
+	MAIN_LOVE:22 += 1
+	
+ELSEIF TALENT:316 == 16 || TALENT:316 == 17
+	;大義名分
+	;平和のため・正義のため
+	
+	;世界へのボーナス
+	MAIN_LOVE:2 += 3
+	;奉仕増加
+	MAIN_LOVE:30 += 1
+	
+ENDIF
+
+;喜歡的東西補正
+IF TALENT:317 == 4
+	;故郷の戀人
+	
+	;戀人への愛情
+	MAIN_LOVE:42 += 3
+	
+ELSEIF TALENT:317 == 5
+	;お金
+	
+	;世界減少
+	MAIN_LOVE:2 -= 1
+	;売春ボーナス
+	MAIN_LOVE:22 += 1
+	
+ELSEIF TALENT:317 == 8 && TALENT:人妻
+	;家族かつ人妻
+	
+	;夫への愛情
+	MAIN_LOVE:40 += 3
+	
+ELSEIF TALENT:317 == 8 && TALENT:戀母情結
+	;家族かつ戀母情結
+	
+	;母増加
+	MAIN_LOVE:51 += 3
+	
+ELSEIF TALENT:317 == 8 && TALENT:戀父情結
+	;家族かつ戀父情結
+	
+	;父増加
+	MAIN_LOVE:52 += 3
+	
+ELSEIF TALENT:317 == 9 || TALENT:317 == 10
+	;使命・故郷
+	
+	;世界へのボーナス
+	MAIN_LOVE:2 += 1
+	
+ELSEIF TALENT:317 == 12
+	;かわいい動物
+	
+	;野良犬ボーナス
+	MAIN_LOVE:60 += 1
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 1
+	
+ENDIF
+
+;陥落度合い
+
+IF CFLAG:0 == 1
+	;売卻可
+	
+	;你へボーナス
+	MAIN_LOVE:1 += 1
+	;世界へは興味を失う
+	MAIN_LOVE:2 -= 1
+	;コンプレックスへの性的倒錯が強まる
+	MAIN_LOVE:50 += 1
+ELSEIF CFLAG:0 == 2
+	;助手可
+	
+	;你へボーナス
+	MAIN_LOVE:1 += 2
+	;世界へは興味を失う
+	MAIN_LOVE:2 -= 2
+	;コンプレックスへの性的倒錯が強まる
+	MAIN_LOVE:50 += 2
+ELSE
+	;未陥落
+	
+	;你への興味は無い
+	MAIN_LOVE:1 -= 1
+	;世界へボーナス
+	MAIN_LOVE:2 += 1
+	;コンプレックスへの性的倒錯が減少
+	MAIN_LOVE:50 -= 1
+ENDIF
+
+;素質による補正
+
+;淫亂
+IF TALENT:淫亂
+	;你への興味は無い
+	MAIN_LOVE:1 -= 1
+	;世界へは興味を失う
+	MAIN_LOVE:2 -= 5
+	;コンプレックスへの性的倒錯が強まる
+	MAIN_LOVE:50 += 5
+ENDIF
+
+;愛
+IF TALENT:愛慕
+	;你へボーナス
+	MAIN_LOVE:1 += 10
+	;世界へは興味を失う
+	MAIN_LOVE:2 -= 5
+ENDIF
+
+
+;處女
+IF TALENT:0
+	;V性感減少
+	MAIN_LOVE:11 -= 60
+ENDIF
+
+;童貞
+IF TALENT:1
+	;自分のペニス減少
+	MAIN_LOVE:4 -= 1
+	;自慰増加
+	MAIN_LOVE:20 += 1
+ENDIF
+
+;崩壞
+IF TALENT:9
+	;你減少
+	MAIN_LOVE:1 -= 3
+	;世界減少
+	MAIN_LOVE:2 -= 60
+	;自慰増加
+	MAIN_LOVE:20 += 3
+	;性交増加
+	MAIN_LOVE:21 += 3
+	;売春増加
+	MAIN_LOVE:22 += 3
+	;精液増加
+	MAIN_LOVE:31 += 3
+	;露出増加
+	MAIN_LOVE:35 += 3
+	;夫や戀人への愛情
+	MAIN_LOVE:40 += 3
+	MAIN_LOVE:42 += 3
+	;新しい結婚相手ボーナス
+	MAIN_LOVE:41 += 3
+	;コンプレックス増加
+	MAIN_LOVE:50 += 3
+	;野良犬ボーナス
+	MAIN_LOVE:60 += 1
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 1
+	
+ENDIF
+
+;好奇心
+IF TALENT:23
+	;コンプレックス増加
+	MAIN_LOVE:50 += 1
+ENDIF
+
+;保守的
+IF TALENT:24
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;コンプレックス減少
+	MAIN_LOVE:50 -= 1
+ENDIF
+
+;看重貞操
+IF TALENT:30
+	;性交減少
+	MAIN_LOVE:21 -= 1
+	;売春減少
+	MAIN_LOVE:22 -= 1
+	;コンプレックス減少
+	MAIN_LOVE:50 -= 1
+ENDIF
+
+;看輕貞操
+IF TALENT:31
+	;性交増加
+	MAIN_LOVE:21 += 1
+	;売春増加
+	MAIN_LOVE:22 += 1
+	;コンプレックス増加
+	MAIN_LOVE:50 += 1
+ENDIF
+
+;害羞
+IF TALENT:35
+	;露出増加
+	MAIN_LOVE:35 += 1
+ENDIF
+
+;不知羞恥
+IF TALENT:36
+	;露出減少
+	MAIN_LOVE:35 -= 1
+ENDIF
+
+;害怕疼痛
+IF TALENT:40
+	;受虐狂増加
+	MAIN_LOVE:33 += 1
+ENDIF
+
+;喜歡精液
+IF TALENT:47
+	;精液増加
+	MAIN_LOVE:31 += 10
+ENDIF
+
+;漏尿癖
+IF TALENT:57
+	;露出増加
+	MAIN_LOVE:35 += 1
+ENDIF
+
+;容易自慰
+IF TALENT:60
+	;自慰増加
+	MAIN_LOVE:20 += 1
+ENDIF
+
+;自慰狂
+IF TALENT:74
+	;C性感増加
+	MAIN_LOVE:10 += 3
+	;自慰増加
+	MAIN_LOVE:20 += 3
+ENDIF
+
+;性愛狂
+IF TALENT:75
+	;V性感増加
+	MAIN_LOVE:11 += 3
+	;性交増加
+	MAIN_LOVE:21 += 3
+ENDIF
+
+;尻穴狂
+IF TALENT:77
+	;A性感増加
+	MAIN_LOVE:12 += 3
+	;自慰増加
+	MAIN_LOVE:20 += 1
+	;性交増加
+	MAIN_LOVE:21 += 1
+ENDIF
+
+;弄乳狂
+IF TALENT:78
+	;B性感増加
+	MAIN_LOVE:13 += 3
+	;自慰増加
+	MAIN_LOVE:20 += 3
+ENDIF
+
+;倒錯的
+IF TALENT:80
+	;同性愛増加
+	MAIN_LOVE:32 += 1
+	;受虐狂増加
+	MAIN_LOVE:33 += 1
+	;施虐狂増加
+	MAIN_LOVE:34 += 1
+	;露出増加
+	MAIN_LOVE:35 += 1
+	;コンプレックス増加
+	MAIN_LOVE:50 += 1
+	;野良犬ボーナス
+	MAIN_LOVE:60 += 1
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 1
+ENDIF
+
+;雙性戀
+IF TALENT:80
+	;同性愛増加
+	MAIN_LOVE:32 += 1
+ENDIF
+
+;施虐狂
+IF TALENT:83
+	;施虐狂増加
+	MAIN_LOVE:34 += 10
+ENDIF
+
+;受虐狂
+IF TALENT:88
+	;受虐狂増加
+	MAIN_LOVE:33 += 10
+ENDIF
+
+;露出狂
+IF TALENT:89
+	;露出増加
+	MAIN_LOVE:35 += 10
+ENDIF
+
+;C鈍感
+IF TALENT:101
+	;C性感減少
+	MAIN_LOVE:10 -= 1
+ENDIF
+
+;C敏感
+IF TALENT:102
+	;C性感増加
+	MAIN_LOVE:10 += 1
+ENDIF
+
+;V鈍感
+IF TALENT:103
+	;V性感減少
+	MAIN_LOVE:11 -= 1
+ENDIF
+
+;V敏感
+IF TALENT:104
+	;V性感増加
+	MAIN_LOVE:11 += 1
+ENDIF
+
+;A鈍感
+IF TALENT:105
+	;A性感減少
+	MAIN_LOVE:12 -= 1
+ENDIF
+
+;A敏感
+IF TALENT:106
+	;A性感増加
+	MAIN_LOVE:12 += 1
+ENDIF
+
+;B鈍感
+IF TALENT:107
+	;B性感減少
+	MAIN_LOVE:13 -= 1
+ENDIF
+
+;B敏感
+IF TALENT:108
+	;B性感増加
+	MAIN_LOVE:13 += 1
+ENDIF
+
+;扶她・男人
+IF TALENT:121 || TALENT:122
+	;自ペニス増加
+	MAIN_LOVE:4 += 1
+ENDIF
+
+;動物耳朵
+IF TALENT:124
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 1
+ENDIF
+
+;噴乳體質
+IF TALENT:130
+	;B性感増加
+	MAIN_LOVE:13 += 1
+ENDIF
+
+;早泄
+IF TALENT:133
+	;自分のペニス減少
+	MAIN_LOVE:4 -= 1
+ENDIF
+
+;牝犬
+IF TALENT:124
+	;野良犬ボーナス
+	MAIN_LOVE:60 += 3
+	;獣姦ボーナス
+	MAIN_LOVE:61 += 3
+ENDIF
+
+;戀母情結
+IF TALENT:140
+	;母増加
+	MAIN_LOVE:51 += 10
+ENDIF
+
+;戀父情結
+IF TALENT:141
+	;父増加
+	MAIN_LOVE:52 += 10
+ENDIF
+
+;蘿莉控
+IF TALENT:142
+	;ロリ増加
+	MAIN_LOVE:53 += 10
+ENDIF
+
+;正太控
+IF TALENT:143
+	;ショタ増加
+	MAIN_LOVE:54 += 10
+ENDIF
+
+;從不自慰
+IF TALENT:150
+	;自慰減少
+	MAIN_LOVE:20 -= 60
+ENDIF
+
+;絕不侍奉
+IF TALENT:151
+	;奉仕減少
+	MAIN_LOVE:30 -= 60
+ENDIF
+
+;人妻
+IF TALENT:157
+	;夫への愛情
+	MAIN_LOVE:40 += 3
+ENDIF
+
+;妓女
+IF TALENT:180
+	;売春増加
+	MAIN_LOVE:22 += 1
+ENDIF
+
+;傾城
+IF TALENT:181
+	;売春増加
+	MAIN_LOVE:22 += 2
+ENDIF
+
+;肉便器
+IF TALENT:204
+	;世界減少
+	MAIN_LOVE:2 -= 1
+	;性交ボーナス
+	MAIN_LOVE:21 += 1
+	;売春ボーナス
+	MAIN_LOVE:22 += 1
+	;夫や戀人減少
+	MAIN_LOVE:40 -= 1
+	MAIN_LOVE:42 -= 1
+ENDIF
+
+;淫核
+IF TALENT:230
+	;C性感増加
+	MAIN_LOVE:10 += 3
+ENDIF
+
+;淫壺
+IF TALENT:232
+	;V性感増加
+	MAIN_LOVE:11 += 3
+ENDIF
+
+;淫肛
+IF TALENT:233
+	;A性感増加
+	MAIN_LOVE:12 += 3
+ENDIF
+
+;淫乳
+IF TALENT:231
+	;B性感増加
+	MAIN_LOVE:13 += 3
+ENDIF
+
+;私處封印
+IF TALENT:273
+	;V性感減少
+	MAIN_LOVE:11 -= 3
+ENDIF
+
+;狂王俘虜
+IF TALENT:狂王俘虜
+	;あなたへの興味を失う
+	MAIN_LOVE:1 -= 10
+	;狂王へのボーナス
+	MAIN_LOVE:62 += 30
+ENDIF
+
+;能力による補正
+
+;C感覚
+	;C性感増加
+	MAIN_LOVE:10 += ABL:0
+
+;B感覚
+	;B性感増加
+	MAIN_LOVE:13 += ABL:1
+
+;V感覚
+	;V性感増加
+	MAIN_LOVE:11 += ABL:2
+
+;A感覚
+	;A性感増加
+	MAIN_LOVE:12 += ABL:3
+
+;順從
+IF TALENT:愛慕 && !TALENT:狂王俘虜
+	;愛の場合
+	;你増加
+	MAIN_LOVE:1 += ABL:10 * 3
+ENDIF
+
+
+;慾望
+IF TALENT:淫亂
+	;淫亂の場合
+	;コンプレックス増加
+	MAIN_LOVE:50 += ABL:11 * 3
+ENDIF
+
+;技巧
+	;奉仕や性交の技術にボーナス
+
+;侍奉技術
+IF ABL:13
+	;奉仕増加
+	MAIN_LOVE:30 += ABL:13 + ABL:12
+ENDIF
+
+;性交技術
+IF ABL:14
+	;性交増加
+	MAIN_LOVE:21 += ABL:14 + ABL:12
+ENDIF
+
+;侍奉精神
+	;奉仕増加
+	MAIN_LOVE:30 += ABL:16
+
+;露出癖
+	;露出増加
+	MAIN_LOVE:35 += ABL:17
+
+;抖S氣質
+	;施虐狂増加
+	MAIN_LOVE:34 += ABL:20
+
+;抖M氣質
+	;受虐狂増加
+	MAIN_LOVE:33 += ABL:21
+
+;百合氣質
+	;同性愛増加
+	MAIN_LOVE:32 += ABL:22
+
+;BLっ気
+	;同性愛増加
+	MAIN_LOVE:32 += ABL:23
+
+;性交中毒
+	;性交増加
+	MAIN_LOVE:21 += ABL:30 * 3
+
+;自慰中毒
+	;自慰増加
+	MAIN_LOVE:20 += ABL:31 * 3
+
+;精液中毒
+	;精液増加
+	MAIN_LOVE:31 += ABL:32 * 3
+
+;百合中毒
+	;同性愛増加
+	MAIN_LOVE:32 += ABL:33 * 3
+
+;賣淫中毒
+	;売春増加
+	MAIN_LOVE:22 += ABL:37 * 3
+
+;獸姦中毒
+	;獣姦ボーナス
+	MAIN_LOVE:61 += ABL:39 * 3
+
+;経験補正
+;明らかに快感を感じた経験のみカウントする
+
+IF EXP:精飲絕頂經驗 > 100
+	;精液増加
+	MAIN_LOVE:31 += 3
+ELSEIF EXP:精飲絕頂經驗 > 30
+	;精液増加
+	MAIN_LOVE:31 += 2
+ELSEIF EXP:精飲絕頂經驗 > 0
+	;精液増加
+	MAIN_LOVE:31 += 1
+ENDIF
+
+IF EXP:侍奉快樂經驗 > 100
+	;奉仕増加
+	MAIN_LOVE:30 += 3
+ELSEIF EXP:侍奉快樂經驗 > 30
+	;奉仕増加
+	MAIN_LOVE:30 += 2
+ELSEIF EXP:侍奉快樂經驗 > 0
+	;奉仕増加
+	MAIN_LOVE:30 += 1
+ENDIF
+
+IF EXP:愛情經驗 > 100
+	;你増加
+	MAIN_LOVE:1 += 3
+ELSEIF EXP:愛情經驗 > 30
+	;你増加
+	MAIN_LOVE:1 += 2
+ELSEIF EXP:愛情經驗 > 0
+	;你増加
+	MAIN_LOVE:1 += 1
+ENDIF
+
+IF EXP:被虐快樂經驗 > 100
+	;受虐狂増加
+	MAIN_LOVE:33 += 3
+ELSEIF EXP:被虐快樂經驗 > 30
+	;受虐狂増加
+	MAIN_LOVE:33 += 2
+ELSEIF EXP:被虐快樂經驗 > 0
+	;受虐狂増加
+	MAIN_LOVE:33 += 1
+ENDIF
+
+IF EXP:肛門快樂經驗 > 200
+	;A性感増加
+	MAIN_LOVE:12 += 3
+ELSEIF EXP:肛門快樂經驗 > 80
+	;A性感増加
+	MAIN_LOVE:12 += 2
+ELSEIF EXP:肛門快樂經驗 > 0
+	;A性感増加
+	MAIN_LOVE:12 += 1
+ENDIF
+
+IF EXP:施虐快樂經驗 > 100
+	;施虐狂増加
+	MAIN_LOVE:34 += 3
+ELSEIF EXP:施虐快樂經驗 > 30
+	;施虐狂増加
+	MAIN_LOVE:34 += 2
+ELSEIF EXP:施虐快樂經驗 > 0
+	;施虐狂増加
+	MAIN_LOVE:34 += 1
+ENDIF
+
+IF EXP:營業愛情經驗 > 100
+	;売春ボーナス
+	MAIN_LOVE:22 += 3
+ELSEIF EXP:營業愛情經驗 > 30
+	;売春ボーナス
+	MAIN_LOVE:22 += 2
+ELSEIF EXP:營業愛情經驗 > 0
+	;売春ボーナス
+	MAIN_LOVE:22 += 1
+ENDIF
+
+;新しい夫ボーナス
+	MAIN_LOVE:41 += CFLAG:602 / 3
+;戀人ボーナス
+	MAIN_LOVE:42 += CFLAG:607 / 3
+
+;刻印
+
+;快樂刻印
+	;コンプレックス増加
+	MAIN_LOVE:50 += MARK:快樂刻印 * 3
+
+;反抗刻印
+	;你減少
+	MAIN_LOVE:1 -= MARK:反抗刻印 * 5
+
+;---------------
+;相互作用
+;---------------
+
+;コンプレックスがこじれる
+
+;戀母情結
+SIF MAIN_LOVE:51
+	LOVE_POOL:51 += MAIN_LOVE:50
+;戀父情結
+SIF MAIN_LOVE:52
+	LOVE_POOL:52 += MAIN_LOVE:50
+;蘿莉控
+SIF MAIN_LOVE:53
+	LOVE_POOL:53 += MAIN_LOVE:50
+;正太控
+SIF MAIN_LOVE:54
+	LOVE_POOL:54 += MAIN_LOVE:50
+
+;可愛い動物好きなボーナス
+IF TALENT:317 == 12
+	;野良犬・獣姦が加算
+	LOVE_POOL:0 += MAIN_LOVE:60 / 3
+	LOVE_POOL:0 += MAIN_LOVE:61 / 3
+ENDIF
+
+;獣姦好きは野良犬も好き
+LOVE_POOL:60 += MAIN_LOVE:61 / 2
+
+;新しい夫の方がいいの…
+LOVE_POOL:40 -= MAIN_LOVE:41 / 3
+
+
+;修正値適用
+FOR LOVE_ID, 0, 100
+	MAIN_LOVE:LOVE_ID += LOVE_POOL:LOVE_ID
+NEXT
+
+
+;--------------
+;各種表示
+;--------------
+
+LOVE_NUM = 0
+
+IF FLAG:5 & 2048
+	PRINTL 「喜歡的東西是……
+ELSE
+	PRINTL [喜歡的東西]
+ENDIF
+
+;ソート
+;LOCAL = 最大値
+LOCAL = -9999
+
+;最大値を算出
+FOR LOVE_ID, 0, 100
+	SIF LOCAL < MAIN_LOVE:LOVE_ID
+		LOCAL = MAIN_LOVE:LOVE_ID
+NEXT
+
+LOVE_COUNT = 0
+
+;無限ループ避け
+LOCAL:1 = 0
+
+;最大値の次に大きい數記憶
+LOCAL:2 = -9999
+
+;30位までソート
+WHILE LOVE_COUNT < 30
+	
+	FOR LOVE_ID, 0, 100
+		
+		;現在の最大値と同じものを選択
+		IF LOCAL == MAIN_LOVE:LOVE_ID
+			
+			;リストにIDを記憶
+			LOVE_SORT:LOVE_COUNT = LOVE_ID
+			;順位を進める
+			LOVE_COUNT++
+			
+		ELSEIF MAIN_LOVE:LOVE_ID < LOCAL && MAIN_LOVE:LOVE_ID > LOCAL:2
+			
+			;現在の最大値ではない、現在の最大値の次に大きい數記憶
+			LOCAL:2 = MAIN_LOVE:LOVE_ID
+			
+		ENDIF
+		
+	NEXT
+	
+	;次にソートする最大値をセット
+	LOCAL = LOCAL:2
+	LOCAL:2 = -9999
+	
+	;無限ループ避け
+	LOCAL:1++
+	SIF LOCAL:1 > 100
+		BREAK
+	
+WEND
+
+
+PRINT 　
+FOR LOVE_COUNT, 0, 30
+	
+	;順位からIDを取り出す
+	LOVE_ID = LOVE_SORT:LOVE_COUNT
+	
+	;愛情度が2以下の場合、何も表示されない
+	SIF MAIN_LOVE:LOVE_ID <= 3
+		CONTINUE
+	IF LOVE_ID == 0
+		CALL LOVE_LIKE_BASE
+		SIF RESULT == 0
+			CONTINUE
+	ELSEIF LOVE_ID == 1
+		PRINTFORM 魔王大人
+	ELSEIF LOVE_ID == 2
+		PRINTFORM 拯救萬民
+	ELSEIF LOVE_ID == 3
+		PRINTFORM 肉棒
+	ELSEIF LOVE_ID == 4
+		PRINTFORM 勃起
+	ELSEIF LOVE_ID == 10
+		PRINTFORM 被弄陰蒂
+	ELSEIF LOVE_ID == 11
+		PRINTFORM 被弄小穴
+	ELSEIF LOVE_ID == 12
+		PRINTFORM 被弄菊穴
+	ELSEIF LOVE_ID == 13
+		PRINTFORM 被弄乳房
+	ELSEIF LOVE_ID == 20
+		PRINTFORM 手淫
+	ELSEIF LOVE_ID == 21
+		PRINTFORM 做愛
+	ELSEIF LOVE_ID == 22
+		PRINTFORM 賣淫
+	ELSEIF LOVE_ID == 30
+		PRINTFORM 侍奉
+	ELSEIF LOVE_ID == 31
+		PRINTFORM 精液
+	ELSEIF LOVE_ID == 32 && TALENT:男人
+		PRINTFORM 斷背行為
+	ELSEIF LOVE_ID == 32
+		PRINTFORM 百合行為
+	ELSEIF LOVE_ID == 33
+		PRINTFORM 被人虐待
+	ELSEIF LOVE_ID == 34
+		PRINTFORM 虐待別人
+	ELSEIF LOVE_ID == 35
+		PRINTFORM 露出身體
+	ELSEIF LOVE_ID == 40
+		PRINTFORM 丈夫
+	ELSEIF LOVE_ID == 41
+		PRINTFORM 現在的丈夫
+	ELSEIF LOVE_ID == 42
+		;戀人無し
+		IF LOVER == 0
+			PRINTFORM 將來的老公
+		ELSEIF LOVER == 0 && TALENT:男人
+			PRINTFORM 將來的妻子
+		ELSEIF LOVER == 200
+			PRINTFORM 戀人
+		ELSE
+			PRINT 戀人的
+			CALL NAME_LOVER,LOVER,1
+		ENDIF
+	ELSEIF LOVE_ID == 50
+		;コンプレックスは強化ソースなので表示はしない
+		CONTINUE
+	ELSEIF LOVE_ID == 51 && MAIN_LOVE:50 > 6
+		PRINTFORM 人妻
+	ELSEIF LOVE_ID == 51
+		PRINTFORM 媽媽
+	ELSEIF LOVE_ID == 52 && MAIN_LOVE:50 > 6
+		PRINTFORM 中年大叔
+	ELSEIF LOVE_ID == 52
+		PRINTFORM 爸爸
+	ELSEIF LOVE_ID == 53 && MAIN_LOVE:50 > 6
+		PRINTFORM 蘿莉的小穴
+	ELSEIF LOVE_ID == 53
+		PRINTFORM 小女孩
+	ELSEIF LOVE_ID == 54 && MAIN_LOVE:50 > 6
+		PRINTFORM 正太的陰莖
+	ELSEIF LOVE_ID == 54
+		PRINTFORM 美少年
+	ELSEIF LOVE_ID == 60 && MAIN_LOVE:50 > 6
+		PRINTFORM 野狗大人
+	ELSEIF LOVE_ID == 60
+		PRINTFORM 狗
+	ELSEIF LOVE_ID == 61 && MAIN_LOVE:50 > 6
+		PRINTFORM 和野獸交配
+	ELSEIF LOVE_ID == 61
+		PRINTFORM 可愛的東西
+	ELSEIF LOVE_ID == 62
+		PRINTFORM 狂王大人
+	ELSE
+		CONTINUE
+	ENDIF
+	
+	;5個ごとに金紅桃が一つずつ増える
+	HEART = (MAIN_LOVE:LOVE_ID / 5) -1
+	;金紅桃の數最大値は6個
+	SIF HEART > 6
+		HEART = 6
+	SIF HEART > 0
+		PRINTFORM %UNICODE(0x2661) *HEART%
+	
+	;間の空白
+	PRINT 　
+	
+	;好きな數を増やす
+	LOVE_NUM++
+	
+	;改行
+	IF LOVE_NUM % 6 == 0
+		PRINTL  
+		PRINT 　
+	ENDIF
+NEXT
+
+IF FLAG:5 & 2048
+	;喜び
+	CALL GOBI_KOUJO, 1
+	
+	PRINTL 」 
+ELSE
+	PRINTL  
+ENDIF
+
+PRINTFORML [共{LOVE_NUM}個喜歡的東西]
+
+RETURN 1
+
+;---------------------
+@LOVE_LIKE_BASE
+;---------------------
+;これだけバラバラなので、別に移しました
+;TARGETの喜歡的東西を表示ます
+;表示された場合LOCALに1が返ります
+
+LOCAL = 0
+
+IF TALENT:317 == 1
+	PRINTFORM 甜食
+	LOCAL++
+ELSEIF TALENT:317 == 2
+	PRINTFORM 辣條
+	LOCAL++
+ELSEIF TALENT:317 == 3
+	PRINTFORM 唱歌
+	LOCAL++
+ELSEIF TALENT:317 == 4 && CFLAG:0 == 0
+	PRINTFORM 故鄉的戀人
+	LOCAL++
+ELSEIF TALENT:317 == 5
+	PRINTFORM 錢
+	LOCAL++
+ELSEIF TALENT:317 == 6
+	PRINTFORM 跳舞
+	LOCAL++
+ELSEIF TALENT:317 == 7
+	PRINTFORM 繪畫
+	LOCAL++
+ELSEIF TALENT:317 == 8 && CFLAG:0 == 0
+	PRINTFORM 家族
+	LOCAL++
+ELSEIF TALENT:317 == 9 && CFLAG:0 == 0
+	PRINTFORM 使命
+	LOCAL++
+ELSEIF TALENT:317 == 10 && CFLAG:0 == 0
+	PRINTFORM 故鄉
+	LOCAL++
+ELSEIF TALENT:317 == 11 && CFLAG:0 == 0
+	PRINTFORM 憧憬的那個人
+	LOCAL++
+ELSEIF TALENT:317 == 12
+	PRINTFORM 可愛的動物
+	LOCAL++
+ELSEIF TALENT:317 == 13
+	PRINTFORM 美麗的飾品
+	LOCAL++
+ELSEIF TALENT:317 == 14
+	PRINTFORM 寶石
+	LOCAL++
+ELSEIF TALENT:317 == 15
+	PRINTFORM 點心
+	LOCAL++
+ELSEIF TALENT:317 == 16
+	PRINTFORM 喝茶
+	LOCAL++
+ELSEIF TALENT:317 == 17
+	PRINTFORM 睡覺
+	LOCAL++
+ELSEIF TALENT:317 == 18
+	PRINTFORM 小說
+	LOCAL++
+ELSEIF TALENT:317 == 19
+	PRINTFORM 開懷大笑
+	LOCAL++
+ELSEIF TALENT:317 == 20
+	PRINTFORM 游泳
+	LOCAL++
+ENDIF
+
+RETURN LOCAL
+
+
+;----------------------------------------------
+@GET_LOOK_INFO(ARG, ARGS)
+#FUNCTIONS
+#DIM TEMP
+;----------------------------------------------
+;ARG  參照キャラ
+;ARGS 參照內容
+;　頭髮顏色,頭髮狀態,頭髮長度,頭髮修剪方式,髮型,目,瞳色,唇,體型,乳頭,陰毛狀態,魅力點,癖,
+;　種族,成為勇者前的生活,成為勇者的契機,陰莖的狀態,職業,性格 に対応
+
+IF ARGS == "髮色(顏色)"
+	SELECTCASE TALENT:ARG:頭髮顏色
+	CASE 1
+		LOCALS = 金色
+	CASE 2
+		LOCALS = 栗色
+	CASE 3
+		LOCALS = 黑色
+	CASE 4
+		LOCALS = 紅色
+	CASE 5
+		LOCALS = 銀色
+	CASE 6
+		LOCALS = 藍色
+	CASE 7
+		LOCALS = 綠色
+	CASE 8
+		LOCALS = 紫色
+	CASE 9
+		LOCALS = 白色
+	CASE 10
+		LOCALS = 暗金色
+	CASE 11
+		LOCALS = 粉色
+	CASEELSE
+		LOCALS = 黑色
+		;#;LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "頭髮顏色"
+	SELECTCASE TALENT:ARG:頭髮顏色
+	CASE 1
+		LOCALS = 金髮
+	CASE 2
+		LOCALS = 栗發
+	CASE 3
+		LOCALS = 黑髮
+	CASE 4
+		LOCALS = 紅髮
+	CASE 5
+		LOCALS = 銀髮
+	CASE 6
+		LOCALS = 藍髮
+	CASE 7
+		LOCALS = 綠髮
+	CASE 8
+		LOCALS = 紫發
+	CASE 9
+		LOCALS = 白髮
+	CASE 10
+		LOCALS = 暗金髮
+	CASE 11
+		LOCALS = 粉發
+	CASEELSE
+		LOCALS = 黑髮
+		;#;LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "頭髮狀態"
+	SELECTCASE TALENT:ARG:頭髮狀態
+	CASE 1
+		LOCALS = 直髮
+	CASE 2
+		LOCALS = 卷髮
+	CASE 3
+		LOCALS = 內卷髮
+	CASE 4
+		LOCALS = 外卷髮
+	CASE 5
+		LOCALS = 天然卷
+	CASE 6
+		LOCALS = 大波浪
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "頭髮長度"
+	SELECTCASE TALENT:ARG:頭髮長度
+	CASE 1 TO 100
+		LOCALS = 短
+	CASE 101 TO 200
+		LOCALS = 半長
+	CASE 201 TO 300
+		LOCALS = 長
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "頭髮修剪方式"
+	SELECTCASE TALENT:ARG:頭髮修剪方式
+	CASE 1
+		LOCALS = 基本剪法
+	CASE 2
+		LOCALS = 齊剪
+	CASE 3
+		LOCALS = 層剪
+	CASE 4
+		LOCALS = 碎髮
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "髮型"
+	SELECTCASE TALENT:ARG:髮型
+	CASE 1
+		LOCALS = 自然
+	CASE 2
+		LOCALS = 中分
+	CASE 3
+		LOCALS = 不均分
+	CASE 4
+		LOCALS = 長束髮
+	CASE 5
+		LOCALS = 馬尾
+	CASE 6
+		LOCALS = 側馬尾
+	CASE 7
+		LOCALS = 垂髮辮
+	CASE 8
+		LOCALS = 雙馬尾
+	CASE 9
+		LOCALS = 頂束髮
+	CASE 10
+		LOCALS = 側束髮
+	CASE 11
+		LOCALS = 魚骨辮
+	CASE 12
+		LOCALS = 卷髮
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "目"
+	SELECTCASE TALENT:ARG:目
+	CASE 1
+		LOCALS = 細長眼
+	CASE 2
+		LOCALS = 大眼
+	CASE 3
+		LOCALS = 深邃眼
+	CASE 4
+		LOCALS = 吊眼
+	CASE 5
+		LOCALS = 水汪汪眼
+	CASE 6
+		LOCALS = 標準眼
+	CASE 7
+		LOCALS = 三白眼
+	CASE 8
+		LOCALS = 下垂眼
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "瞳色"
+	SELECTCASE TALENT:ARG:瞳色
+	CASE 1
+		LOCALS = 藍色
+	CASE 2
+		LOCALS = 棕色
+	CASE 3
+		LOCALS = 灰色
+	CASE 4
+		LOCALS = 金色
+	CASE 5
+		LOCALS = 紅色
+	CASE 6
+		LOCALS = 黑色
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "唇"
+	SELECTCASE TALENT:ARG:唇
+	CASE 1
+		LOCALS = 肉感的
+	CASE 2
+		LOCALS = 薄的
+	CASE 3
+		LOCALS = 豐潤的
+	CASE 4
+		LOCALS = 標準
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "體型"
+	SELECTCASE TALENT:ARG:體型
+	CASE 1 TO 100
+		LOCALS = 纖細
+	CASE 101 TO 200
+		LOCALS = 標準
+	CASE 201 TO 300
+		LOCALS = 豐滿
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "乳頭"
+	SELECTCASE TALENT:ARG:乳頭
+	CASE 1
+		LOCALS = 粉紅色
+	CASE 2
+		LOCALS = 褐色
+	CASE 3
+		LOCALS = 標準
+	CASE 4
+		LOCALS = 凹陷
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "陰毛狀態"
+	SELECTCASE TALENT:ARG:陰毛狀態
+	CASE 1
+		LOCALS = 白虎
+	CASE 2 TO 20
+		LOCALS = 胎毛
+	CASE 20 TO 50
+		LOCALS = 新長的
+	CASE 50 TO 100
+		LOCALS = 稀薄
+	CASE 100 TO 150
+		LOCALS = 標準
+	CASE 150 TO 200
+		LOCALS = 濃密
+	CASE 201 TO 500
+		LOCALS = 硬毛
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "魅力點"
+	SELECTCASE TALENT:ARG:魅力點
+	CASE 1
+		LOCALS = 面板
+	CASE 2
+		LOCALS = 眼角
+	CASE 3
+		LOCALS = 鼻樑
+	CASE 4
+		LOCALS = 嘴角
+	CASE 5
+		LOCALS = 淚痣
+	CASE 6
+		LOCALS = 鎖骨
+	CASE 7
+		LOCALS = 小臂
+	CASE 8
+		LOCALS = 手腕
+	CASE 9
+		LOCALS = 手
+	CASE 10
+		LOCALS = 手指
+	CASE 11
+		LOCALS = 肚臍
+	CASE 12
+		LOCALS = 美乳
+	CASE 13
+		LOCALS = 腰線
+	CASE 14
+		LOCALS = 臀部線條
+	CASE 15
+		LOCALS = 腿部線條
+	CASE 16
+		LOCALS = 膝蓋
+	CASE 17
+		LOCALS = 腳踝
+	CASE 18
+		LOCALS = 腳跟
+	CASE 19
+		LOCALS = 背脊
+	CASE 20
+		LOCALS = 耳朵
+	CASE 21
+		LOCALS = 性器
+	CASE 22
+		LOCALS = 頭髮的光澤
+	CASE 23
+		LOCALS = 豐滿的屁股
+	CASE 24
+		LOCALS = 長睫毛
+	CASE 25
+		LOCALS = 虎牙
+	CASE 26
+		LOCALS = 眉毛
+	CASE 27
+		LOCALS = 指甲
+	CASE 28
+		LOCALS = 寢癖
+	CASE 29
+		SIF TALENT:121 == 1 || TALENT:122 == 1 
+			PRINT 自己的雞雞
+		SIF TALENT:121 == 0 && TALENT:122 == 0 
+			PRINT 私處
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "癖"
+	SELECTCASE TALENT:ARG:癖
+	CASE 1
+		LOCALS = 舔嘴唇
+	CASE 2
+		LOCALS = 往後看
+	CASE 3
+		LOCALS = 摸頭髮
+	CASE 4
+		LOCALS = 用腿夾住手
+	CASE 5
+		LOCALS = 抱手臂
+	CASE 6
+		LOCALS = 手指交握
+	CASE 7
+		LOCALS = 抖腿
+	CASE 8
+		LOCALS = 打拍子
+	CASE 9
+		LOCALS = 仰視對方
+	CASE 10
+		LOCALS = 歪脖子
+	CASE 11
+		LOCALS = 嘆氣
+	CASE 12
+		LOCALS = 動作誇張
+	CASE 13
+		LOCALS = 頻繁眨眼
+	CASE 14
+		LOCALS = 鼓腮
+	CASE 15
+		LOCALS = 咬緊牙關
+	CASE 16
+		LOCALS = 遮住嘴
+	CASE 17
+		LOCALS = 摸耳朵
+	CASE 18
+		LOCALS = 懶散
+	CASE 19
+		LOCALS = 咂嘴
+	CASE 20
+		LOCALS = 咬指甲
+	CASE 21
+		LOCALS = 撓鼻子
+	CASE 22
+		LOCALS = 扶額
+	CASE 23
+		LOCALS = 握拳
+	CASE 24
+		LOCALS = 用手指人
+	CASE 25
+		LOCALS = 說口頭禪
+	CASE 26
+		LOCALS = 扭腰
+	CASE 27
+		LOCALS = 閉上一隻眼
+	CASE 28
+		LOCALS = 瞇眼
+	CASE 29
+		LOCALS = 歪嘴
+	CASE 30
+		LOCALS = 碎碎念
+	CASE 31
+		LOCALS = 總往角落躲
+	CASE 32
+		LOCALS = 估算物體長度
+	CASE 33
+		LOCALS = 說話越說越近
+	CASE 34
+		LOCALS = 舔手背
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "種族"
+$INFO_種族
+	SELECTCASE TALENT:ARG:種族
+	CASE 0
+		LOCALS = 人類
+	CASE 1
+		LOCALS = 精靈
+	CASE 2
+		LOCALS = 狼人
+	CASE 3
+		LOCALS = 吸血鬼
+	CASE 4
+		LOCALS = 無頭騎士
+	CASE 5
+		LOCALS = 龍族
+	CASE 6
+		LOCALS = 天使
+	CASE 7
+		LOCALS = 暗精靈
+	CASE 8
+		LOCALS = 墮天使
+	CASE 9
+		LOCALS = 魔族
+	CASE 10
+		LOCALS = 霍位元人
+	CASE 11
+		LOCALS = 矮人
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+	;SIF ARG == 0
+		;LOCALS = 不明
+ELSEIF ARGS == "種族2"
+$INFO_種族2
+	SELECTCASE TALENT:ARG:種族2
+	CASE 1
+		LOCALS = 獸人
+	CASE 2
+		LOCALS = 史萊姆
+	CASE 3
+		LOCALS = 昆蟲
+	CASE 4
+		LOCALS = 植物
+	CASE 5, 11
+		LOCALS = 觸手
+	CASE 6
+		LOCALS = 妖精
+	CASE 7
+		LOCALS = 巨人
+	CASE 8,9
+		LOCALS = 魔族
+	CASE 10, 12
+		LOCALS = 魔獸
+	CASEELSE
+		LOCALS = TOSTR(TALENT:ARG:種族2, "$${0}")
+	ENDSELECT
+ELSEIF ARGS == "種族12"
+	IF TALENT:ARG:220 == 0
+		GOTO INFO_種族
+	ELSE
+		GOTO INFO_種族2
+	ENDIF
+ELSEIF ARGS == "成為勇者前的生活"
+	SELECTCASE TALENT:ARG:成為勇者前的生活
+	CASE 0
+		LOCALS = 不明
+	CASE 1
+		LOCALS = 學生
+	CASE 2
+		LOCALS = 修女
+	CASE 3
+		LOCALS = 農民
+	CASE 4
+		LOCALS = 漁民
+	CASE 5
+		LOCALS = 妓女
+	CASE 6
+		LOCALS = 小偷
+	CASE 7
+		LOCALS = 乞丐
+	CASE 8
+		LOCALS = 貴族
+	CASE 9
+		LOCALS = 貧民
+	CASE 10
+		LOCALS = 守墓人
+	CASE 11
+		LOCALS = 巫女
+	CASE 12
+		LOCALS = 聖女
+	CASE 13
+		LOCALS = 預言家
+	CASE 14
+		LOCALS = 占卜師
+	CASE 15
+		LOCALS = 商人
+	CASE 16
+		LOCALS = 採藥人
+	CASE 17
+		LOCALS = 隱士
+	CASE 18
+		LOCALS = 麵包師
+	CASE 19
+		LOCALS = 軍人
+	CASE 20
+		LOCALS = 奴隸
+	CASE 21
+		LOCALS = 主婦
+	CASE 90
+		LOCALS = 淫亂的產物
+	CASE 91
+		LOCALS = 墮落的結果
+	CASE 92
+		LOCALS = 愛的結晶
+	CASE 93
+		LOCALS = 交歡的副產品
+	CASE 94
+		LOCALS = 魔族的孽種
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "成為勇者的契機"
+	SELECTCASE TALENT:ARG:成為勇者的契機
+	CASE 0
+		LOCALS = 不明
+	CASE 1
+		LOCALS = 命運的引導
+	CASE 2
+		LOCALS = 爲了錢
+	CASE 3
+		LOCALS = 受到了上天啟示
+	CASE 4
+		LOCALS = 因使命感而熱血沸騰
+	CASE 5
+		LOCALS = 對日常感到厭倦
+	CASE 6
+		LOCALS = 經歷無盡悲傷后
+	CASE 7
+		LOCALS = 拯救故鄉
+	CASE 8
+		LOCALS = 復仇
+	CASE 9
+		LOCALS = 國王的任命
+	CASE 10
+		LOCALS = 贖罪
+	CASE 11
+		LOCALS = 自暴自棄
+	CASE 12
+		LOCALS = 純屬意外
+	CASE 13
+		LOCALS = 被命令了
+	CASE 14
+		LOCALS = 無可奈何
+	CASE 15
+		LOCALS = 測試自己的力量
+	CASE 16
+		LOCALS = 爲了和平
+	CASE 17
+		LOCALS = 爲了正義
+	CASE 18
+		LOCALS = 夢見自己有所作為
+	CASE 19
+		LOCALS = 獲得了力量
+	CASE 20
+		LOCALS = 旅行的結果
+	CASE 90
+		LOCALS = 父母的囑咐
+	CASE 91
+		LOCALS = 憧憬魔王
+	CASE 92
+		LOCALS = 爲了出人頭地
+	CASE 93
+		LOCALS = 爲了報恩
+	CASE 94
+		LOCALS = 被惡魔誘惑
+	CASEELSE
+		LOCALS = ERROR
+	ENDSELECT
+ELSEIF ARGS == "陰莖的狀態"
+	SELECTCASE TALENT:ARG:陰莖的狀態
+	CASE 1
+		LOCALS = 巨根
+	CASE 2
+		LOCALS = 短小包莖
+	CASE 3
+		LOCALS = 包莖
+	CASE 4
+		LOCALS = 馬陰莖
+	CASEELSE
+		LOCALS = 普通
+	ENDSELECT
+ELSEIF ARGS == "職業"
+	LOCAL:1 = -1
+	FOR LOCAL, 200, 229
+		SIF TALENT:ARG:LOCAL
+			LOCAL:1 = LOCAL
+	NEXT
+	IF LOCAL:1 >= 0 
+		LOCALS = %TALENTNAME:(LOCAL:1)%
+	ELSEIF ARG == 0
+		LOCALS = 魔王
+	ELSE
+		LOCALS = 無
+	ENDIF
+ELSEIF ARGS == "性格"
+	LOCAL:1 = -1
+	FOR LOCAL, 160, 179
+		SIF TALENT:ARG:LOCAL
+			LOCAL:1 = LOCAL
+	NEXT
+	IF LOCAL:1 < 0 
+		FOR LOCAL, 10, 19
+			SIF TALENT:ARG:LOCAL
+				LOCAL:1 = LOCAL
+		NEXT
+	ENDIF
+	IF LOCAL:1 >= 0 
+		LOCALS = %TALENTNAME:(LOCAL:1)%
+	ELSE
+		LOCALS = 不明
+	ENDIF
+ELSEIF ARGS == "婚史"
+	LOCAL = TALENT:ARG:320
+	;家族設定の有無
+	LOCAL:1 = LOCAL % 10
+	IF LOCAL:1 == 0 && LOCAL != 0
+		LOCALS = 婚史保密
+		RETURNF LOCALS
+	ELSEIF LOCAL == 0
+		LOCALS = 無
+		RETURNF LOCALS
+	ENDIF
+	
+	;夫の有無
+	LOCAL:1 = LOCAL % 100000
+	LOCAL:2 = LOCAL % 10000000000
+	LOCALS = 
+	
+	SELECTCASE LOCAL:1 / 10000
+		CASE 0
+			SIF CFLAG:ARG:601 != 0
+				LOCALS += "原"
+			LOCALS += "未婚"
+		CASE 1
+			LOCALS += "已與"
+			SELECTCASE LOCAL:2 / 1000000000
+				CASE 0,4,8
+					LOCALS += "丈夫"
+				CASE 1,5,7
+					LOCALS += "扶她妻子"
+				CASEELSE
+					LOCALS += "妻子"
+			ENDSELECT
+			LOCALS += "結婚"
+		CASE 2
+			LOCALS += "已與原"
+			SELECTCASE LOCAL:2 / 1000000000
+				CASE 0,4,8
+					LOCALS += "丈夫"
+				CASE 1,5,7
+					LOCALS += "扶她妻子"
+				CASEELSE
+					LOCALS += "妻子"
+			ENDSELECT
+			LOCALS += "離婚"
+		CASE 3
+			LOCALS += "已與原"
+			SELECTCASE LOCAL:2 / 1000000000
+				CASE 0,4,8
+					LOCALS += "丈夫"
+				CASE 1,5,7
+					LOCALS += "扶她妻子"
+				CASEELSE
+					LOCALS += "妻子"
+			ENDSELECT
+			LOCALS += "復婚"
+		CASE 4
+			LOCALS += "已與原"
+			SELECTCASE LOCAL:2 / 1000000000
+				CASE 0,4,8
+					LOCALS += "丈夫"
+				CASE 1,5,7
+					LOCALS += "扶她妻子"
+				CASEELSE
+					LOCALS += "妻子"
+			ENDSELECT
+			LOCALS += "離婚後重新結婚"
+		CASE 5
+			LOCALS = 未亡人
+		CASEELSE
+			LOCALS = 秘密
+	ENDSELECT
+
+ELSEIF ARGS == "家族"
+	IF TALENT:ARG:323 > 0 && TALENT:ARG:324 > 0
+		;両親指定
+		LOCALS = 
+		LOCAL = TALENT:ARG:323
+		IF LOCAL > 1000
+			LOCAL -= 1000
+			LOCALS += TALENTNAME:LOCAL
+			LOCALS += "的父親，"
+		ELSE
+			LOCALS += ITEMNAME:LOCAL
+			LOCALS += "的父親，"
+		ENDIF
+		
+		LOCAL = TALENT:ARG:324
+		IF LOCAL > 1000
+			LOCAL -= 1000
+			LOCALS += TALENTNAME:LOCAL
+			LOCALS += "的母親，"
+		ELSE
+			LOCALS += ITEMNAME:LOCAL
+			LOCALS += "的母親，"
+		ENDIF
+		
+		RETURNF LOCALS
+	ENDIF
+	LOCAL = TALENT:ARG:320
+	;家族設定の有無
+	LOCAL:1 = LOCAL % 10
+	IF LOCAL:1 == 0
+		LOCALS = 家族保密
+		RETURNF LOCALS
+	ENDIF
+	
+	;あくまで勇者になる前の家族構成
+	
+	LOCALS = 
+	
+	;夫の有無
+	LOCAL:1 = LOCAL / 10000 % 10
+	LOCAL:2 = LOCAL / 1000000000 % 10
+	IF LOCAL:1== 1
+		SELECTCASE LOCAL:2
+			CASE 0,4,8
+				LOCALS += "丈夫"
+			CASE 1,5,7
+				LOCALS += "扶她妻子"
+			CASEELSE
+				LOCALS += "妻子"
+		ENDSELECT
+	ELSEIF LOCAL:1 == 3
+		SELECTCASE LOCAL:2
+			CASE 0,4,8
+				LOCALS += "丈夫"
+			CASE 1,5,7
+				LOCALS += "扶她妻子"
+			CASEELSE
+				LOCALS += "妻子"
+		ENDSELECT
+	ENDIF
+	
+	;娘の有無
+	LOCAL:1 = LOCAL /100 %10
+	IF LOCAL:1 == 1
+		LOCALS += " 娘"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 娘x{0}")
+	ENDIF
+	
+	;息子の有無
+	LOCAL:1 = LOCAL /1000 %10
+	IF LOCAL:1 == 1
+		LOCALS += " 兒"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 兒x{0}")
+	ENDIF
+	
+	;姉の有無
+	LOCAL:1 = LOCAL /100000 %10
+	IF LOCAL:1 == 1
+		LOCALS += " 姊"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 姊x{0}")
+	ENDIF
+	
+	;兄の有無
+	LOCAL:1 = LOCAL /1000000 % 10
+	IF LOCAL:1 == 1
+		LOCALS += " 兄"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 兄x{0}")
+	ENDIF
+	
+	;妹の有無
+	LOCAL:1 = LOCAL /10000000 % 10
+	IF LOCAL:1 == 1
+		LOCALS += " 妹"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 妹x{0}")
+	ENDIF
+	
+	;弟の有無
+	LOCAL:1 = LOCAL /100000000 % 10
+	IF LOCAL:1 == 1
+		LOCALS += " 弟"
+	ELSEIF LOCAL:1 > 0
+		LOCALS += TOSTR(LOCAL:1," 弟x{0}")
+	ENDIF
+	
+	SIF LOCALS == ""
+		LOCALS = 孤身一人
+	
+ELSEIF ARGS == "原種族"
+	SELECTCASE TALENT:ARG:原種族
+	CASE 0
+		LOCALS = 人類
+	CASE 1
+		LOCALS = 精靈
+	CASE 2
+		LOCALS = 狼人
+	CASE 3
+		LOCALS = 吸血鬼
+	CASE 4
+		LOCALS = 無頭騎士
+	CASE 5
+		LOCALS = 龍族
+	CASE 6
+		LOCALS = 天使
+	CASE 7
+		LOCALS = 暗精靈
+	CASE 8
+		LOCALS = 墮天使
+	CASE 9
+		LOCALS = 魔族
+	CASE 10
+		LOCALS = 霍位元人
+	CASE 11
+		LOCALS = 矮人
+	CASEELSE
+		ARGS = "種族"
+		RESTART
+	ENDSELECT
+ELSEIF ARGS == "現種族"
+	IF INRANGE(TALENT:現種族, 100, 220)
+		LOCALS '= ITEMNAME:(TALENT:現種族)
+	ELSE
+		LOCALS = ERROR
+	ENDIF
+ELSEIF ARGS == "常識改變【戰鬥】"
+	SELECTCASE  TALENT:ARG:281
+	CASE 0
+		LOCALS = 不改變
+	CASE 1
+		LOCALS = 奉侍戰鬥
+	CASE 2
+		LOCALS = 跪地求饒
+	CASE 3
+		LOCALS = 
+	CASE 4
+		LOCALS = 
+	CASE 5
+		LOCALS = 
+	CASE 6
+		LOCALS = 
+	CASE 7
+		LOCALS = 
+	CASE 8
+		LOCALS = 
+	CASE 9
+		LOCALS = 
+	CASE 10
+		LOCALS = 
+	CASE 11
+		LOCALS = 
+	CASEELSE
+		LOCALS = 不改變
+	ENDSELECT
+ELSEIF ARGS == "常識改變【日常】"
+	SELECTCASE  TALENT:ARG:283
+	CASE 0
+		LOCALS = 不改變
+	CASE 1
+		LOCALS = 服侍乞丐
+	CASE 2
+		LOCALS = 野外露出
+	CASE 3
+		LOCALS = 癡態公開
+	CASE 4
+		LOCALS = 公眾便器
+	CASE 5
+		LOCALS = 獸姦狂熱
+	CASE 6
+		LOCALS = 
+	CASE 7
+		LOCALS = 
+	CASE 8
+		LOCALS = 
+	CASE 9
+		LOCALS = 
+	CASE 10
+		LOCALS = 
+	CASE 11
+		LOCALS = 
+	CASEELSE
+		LOCALS = 不改變
+	ENDSELECT
+;ELSEIF ARGS == ""
+;	SELECTCASE TALENT:ARG:
+;ELSEIF ARGS == ""
+;	SELECTCASE TALENT:ARG:
+ELSE
+	LOCALS = ERROR!
+ENDIF
+RETURNF LOCALS

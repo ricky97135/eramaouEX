@@ -1,0 +1,1708 @@
+﻿
+;勇者にスパイを接近させて交際させ
+;墮落を誘発させるシステムです
+;悪い戀人に騙されて身を崩す女の子いいよね……
+
+;------------------------------------
+@ENTER_LOVER, ARG:0
+;------------------------------------
+;ARG:0 = 対象勇者
+
+SIF ARG:0 < 0
+	RETURN 0
+
+PRINTFORML 派遣魔王的手下外出，設下戀愛陷阱誘惑對像勇者墮落
+PRINTFORML 選擇派遣誰外出誘惑%SAVESTR:(ARG:0)%呢？
+DRAWLINE
+PRINTL [ 0] 誰都不派遣
+
+FOR LOCAL, 1, 100
+	CALL NAME_LOVER,LOCAL,0
+	IF RESULT == 1
+		PRINTFORM [{LOCAL,2,RIGHT}] 
+		CALL NAME_LOVER,LOCAL,1
+		PRINT 　
+	ENDIF
+	
+	LOCAL:1 = LOCAL % 20
+	SIF LOCAL:1 == 0
+		PRINTL  
+NEXT
+SIF !LINEISEMPTY()
+	PRINTL
+PRINTL [999] 取消
+DRAWLINE
+
+;入力
+$INPUT_LOOP
+INPUT
+
+;戻る
+IF RESULT == 999
+	RETURN 0
+ELSEIF RESULT == 0
+	LOCAL = 0
+ELSE
+	LOCAL = RESULT
+	;対象が存在しているか判定する
+	CALL NAME_LOVER,LOCAL,0
+	SIF RESULT == 0
+		GOTO INPUT_LOOP
+ENDIF
+
+;戀人派遣確定
+
+LOCAL:1 = CFLAG:(ARG:0):606
+CFLAG:(ARG:0):606 = LOCAL
+
+;愛情度リセット
+SIF LOCAL != LOCAL:1
+	CFLAG:(ARG:0):607 = 0
+
+IF LOCAL > 0
+	PRINTFORM %SAVESTR:(ARG:0)%為目標
+	CALL NAME_LOVER,LOCAL,1
+	PRINTW 開始接觸邂逅了
+ELSE
+	PRINTFORMW 引誘%SAVESTR:(ARG:0)%的行動正在進行中
+ENDIF
+
+RETURN 1
+
+;------------------------------------
+@NAME_LOVER, ARG:0, ARG:1
+;------------------------------------
+;ARG:0 = 対象戀人
+;ARG:1 = プリントフラグ。1のときプリントする
+
+LOCALS = 
+
+SIF ARG:0 <= 0
+	RETURN 0
+	
+; 1～20  人間
+;21～40  異種族
+;41～60  女性?ふたなり
+;61～80  ショタ
+;81～100 犬?家畜
+;200     キャラ名
+
+SELECTCASE ARG:0
+CASE 1
+	LOCALS = 溫柔的青年
+CASE 2
+	LOCALS = 威嚴的彪形大漢
+CASE 3
+	LOCALS = 粗野的流氓
+CASE 4
+	LOCALS = 大腹便便的中年人
+CASE 21
+	LOCALS = 醜陋的獸人
+CASE 22
+	LOCALS = 精靈美男子
+CASE 23
+	LOCALS = 暗黑精靈
+CASE 24
+	LOCALS = 奴隷
+CASE 41
+	LOCALS = 妓女
+CASE 42
+	LOCALS = 女學生
+CASE 43
+	LOCALS = 貴婦
+CASE 44
+	LOCALS = 女騎士
+CASE 61
+	LOCALS = 懦弱少年
+CASE 62
+	LOCALS = 戴眼鏡的男學生
+CASE 63
+	LOCALS = 活潑的少年
+CASE 64
+	LOCALS = 可愛的男學生
+CASE 81
+	LOCALS = 大型寵物狗
+CASE 82
+	LOCALS = 愛馬
+CASE 83
+	LOCALS = 寵物豬
+CASE 84
+	LOCALS = 農家的牛
+CASE 200
+	LOCALS = 戀人
+ENDSELECT
+
+SIF LOCALS == ""
+	RETURN 0
+
+SIF ARG:1 == 1
+	PRINTFORM %LOCALS,14,LEFT%
+
+RETURN 1
+
+;------------------------------------
+@DUNGEON_TOWN_LOVER, ARG:0
+#DIM LOVER
+#DIM LOVE_UP
+#DIM LOVE_LV
+#DIM LOVE_ID
+#DIM LOVE_EXP,50
+#DIM MARRIAGE
+#DIM RACE
+#DIM NO_KARMA
+;------------------------------------
+;ARG:0 = 対象勇者
+
+;街中での逢瀬
+;LOVE_EXP:0 = プレイ回數
+;LOVE_EXP:1 = 煙草フラグ
+;LOVE_EXP:2 = 薬物フラグ
+;LOVE_EXP:3 = フェラフラグ
+;LOVE_EXP:4 = V性交フラグ
+;LOVE_EXP:5 = A性交フラグ
+;LOVE_EXP:6 = レズフラグ
+;LOVE_EXP:7 = 獣姦フラグ
+;LOVE_EXP:8 = 被寫フラグ
+;LOVE_EXP:9 = 前戯フラグ
+
+FOR LOCAL,0,50
+	LOVE_EXP:LOCAL = 0
+NEXT
+
+
+LOCALS = ERROR
+
+SIF ARG:0 <= 0
+	RETURN 0
+
+LOVER = CFLAG:(ARG:0):606
+LOVE_LV = CFLAG:(ARG:0):607
+NO_KARMA = 0
+;902が代入されている場合、戀人と結婚狀態
+MARRIAGE = CFLAG:(ARG:0):601
+
+IF LOVER <= 0
+	;戀人がいない場合、早速作りに行く
+	CALL DUNGEON_TOWN_LOVER_CHARA_ENTER,ARG:0
+	SIF RESULT == 0
+		RETURN 0
+	LOVER = CFLAG:(ARG:0):606
+ENDIF
+
+LOVE_ID = CFLAG:(ARG:0):610
+
+; 1～20  人間
+;21～40  異種族
+;41～60  女性?ふたなり
+;61～80  ショタ
+;81～100 犬?家畜
+
+SELECTCASE LOVER
+CASE 1
+	LOCALS = 溫柔的青年
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙……
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 「偶然之下」%LOCALS%幫了%SAVESTR:(ARG:0)%一把……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ENDIF
+CASE 2
+	LOCALS = 威嚴的彪形大漢
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%爲了和%LOCALS%生孩子而努力準備著……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某次%SAVESTR:(ARG:0)%陷入危機之時，被%LOCALS%出手相救……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%去%LOCALS%的家裡做客、被推倒了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ENDIF
+CASE 3
+	LOCALS = 粗野的流氓
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚，%SAVESTR:(ARG:0)%努力配合著%LOCALS%各種花樣的性要求……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%爲了和%LOCALS%生孩子而努力準備著……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;A性交フラグ
+		LOVE_EXP:5 += 1
+		;煙草フラグ
+		LOVE_EXP:1 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天%SAVESTR:(ARG:0)%在街頭被%LOCALS%搭訕了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%去%LOCALS%的家中相會、沒多久，兩人抽起了事後煙……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;A性交フラグ
+		LOVE_EXP:5 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 2
+	ENDIF
+CASE 4
+	LOCALS = 大腹便便的中年人
+	IF LOVE_LV <= 0
+		PRINTFORM 某天在酒吧里，%LOCALS%請%SAVESTR:(ARG:0)%喝酒並搭訕了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%開始進出%LOCALS%的家、並收到了昂貴的首飾作為禮物……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;A性交フラグ
+		LOVE_EXP:5 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ENDIF
+CASE 21
+	LOCALS = 醜陋的獸人
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 「偶然之下」%LOCALS%幫了%SAVESTR:(ARG:0)%一把……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ENDIF
+CASE 22
+	LOCALS = 精靈美男子
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%爲了和%LOCALS%生孩子而努力準備著……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 「偶然之下」%LOCALS%幫了%SAVESTR:(ARG:0)%一把……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ENDIF
+CASE 23
+	LOCALS = 暗黑精靈
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚，%SAVESTR:(ARG:0)%努力配合著%LOCALS%各種花樣的性要求……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%爲了和%LOCALS%生孩子而努力準備著……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;A性交フラグ
+		LOVE_EXP:5 += 1
+		;煙草フラグ
+		LOVE_EXP:1 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天%SAVESTR:(ARG:0)%在街頭被%LOCALS%搭訕了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%去%LOCALS%的家中相會、沒多久，兩人抽起了事後煙……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;A性交フラグ
+		LOVE_EXP:5 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;煙草フラグ
+		LOVE_EXP:1 += 2
+		;薬物フラグ
+		LOVE_EXP:2 += 1
+	ENDIF
+CASE 24
+	LOCALS = 奴隷
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某天，路過的%SAVESTR:(ARG:0)%被%LOCALS%工作的身影吸引了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%找上了奴隸主，表示想和%LOCALS%說說話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%從奴隸主手中買下了%LOCALS%，並開始和%LOCALS%約會了……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 3
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ENDIF
+CASE 41
+	LOCALS = 妓女
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某天，%SAVESTR:(ARG:0)%幫了「身處困難」的%LOCALS%一把…………
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%約好、一起吃飯……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;レズフラグ
+		LOVE_EXP:6 += 2
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始親熱……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ENDIF
+CASE 42
+	LOCALS = 女學生
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;レズフラグ
+		LOVE_EXP:6 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某天，%SAVESTR:(ARG:0)%幫了「身處困難」的%LOCALS%一把…………
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%約好、一起吃飯……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始親熱……
+		;レズフラグ
+		LOVE_EXP:6 += 2
+	ENDIF
+CASE 43
+	LOCALS = 貴婦
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天，%SAVESTR:(ARG:0)%被%LOCALS%打招呼了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次見面、說起了工作的事……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%約好、一起吃飯……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%去開房了……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;レズフラグ
+		LOVE_EXP:6 += 2
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ENDIF
+CASE 44
+	LOCALS = 女騎士
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天，%SAVESTR:(ARG:0)%被%LOCALS%打招呼了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次見面、說起了工作的事……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%約好、一起吃飯……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;レズフラグ
+		LOVE_EXP:6 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始親熱……
+		;レズフラグ
+		LOVE_EXP:6 += 3
+	ENDIF
+CASE 61
+	LOCALS = 懦弱少年
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某天，%SAVESTR:(ARG:0)%幫了「身處困難」的%LOCALS%一把…………
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%一起出去玩、直到黃昏才回來……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ENDIF
+CASE 62
+	LOCALS = 戴眼鏡的男學生
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM %SAVESTR:(ARG:0)%接受了家庭教師的委託，開始輔導%LOCALS%的功課……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %LOCALS%對%SAVESTR:(ARG:0)%的輔導不是很上心、總是說一些其他的事……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %LOCALS%對%SAVESTR:(ARG:0)%的輔導不是很上心、總愛說些私人話題……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %LOCALS%根本不在意%SAVESTR:(ARG:0)%教了什麼、總是說一些讓人心跳加速的情話……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%總是在輔導中被打斷，然後和%LOCALS%開始做其他的事情……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ENDIF
+CASE 63
+	LOCALS = 活潑的少年
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某天，%SAVESTR:(ARG:0)%幫了「身處困難」的%LOCALS%一把…………
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%再次相遇，說著毫無營養的話……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%一起出去玩、直到黃昏才回來……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%已經可以自由進出%LOCALS%的家，還會為對方準備料理……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%已經住進了%LOCALS%的家……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%一進家門，就被%LOCALS%抱住開始激烈的性交……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ENDIF
+CASE 64
+	LOCALS = 可愛的男子學生
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%越來越熟悉對方的身體……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%過著和睦而又淫蕩的新婚生活……
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM %SAVESTR:(ARG:0)%接受了家庭教師的委託，開始輔導%LOCALS%的功課……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %LOCALS%對%SAVESTR:(ARG:0)%的輔導不是很上心、總是說一些其他的事……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %LOCALS%對%SAVESTR:(ARG:0)%的輔導不是很上心、總愛說些私人話題……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %LOCALS%根本不在意%SAVESTR:(ARG:0)%教了什麼、只顧著說那些讓人心跳加速的情話……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%開始約會了……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%總是在輔導中被打斷，然後和%LOCALS%開始做其他的事情……
+		;V性交フラグ
+		LOVE_EXP:4 += 1
+		;フェラフラグ
+		LOVE_EXP:3 += 3
+	ENDIF
+CASE 81
+	LOCALS = 大型寵物狗
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，還是有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%終於開始交尾……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%像母狗一樣被%LOCALS%騎在身下沒日沒夜的猛艸……
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 有一天、%SAVESTR:(ARG:0)%從寵物商店把光鮮亮麗的%LOCALS%買回家了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%總喜歡帶著%LOCALS%舉止過分親昵的到處遊玩、引來無數非議……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%終於明白了自己對%LOCALS%的心意……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%開始故意挑逗%LOCALS%……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%成功的讓%LOCALS%性奮起來了……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%開始被%LOCALS%艸上癮了……
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ENDIF
+CASE 82
+	LOCALS = 馬
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%終於開始交尾……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%像母馬一樣被%LOCALS%騎在身下沒日沒夜的猛艸…………
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天，%SAVESTR:(ARG:0)%將坐騎%LOCALS%買回來了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%帶著%LOCALS%舉止過分親昵的到處遊玩、引來無數非議……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%終於明白了自己對%LOCALS%的心意……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%開始故意挑逗%LOCALS%……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%成功的讓%LOCALS%性奮起來了……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%開始被%LOCALS%艸上癮了……
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ENDIF
+CASE 83
+	LOCALS = 寵物豬
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%終於開始交尾……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%像母豬一樣被%LOCALS%騎在身下沒日沒夜的猛艸…………
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 有一天、%SAVESTR:(ARG:0)%在寵物商店看上了%LOCALS%，並買回家了…………
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%帶著%LOCALS%舉止過分親昵的到處遊玩、引來無數非議……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%終於明白了自己對%LOCALS%的心意……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%開始故意挑逗%LOCALS%……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%成功的讓%LOCALS%性奮起來了……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%開始被%LOCALS%艸上癮了……
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 3
+	ENDIF
+CASE 84
+	LOCALS = 農家的牛
+	IF MARRIAGE == 902 && LOVE_LV < 10
+		;結婚10日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%相處時，依舊有些笨拙…………
+	ELSEIF MARRIAGE == 902 && LOVE_LV < 30
+		;結婚30日未満
+		PRINTFORM 新婚的%SAVESTR:(ARG:0)%和%LOCALS%終於開始交尾……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSEIF MARRIAGE == 902
+		;結婚30日以降
+		PRINTFORM %SAVESTR:(ARG:0)%像母牛一樣被%LOCALS%騎在身下沒日沒夜的猛艸…………
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 2
+	ELSEIF LOVE_LV <= 0
+		PRINTFORM 某一天，%SAVESTR:(ARG:0)%發現身邊似乎具有不可思議魅力的%LOCALS%了……
+	ELSEIF LOVE_LV < 10
+		PRINTFORM %SAVESTR:(ARG:0)%爲了接近照顧%LOCALS%，特意去農家幫忙……
+	ELSEIF LOVE_LV < 20
+		PRINTFORM %SAVESTR:(ARG:0)%終於明白了自己對%LOCALS%的心意……
+	ELSEIF LOVE_LV < 30
+		PRINTFORM %SAVESTR:(ARG:0)%開始故意挑逗%LOCALS%……
+	ELSEIF LOVE_LV < 40
+		PRINTFORM %SAVESTR:(ARG:0)%成功的讓%LOCALS%性奮起來了……
+		;フェラフラグ
+		LOVE_EXP:3 += 1
+		;獣姦フラグ
+		LOVE_EXP:7 += 1
+	ELSE
+		PRINTFORM %SAVESTR:(ARG:0)%開始被%LOCALS%艸上癮了……
+		;フェラフラグ
+		LOVE_EXP:3 += 2
+		;V性交フラグ
+		LOVE_EXP:4 += 2
+		;獣姦フラグ
+		LOVE_EXP:7 += 3
+	ENDIF
+CASE 200
+	;勇者間的戀愛
+	LOCALS = 
+	CALL SEARCH_FAMILY,ARG:0,"LOVE"
+	LOVE_ID = RESULT
+	NO_KARMA = 1
+	SIF LOVE_ID < 0
+		RETURN 0
+	LOCALS += SAVESTR:LOVE_ID
+	IF CFLAG:(ARG:0):1 == 2 && CFLAG:LOVE_ID:1 == 2
+		;まず、雙方侵攻中の場合
+		;パーティを結成していないとダメ
+		SIF CFLAG:(ARG:0):533 <= 0
+			RETURN 0
+		;同じパーティにいないとダメ
+		SIF CFLAG:(ARG:0):533 != CFLAG:LOVE_ID:533
+			RETURN 0
+		
+		PRINTFORM %SAVESTR:(ARG:0)%吻了%LOCALS%……
+		;キスフラグ
+		LOVE_EXP:0 += 1
+		
+	ELSEIF CFLAG:(ARG:0):1 == 0 && CFLAG:LOVE_ID:1 == 0
+		;雙方が奴隷の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%不顧場合地開始做愛……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向%LOCALS%洗腦了魔族的美好……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%從%LOCALS%瞭解到了魔族的美好……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%互相鼓勵著不屈不撓的內心……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 7 && CFLAG:LOVE_ID:1 == 7
+		;雙方が苗床の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%和%LOCALS%互相讚美著懷有身孕的肚子……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向%LOCALS%に講述著孕育著魔族的美妙之處……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%見到了孕育著魔族的%LOCALS%后，內心崩潰了……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%與%LOCALS%下了絕不因成為魔族的生育工具而屈服的決心……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 8 && CFLAG:LOVE_ID:1 == 8
+		;雙方が曬し臺の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%與%LOCALS%比拚著誰更能讓觀眾感到滿足……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向%LOCALS%に炫耀著讓觀眾滿足的自己……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%見到了一臉癡像的%LOCALS%后，內心崩潰了……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%與%LOCALS%下了絕不因向眾人獻媚而屈服的決心……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 0 && CFLAG:LOVE_ID:1 == 2
+		;自分が奴隷の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%期待著%LOCALS%成為魔族的那一天……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%相信著%LOCALS%一定會來救援……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 2 && CFLAG:LOVE_ID:1 == 0
+		;相手が奴隷の場合
+		
+		IF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%聽說了%LOCALS%墮為魔族的事，備受罪惡感的折磨……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%發誓一定要救%LOCALS%出來……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 3 && CFLAG:LOVE_ID:1 == 2
+		;自分が迎撃の場合
+		
+		PRINTFORM %SAVESTR:(ARG:0)%期待著親手將%LOCALS%轉化為魔族的那一天……
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 2 && CFLAG:LOVE_ID:1 == 3
+		;相手が迎撃の場合
+		
+		PRINTFORM %SAVESTR:(ARG:0)%聽說了%LOCALS%在魔王軍中活躍的傳聞，內心十分的混亂……
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 7 && CFLAG:LOVE_ID:1 == 2
+		;自分が苗床の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%不斷地幻想著%LOCALS%在自己身旁一同孕育魔族的場面……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%不斷地幻想著%LOCALS%前來拯救自己的場面……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 2 && CFLAG:LOVE_ID:1 == 7
+		;相手が苗床の場合
+		
+		IF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%聽說了%LOCALS%樂於孕育魔族的傳言，異樣的興奮並自慰了……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%聽說了%LOCALS%孕育魔族的傳言，哭著自慰了……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 8 && CFLAG:LOVE_ID:1 == 2
+		;自分が曬し臺の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向著寄給%LOCALS%的水晶球高興地展現著被侵犯的場面……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%向著寄給%LOCALS%的水晶球哭著求救……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 2 && CFLAG:LOVE_ID:1 == 8
+		;相手が曬し臺の場合
+		
+		IF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%看著收到的水晶球中顯現的%LOCALS%淫蕩的話語，異樣的興奮得難以自己地自慰了……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%看著收到的水晶球中顯現的%LOCALS%慘烈的身姿，因罪惡感而落淚並自慰了……
+		ENDIF
+		
+		PRINTL  
+		RETURN 0
+		
+	ELSEIF CFLAG:(ARG:0):1 == 7 && CFLAG:LOVE_ID:1 == 0
+		;自分が苗床で相手が奴隷の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%懷有身孕的腹部，%LOCALS%十分憐愛地撫摸著……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向%LOCALS%講述著孕育魔族的快感……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%感受到%LOCALS%向自己懷有身孕的腹部投來了憐愛的目光，%SAVESTR:(ARG:0)%感到十分絕望……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%因孕育著魔族的事向%LOCALS%謝罪……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 0 && CFLAG:LOVE_ID:1 == 7
+		;自分が奴隷で相手が苗床の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%十分憐愛地撫摸著%LOCALS%懷有身孕的腹部……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向%LOCALS%に講述著孕育著魔族的美妙之處……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%對沉溺於孕育魔族快感的%LOCALS%感到絕望……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%讓孕育著魔族的%LOCALS%鼓起勇氣堅持下去……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 8 && CFLAG:LOVE_ID:1 == 0
+		;自分が曬し臺で相手が奴隷の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%爲了讓%LOCALS%癡態似地把腰越抬越高……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向絕望了的%LOCALS%に展現著自己的癡態……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%感受到了%LOCALS%向被凌辱的自己投來戀愛的目光，感到十分絕望……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%因被凌辱的事向%LOCALS%謝罪……
+		ENDIF
+		
+	ELSEIF CFLAG:(ARG:0):1 == 0 && CFLAG:LOVE_ID:1 == 8
+		;自分が奴隷で相手が曬し臺の場合
+		
+		IF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 > 0
+			;雙方が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%和裸露於人前的%LOCALS%接吻著自慰了……
+		ELSEIF CFLAG:(ARG:0):0 > 0 && CFLAG:LOVE_ID:0 == 0
+			;自分が陥落している場合
+			PRINTFORM %SAVESTR:(ARG:0)%向絕望了的%LOCALS%訴說著魔族的美好……
+		ELSEIF CFLAG:(ARG:0):0 == 0 && CFLAG:LOVE_ID:0 > 0
+			;相手が陥落している
+			PRINTFORM %SAVESTR:(ARG:0)%對歡樂地抬起屁股的%LOCALS%感到了異樣的興奮，開始自慰了起來……
+		ELSE
+			;どちらも陥落していない
+			PRINTFORM %SAVESTR:(ARG:0)%向裸露於人前的%LOCALS%哭著謝罪，感同身受的自慰了起來……
+		ENDIF
+		
+	;もっと分岐挾める気がする
+	ELSE
+		RETURN 0
+	ENDIF
+	
+	
+ENDSELECT
+
+;貞操帯?処女封印
+IF CFLAG:(ARG:0):42 == 79 && (CFLAG:(ARG:0):40 & 64) && FLAG:37
+	;貞操帯の場合アナルに
+	LOVE_EXP:5 += LOVE_EXP:4
+	LOVE_EXP:4 = 0
+ELSEIF TALENT:(ARG:0):273
+	;貞操封印の場合アナルに
+	LOVE_EXP:5 += LOVE_EXP:4
+	LOVE_EXP:4 = 0
+ENDIF
+
+;キスボーナス
+SIF LOVE_LV >= 10
+	LOVE_EXP:0 += 1
+SIF LOVE_LV >= 20
+	LOVE_EXP:0 += 1
+SIF LOVE_LV >= 30
+	LOVE_EXP:0 += 2
+SIF LOVE_LV >= 40
+	LOVE_EXP:0 += 3
+SIF LOVE_LV >= 60
+	LOVE_EXP:0 += 5
+
+;フェラボーナス
+IF LOVE_EXP:3 > 0
+	;技巧
+		LOVE_EXP:3 += ABL:(ARG:0):12
+	;奉仕技術
+		LOVE_EXP:3 += ABL:(ARG:0):13
+	;奉仕精神
+		LOVE_EXP:3 += ABL:(ARG:0):16
+	;精液中毒
+		LOVE_EXP:3 += ABL:(ARG:0):32
+	;舌使い
+	SIF TALENT:(ARG:0):52
+		LOVE_EXP:3 += 1
+	;汚臭鈍感
+	SIF TALENT:(ARG:0):61
+		LOVE_EXP:3 += 1
+	;汚臭敏感
+	SIF TALENT:(ARG:0):62
+		LOVE_EXP:3 -= 1
+	;汚臭敏感+精液中毒
+	SIF TALENT:(ARG:0):62 && ABL:(ARG:0):32 > 0
+		LOVE_EXP:3 += ABL:(ARG:0):32 * 3
+	
+ENDIF
+
+;V性交ボーナス
+IF LOVE_EXP:4 > 0
+	;V感覚
+		LOVE_EXP:4 += ABL:(ARG:0):2
+	;V鈍感
+	SIF TALENT:(ARG:0):103
+		LOVE_EXP:4 -= 1
+	;V敏感
+	SIF TALENT:(ARG:0):104
+		LOVE_EXP:4 += 1
+	;セックス狂
+	SIF TALENT:(ARG:0):75
+		LOVE_EXP:4 += 1
+	;淫壺
+	SIF TALENT:(ARG:0):232
+		LOVE_EXP:4 += 1
+	
+ENDIF
+
+;A性交ボーナス
+IF LOVE_EXP:5 > 0
+	;A感覚
+		LOVE_EXP:5 += ABL:(ARG:0):3
+	;A鈍感
+	SIF TALENT:(ARG:0):105
+		LOVE_EXP:5 -= 1
+	;A敏感
+	SIF TALENT:(ARG:0):106
+		LOVE_EXP:5 += 1
+	;尻穴狂い
+	SIF TALENT:(ARG:0):77
+		LOVE_EXP:5 += 1
+	;淫肛
+	SIF TALENT:(ARG:0):233
+		LOVE_EXP:5 += 1
+	
+ENDIF
+
+;オトコでない場合、レズフラグボーナス
+IF LOVE_EXP:6 > 0 && TALENT:(ARG:0):122 == 0
+	;レズっ気
+		LOVE_EXP:6 += ABL:(ARG:0):22
+	;レズ中毒
+		LOVE_EXP:6 += ABL:(ARG:0):33
+	;両刀
+	SIF TALENT:(ARG:0):81
+		LOVE_EXP:6 += 1
+	;男嫌い
+	SIF TALENT:(ARG:0):82
+		LOVE_EXP:6 += 1
+ENDIF
+
+;獣姦フラグボーナス
+IF LOVE_EXP:7 > 0
+	;種族人狼
+	SIF TALENT:(ARG:0):種族 == 2
+		LOVE_EXP:7 += 1
+	;かわいい動物が好き
+	SIF TALENT:(ARG:0):317 == 12
+		LOVE_EXP:7 += 1
+	;獣姦中毒
+		LOVE_EXP:7 += ABL:(ARG:0):39
+	;牝犬
+	SIF TALENT:(ARG:0):136
+		LOVE_EXP:7 += 3
+	
+	;Vフラグボーナス
+	SIF LOVE_EXP:4 > 0
+		LOVE_EXP:4 += LOVE_EXP:7
+	;フェラボーナス
+	SIF LOVE_EXP:3 > 0
+		LOVE_EXP:3 += LOVE_EXP:7
+	
+ENDIF
+
+;被寫フラグボーナス
+;LOVE_EXP:8
+
+;臆病
+SIF TALENT:(ARG:0):10
+	LOVE_EXP:8 -= 1
+;自製心
+SIF TALENT:(ARG:0):20
+	LOVE_EXP:8 -= 1
+;好奇心
+SIF TALENT:(ARG:0):23
+	LOVE_EXP:8 += 1
+;一線越えない
+SIF TALENT:(ARG:0):27
+	LOVE_EXP:8 -= 1
+;目立ちたがり
+SIF TALENT:(ARG:0):28
+	LOVE_EXP:8 += 2
+;露出狂
+SIF TALENT:(ARG:0):89
+	LOVE_EXP:8 += 3
+;露出癖
+	LOVE_EXP:8 += ABL:(ARG:0):17
+
+;前戯フラグボーナス
+;LOVE_EXP:9
+
+;性交の前戯、レズ行為の合計
+LOVE_EXP:9 += LOVE_EXP:5 + LOVE_EXP:4 + LOVE_EXP:6
+
+IF LOVE_EXP:9 > 0
+	;C感覚
+		LOVE_EXP:9 += ABL:(ARG:0):0
+	;B感覚
+		LOVE_EXP:9 += ABL:(ARG:0):1
+	;C鈍感
+	SIF TALENT:(ARG:0):101
+		LOVE_EXP:9 -= 1
+	;C敏感
+	SIF TALENT:(ARG:0):102
+		LOVE_EXP:9 += 1
+	;B鈍感
+	SIF TALENT:(ARG:0):107
+		LOVE_EXP:9 -= 1
+	;B敏感
+	SIF TALENT:(ARG:0):108
+		LOVE_EXP:9 += 1
+	;自慰狂い
+	SIF TALENT:(ARG:0):74
+		LOVE_EXP:9 += 1
+	;乳狂い
+	SIF TALENT:(ARG:0):78
+		LOVE_EXP:9 += 1
+	;淫核
+	SIF TALENT:(ARG:0):230
+		LOVE_EXP:9 += 1
+	;淫乳
+	SIF TALENT:(ARG:0):231
+		LOVE_EXP:9 += 1
+	
+ENDIF
+
+;追加文
+
+IF LOVE_EXP:0 > 0 && CFLAG:(ARG):16 == 0
+	PRINTFORML ?初吻?
+	CFLAG:(ARG):16 = 1
+	CSTR:(ARG:0):4 = %LOCALS%
+ELSEIF LOVE_EXP:3 > 0 && CFLAG:(ARG):16 == 0
+	PRINTFORML ?初吻?
+	CFLAG:(ARG):16 = 101
+	CSTR:(ARG:0):4 = %LOCALS%
+ENDIF
+
+IF TALENT:(ARG:0):0 == 1 && LOVE_EXP:4 > 0
+	PRINTFORML ?處女喪失?
+	TALENT:(ARG:0):0 = 0
+	CFLAG:(ARG):15 = 100
+	CSTR:(ARG:0):3 = %LOCALS%
+ENDIF
+
+SIF LOVE_EXP:8 > 0
+	PRINTFORML %SAVESTR:(ARG:0)%特意將水晶球保留了下來、向認識的人炫耀……
+
+;清算
+
+PRINTL  
+
+;キス回數
+SIF LOVE_EXP:0 > 0
+	PRINTFORM 接吻：{LOVE_EXP:0}次 
+;煙草回數
+SIF LOVE_EXP:1 > 0
+	PRINTFORM 吸菸：{LOVE_EXP:1}根 
+;薬物経験
+IF LOVE_EXP:2 > 0
+	PRINTFORM 藥物經驗＋{LOVE_EXP:2} 
+	EXP:(ARG:0):57 += LOVE_EXP:2
+ENDIF
+
+;フェラ経験
+IF LOVE_EXP:3 > 0
+	PRINTFORM 口交經驗＋{LOVE_EXP:3} 
+	EXP:(ARG:0):22 += LOVE_EXP:3
+ENDIF
+
+;快C?快B
+;性交の前戯、レズ行為の合計
+IF LOVE_EXP:9 > 0
+	PRINTFORM %PALAMNAME:0%點數＋{LOVE_EXP:9 * 5} 
+	JUEL:(ARG:0):0 += LOCAL * 5
+	PRINTFORM %PALAMNAME:14%點數＋{LOVE_EXP:9 * 5} 
+	JUEL:(ARG:0):14 += LOCAL * 5
+ENDIF
+
+;V経験?快V
+IF LOVE_EXP:4 > 0
+	PRINTFORM 私處經驗＋{LOVE_EXP:4} 
+	EXP:(ARG:0):0 += LOVE_EXP:4
+	PRINTFORM %PALAMNAME:1%點數＋{LOVE_EXP:4 * 5} 
+	JUEL:(ARG:0):1 += LOVE_EXP:4 * 5
+ENDIF
+
+;A経験?快A
+IF LOVE_EXP:5 > 0
+	PRINTFORM 肛門經驗＋{LOVE_EXP:5} 
+	EXP:(ARG:0):1 += LOVE_EXP:5
+	PRINTFORM %PALAMNAME:2%點數＋{LOVE_EXP:5 * 5} 
+	JUEL:(ARG:0):2 += LOVE_EXP:5 * 5
+ENDIF
+
+;性交経験
+IF (LOVE_EXP:5 + LOVE_EXP:4)  > 0
+	PRINTFORM 性交經驗＋{(LOVE_EXP:5 + LOVE_EXP:4)} 
+	EXP:(ARG:0):5 += (LOVE_EXP:5 + LOVE_EXP:4)
+ENDIF
+
+;精液経験
+LOCAL = (LOVE_EXP:5 + LOVE_EXP:4 + LOVE_EXP:3) / 2
+IF LOCAL > 0
+	PRINTFORM 精液經驗＋{LOCAL} 
+	EXP:(ARG:0):20 += LOCAL
+ENDIF
+
+;獣姦経験
+IF LOVE_EXP:7  > 0
+	PRINTFORM 獸姦經驗＋{LOVE_EXP:7} 
+	EXP:(ARG:0):56 += LOVE_EXP:7
+ENDIF
+
+;被寫経験
+IF LOVE_EXP:8  > 0
+	PRINTFORM 拍攝經驗＋{LOVE_EXP:8} 
+	EXP:(ARG:0):70 += LOVE_EXP:8
+ENDIF
+
+;膣內射精
+;V経験?快V
+IF (LOVE_EXP:4 / 2) > 0
+	SELECTCASE LOVER
+	CASE 1 TO 20
+		;成人男性
+		RACE = 4
+		CFLAG:(ARG:0):105 = LOVE_EXP:4
+	CASE 21 TO 40
+		;異種族男性
+		RACE = 6
+		CFLAG:(ARG:0):107 = LOVE_EXP:4
+	CASE 41 TO 60
+		;女性?ふたなり
+		RACE = 4
+		CFLAG:(ARG:0):105 = LOVE_EXP:4
+	CASE 61 TO 80
+		;少年
+		RACE = 4
+		CFLAG:(ARG:0):105 = LOVE_EXP:4
+	CASE 81
+		;犬
+		RACE = 5
+		CFLAG:(ARG:0):106 = LOVE_EXP:4
+	CASE 82 TO 100
+		;その他の獣
+		RACE = 6
+		CFLAG:(ARG:0):107 = LOVE_EXP:4
+	ENDSELECT
+	CALL NAKADASHI_CHECK , ARG:0 , RACE
+ENDIF
+
+
+IF MARRIAGE != 902
+	PRINTW (善惡值減少:-1)
+	CALL KARMA, ARG:0, -1
+ELSE
+	WAIT
+ENDIF
+
+CFLAG:(ARG:0):607 += 1
+
+RETURN 1
+
+;------------------------------------
+@DUNGEON_TOWN_LOVER_CHARA_ENTER, ARG:0
+#DIM LOVER
+;------------------------------------
+;ARG:0の勇者が同じく勇者の戀人を探す
+
+;戀人フラグが無いとダメ
+SIF GETBIT(FLAG:8,2) == 0
+	RETURN 0
+
+;戀人がすでにいるとダメ
+SIF CFLAG:(ARG:0):606 > 0
+	RETURN 0
+
+;配偶者がすでにいるとダメ
+SIF CFLAG:(ARG:0):601 > 0
+	RETURN 0
+
+LOCAL = RAND:CHARANUM
+
+;自分自身の場合
+;SIF LOCAL == ARG:0
+;	LOCAL = RAND:CHARANUM
+
+;同じ狀況でないとダメ
+;同じく侵攻中とか、同じく奴隷狀態など
+SIF CFLAG:LOCAL:1 != CFLAG:(ARG:0):1
+	RETURN 0
+
+;対象に戀人がすでにいるとダメ
+SIF CFLAG:LOCAL:606 > 0
+	RETURN 0
+
+;対象に配偶者がすでにいるとダメ
+SIF CFLAG:LOCAL:601 > 0
+	RETURN 0
+
+IF TALENT:(ARG:0):122 == 1 && TALENT:LOCAL:122 == 1
+	;オトコ - オトコの場合
+	;BLっ気が雙方に無いとダメ
+	SIF ABL:(ARG:0):23 == 0 && ABL:LOCAL:23 == 0
+		RETURN 0
+ELSEIF  TALENT:(ARG:0):122 == 0 && TALENT:LOCAL:122 == 0
+	;女 - 女の場合
+	;レズっ気が雙方に無いとダメ
+	SIF ABL:(ARG:0):22 == 0 && ABL:LOCAL:22 == 0
+		RETURN 0
+ENDIF
+
+;侵攻中の場合同じパーティにいないとダメ
+SIF CFLAG:(ARG:0):1 == 2 && (CFLAG:(ARG:0):533 != CFLAG:LOCAL:533)
+	RETURN 0
+
+IF LOCAL == 0
+	;あなたの場合愛じゃないとダメ
+	SIF TALENT:(ARG:0):85 == 0
+		RETURN 0
+	PRINTFORML %SAVESTR:(ARG:0)%向你表白了……
+	PRINTFORML 要接受嗎？
+	CALL SELECT_YES_NO
+	SIF RESULT == 1
+		RETURN 0
+ENDIF
+
+;ID情報を交換
+CALL CHARA_ID_OUTPUT,ARG:0
+CFLAG:LOCAL:610 = RESULT
+CALL CHARA_ID_OUTPUT,LOCAL
+CFLAG:(ARG:0):610 = RESULT
+
+;名前情報を交換
+CFLAG:LOCAL:608 = CFLAG:(ARG:0):6
+CFLAG:(ARG:0):608 = CFLAG:LOCAL:6
+
+;戀人フラグをON
+CFLAG:LOCAL:606 = 200
+CFLAG:(ARG:0):606 = 200
+SIF ARG:0 != 0 && LOCAL != ARG:0
+	PRINTFORMW %SAVESTR:(ARG:0)%被%SAVESTR:LOCAL%吸引了，兩人開始交往了……
+SIF LOCAL == ARG:0
+	PRINTFORMW %SAVESTR:(ARG:0)%被自己的%GET_LOOK_INFO(ARG:0,"魅力點")%吸引了……
+
+RETURN 1
+
+
+
+
+
+
+
+
+
+

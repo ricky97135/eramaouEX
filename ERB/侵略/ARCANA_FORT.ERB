@@ -1,0 +1,554 @@
+﻿;--------------------------------------
+@ARCANA_FORT
+#DIM TMP_ARCANA
+#DIM TMP2_ARCANA
+#DIM Y_ARCANA
+#DIM A_ARCANA
+;1文字変數AとBは戦闘で使うので勘弁してくだち………
+;Y_ARCANAが元勇者 A_ARCANAが聖靈ナイト
+;名前を元に戻した時のランダムネーム決定
+;列表追加
+#DIM NO_PAGE = 0
+#DIM NUM_PAGE = 26
+#DIM MAX_PAGE
+#DIM T_LCOUNT
+#DIM L_LCOUNT
+;-------------------------------------- 
+;東西南北の砦に親衛隊聖靈ナイト
+;四人倒した以降は未実裝
+;
+;FLAG:92 = 狂王の砦侵攻度 (&1:東 &2:南 &4:西 &8:北)
+;東＝黑方片 西＝白梅花 南＝銀黑桃 北＝金紅桃
+IF FLAG:92
+	IF FLAG:92 == 15
+		PRINTW 聖靈騎士全部都被打倒了，四個據點也都被攻陷了。
+		PRINTW 然後，你得到了四張獨特的牌，有何作用呢？
+		PRINTW （作為狂王的情婦及親衛隊長，也許在金紅桃身上能得到一點情報？）
+		RETURN 0
+	;捕獲３人
+	ELSEIF FLAG:92 == 14 || FLAG:92 == 13 ||FLAG:92 == 11 || FLAG:92 == 7
+		PRINT 最後只剩下
+		SIF (FLAG:92 & 1) == 0
+			PRINT 黑方片
+		SIF (FLAG:92 & 2) == 0
+			PRINT 銀黑桃
+		SIF (FLAG:92 & 4) == 0
+			PRINT 白梅花
+		SIF (FLAG:92 & 8) == 0
+			PRINT 金紅桃
+		PRINTW 一位聖靈騎士，決戰時刻臨近了……
+	;捕獲2人
+	ELSEIF FLAG:92 == 3 ||FLAG:92 == 5 ||FLAG:92 == 9 ||FLAG:92 == 6  ||FLAG:92 == 10 || FLAG:92 == 12
+		PRINTW 現在打倒了兩位聖靈騎士，還剩下兩個堡壘……
+	;捕獲1人
+	ELSEIF FLAG:92 == 1 ||FLAG:92 == 2 ||FLAG:92 == 4 ||FLAG:92 == 8
+		PRINT 你的奴隸，將偉大的聖靈騎士
+		SIF FLAG:92 == 1 
+			PRINT 黑方片
+		SIF FLAG:92 == 2
+			PRINT 銀黑桃
+		SIF FLAG:92 == 4
+			PRINT 白梅花
+		SIF FLAG:92 == 8
+			PRINT 金紅桃
+		PRINTW 打倒了，還剩下三位聖靈騎士……
+	ENDIF
+ELSE
+	PRINTW 有俘虜說，狂王的親衛隊【聖靈騎士】正在為進攻你的地下城而在東南西北四個堡壘里特訓著。
+	PRINTW 其它的俘虜也有提起，聖靈騎士正在為封印你的整個地下城而進行了某種儀式。
+	PRINTW 其它不同種族的人，也都或多或少地提到【聖靈騎士堡壘】這東西。
+	PRINTW 聽起來像是有意傳播的謠言呢。
+	TMP2_ARCANA = -1
+	REPEAT CHARANUM
+		SIF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0
+			TMP2_ARCANA = COUNT
+	REND
+	IF TMP2_ARCANA > 0
+		PRINTW 但是，從中看出機會的你反而命令你的奴隸去捕捉聖靈騎士……
+	ELSE
+		PRINTW 聖靈騎士全是一騎當千的高手，手下的怪物想必去到也只有被秒殺的份了吧。
+		PRINTW 要把這樣的猛士抓回來調教，看來必須派遣刺客才行……
+		RETURN 0
+	ENDIF
+ENDIF
+
+;東西南北の門
+;FLAG:92 = 砦侵攻度 (&1:東 &2:南 &4:西 &8:北)
+DRAWLINE
+PRINTW 要向哪個堡壘派遣刺客呢？必須打倒聖靈騎士才算勝利。
+
+IF FLAG:92 & 1 
+	PRINTL [*] - 東方堡壘（已攻佔）
+ELSE
+	PRINTL [0] - 東方堡壘
+ENDIF
+
+IF FLAG:92 & 4
+	PRINTL [*] - 西方堡壘（已攻佔）
+ELSE
+	PRINTL [1] - 西方堡壘
+ENDIF
+
+IF FLAG:92 & 2
+	PRINTL [*] - 南方堡壘（已攻佔）
+ELSE
+	PRINTL [2] - 南方堡壘
+ENDIF
+
+IF FLAG:92 & 8
+	PRINTL [*] - 北方堡壘（已攻佔）
+ELSE
+	PRINTL [3] - 北方堡壘
+ENDIF
+PRINTL [4] - 撤退
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 4
+	RETURN 0
+ELSEIF RESULT >= 5
+	GOTO INPUT_LOOP
+ELSEIF RESULT < 0
+	GOTO INPUT_LOOP
+ENDIF
+
+SIF (FLAG:92 & 1) && RESULT == 0
+	GOTO INPUT_LOOP
+SIF (FLAG:92 & 4) && RESULT == 1
+	GOTO INPUT_LOOP
+SIF (FLAG:92 & 2) && RESULT == 2
+	GOTO INPUT_LOOP
+SIF (FLAG:92 & 8) && RESULT == 3
+	GOTO INPUT_LOOP
+
+;TMP_ARCANAに儲存、最後まで使う
+TMP_ARCANA = RESULT
+
+;勇者選択
+TMP2_ARCANA = 0
+DRAWLINE
+;妊娠出撃可
+IF GETBIT(FLAG:5,10)
+LIST_POS = 0
+PREV_PAGE = 0
+PREV_LIST_POS = 0
+TMP2_ARCANA = 0
+	REPEAT CHARANUM
+		;助手でなおかつ愛か淫亂がついてないと攻撃不可。
+		IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0
+			TMP2_ARCANA += 1
+		ENDIF
+	REND
+IF (TMP2_ARCANA % NUM_PAGE) > 0
+	MAX_PAGE = ( TMP2_ARCANA / NUM_PAGE ) + 1
+ELSE
+	MAX_PAGE = TMP2_ARCANA / NUM_PAGE
+ENDIF
+MAX_PAGE--
+	IF TMP2_ARCANA == 0
+		PRINTW *沒有可以攻擊的勇士*
+		RETURN 0
+	ENDIF
+TMP2_ARCANA == 0
+$INPUT_LOOP1
+;-------------------------------------------------
+;快取、重置列表資訊
+IF NO_PAGE == 0
+	LIST_POS = 0
+	PREV_PAGE = 0
+	PREV_LIST_POS = 0
+ELSEIF NO_PAGE < PREV_PAGE
+	SWAP LIST_POS, PREV_LIST_POS
+ELSEIF NO_PAGE == PREV_PAGE
+	LIST_POS = PREV_LIST_POS
+ELSE
+	PREV_LIST_POS = LIST_POS
+ENDIF
+;-------------------------------------------------
+CUSTOMDRAWLINE =
+PRINTL 派遣誰去攻擊呢？
+DRAWLINE
+L_LCOUNT = LINECOUNT
+T_LCOUNT = NUM_PAGE * NO_PAGE + 1
+FOR COUNT, LIST_POS, CHARANUM
+	IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0 && T_LCOUNT <= (NO_PAGE + 1)*NUM_PAGE && T_LCOUNT >= NO_PAGE* NUM_PAGE + 1
+			PRINTFORM [{TMP2_ARCANA}] %SAVESTR:COUNT% LV{CFLAG:COUNT:9} 攻擊{CFLAG:COUNT:11,4,RIGHT} 防禦{CFLAG:COUNT:12,4,RIGHT} 
+			TMP2_ARCANA += 1
+			T_LCOUNT++
+			LIST_POS = COUNT
+			SETCOLOR 255,100,100
+			SIF CFLAG:COUNT:0 > 1 && COUNT != 0
+				PRINT 	[可以攻擊]
+			RESETCOLOR
+			PRINTL 
+	ENDIF
+NEXT
+L_LCOUNT = LINECOUNT - L_LCOUNT
+	IF L_LCOUNT < (NUM_PAGE + 1)
+		REPEAT (NUM_PAGE - L_LCOUNT)
+			PRINTL
+		REND
+	ENDIF
+DRAWLINE
+PRINTLC [1000] - 上一頁
+PRINTLC [999] - 返  回
+PRINTLC [1001] - 下一頁
+	INPUT
+		IF RESULT < 0
+			GOTO INPUT_LOOP1
+		ELSEIF RESULT == 1000		;上一頁
+			IF NO_PAGE > 0
+				NO_PAGE --
+				CLEARLINE LINECOUNT-L_LCOUNT
+			ENDIF
+			GOTO INPUT_LOOP1
+		ELSEIF RESULT == 1001		;下一頁
+			IF NO_PAGE < MAX_PAGE
+				NO_PAGE ++
+				CLEARLINE LINECOUNT-L_LCOUNT
+			ENDIF
+			GOTO INPUT_LOOP1
+		ELSEIF RESULT >= TMP2_ARCANA && RESULT != 999
+			GOTO INPUT_LOOP1
+		ENDIF
+	SIF RESULT == 999
+		RETURN 0
+
+	TMP2_ARCANA = RESULT
+	Y_ARCANA = 0
+	REPEAT CHARANUM
+		IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0 && TMP2_ARCANA == Y_ARCANA
+			Y_ARCANA = COUNT
+			BREAK
+		ENDIF
+		SIF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && COUNT != 0 && CFLAG:COUNT:0 == 2
+			Y_ARCANA += 1
+	REND
+ELSE
+LIST_POS = 0
+PREV_PAGE = 0
+PREV_LIST_POS = 0
+TMP2_ARCANA = 0
+	REPEAT CHARANUM
+		;助手でなおかつ愛か淫亂がついてないと攻撃不可、妊婦は出撃不可。
+		IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0 && TALENT:COUNT:153 == 0
+			TMP2_ARCANA += 1
+		ENDIF
+	REND
+
+IF (TMP2_ARCANA % NUM_PAGE) > 0
+	MAX_PAGE = ( TMP2_ARCANA / NUM_PAGE ) + 1
+ELSE
+	MAX_PAGE = TMP2_ARCANA / NUM_PAGE
+ENDIF
+MAX_PAGE--
+	IF TMP2_ARCANA == 0
+		PRINTW *沒有可以攻擊的勇士*
+		RETURN 0
+	ENDIF
+TMP2_ARCANA == 0
+$INPUT_LOOP2
+;-------------------------------------------------
+;快取、重置列表資訊
+IF NO_PAGE == 0
+	LIST_POS = 0
+	PREV_PAGE = 0
+	PREV_LIST_POS = 0
+ELSEIF NO_PAGE < PREV_PAGE
+	SWAP LIST_POS, PREV_LIST_POS
+ELSEIF NO_PAGE == PREV_PAGE
+	LIST_POS = PREV_LIST_POS
+ELSE
+	PREV_LIST_POS = LIST_POS
+ENDIF
+;-------------------------------------------------
+CUSTOMDRAWLINE =
+PRINTL 派遣誰去攻擊呢？
+DRAWLINE
+L_LCOUNT = LINECOUNT
+T_LCOUNT = NUM_PAGE * NO_PAGE + 1
+FOR COUNT, LIST_POS, CHARANUM
+	IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0 && TALENT:COUNT:153 == 0 && T_LCOUNT <= (NO_PAGE + 1)*NUM_PAGE && T_LCOUNT >= NO_PAGE* NUM_PAGE + 1
+			PRINTFORM [{TMP2_ARCANA}] %SAVESTR:COUNT% LV{CFLAG:COUNT:9} 攻擊{CFLAG:COUNT:11,4,RIGHT} 防禦{CFLAG:COUNT:12,4,RIGHT} 
+			TMP2_ARCANA += 1
+			T_LCOUNT++
+			LIST_POS = COUNT
+			SETCOLOR 255,100,100
+			SIF CFLAG:COUNT:0 > 1 && COUNT != 0
+				PRINT 	[可以攻擊]
+			RESETCOLOR
+			PRINTL 
+	ENDIF
+NEXT
+L_LCOUNT = LINECOUNT - L_LCOUNT
+	IF L_LCOUNT < (NUM_PAGE + 1)
+		REPEAT (NUM_PAGE - L_LCOUNT)
+			PRINTL
+		REND
+	ENDIF
+DRAWLINE
+PRINTLC [1000] - 上一頁
+PRINTLC [999] - 返  回
+PRINTLC [1001] - 下一頁
+	INPUT
+		IF RESULT < 0
+			GOTO INPUT_LOOP1
+		ELSEIF RESULT == 1000		;上一頁
+			IF NO_PAGE > 0
+				NO_PAGE --
+				CLEARLINE LINECOUNT-L_LCOUNT
+			ENDIF
+			GOTO INPUT_LOOP2
+		ELSEIF RESULT == 1001		;下一頁
+			IF NO_PAGE < MAX_PAGE
+				NO_PAGE ++
+				CLEARLINE LINECOUNT-L_LCOUNT
+			ENDIF
+			GOTO INPUT_LOOP2
+		ELSEIF RESULT >= TMP2_ARCANA && RESULT != 999
+			GOTO INPUT_LOOP1
+		ENDIF
+	SIF RESULT == 999
+		RETURN 0
+
+
+	TMP2_ARCANA = RESULT
+	Y_ARCANA = 0
+	REPEAT CHARANUM
+		IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && CFLAG:COUNT:0 == 2 && COUNT != 0 && TMP2_ARCANA == Y_ARCANA  && TALENT:COUNT:153 == 0
+			Y_ARCANA = COUNT
+			BREAK
+		ENDIF
+		SIF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && (TALENT:COUNT:85 == 1 || TALENT:COUNT:76 == 1) && COUNT != 0 && CFLAG:COUNT:0 == 2 && TALENT:COUNT:153 == 0
+			Y_ARCANA += 1
+	REND
+ENDIF
+
+;東の砦　黑方片 &1
+IF TMP_ARCANA == 0
+	IF TALENT:Y_ARCANA:167 || TALENT:Y_ARCANA:168 || TALENT:Y_ARCANA:169 || TALENT:Y_ARCANA:170
+		PRINTFORMW 在東方堡壘遇到了黑方片，把劍插在地上，雙臂交叉抱于胸前。
+		PRINTFORMW 黑方片看著曾經是同伴的%SAVESTR:Y_ARCANA%，皺起了眉頭。
+		PRINTFORMW 「怎麼會這樣，難道你已經成爲了魔王的手下了嗎？…………沒辦法了，事已至此，受傷可別怪我！做好覺悟吧！！」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「竟然派你全裸來戰鬥……魔王這混蛋，絕對不可原諒！！」
+		PRINTFORMW 黑方片猶豫了一下，但還是揮舞著黑亮的大劍發起了襲擊。
+	ELSE
+		PRINTFORMW 在東方堡壘遇到了黑方片，把劍插在地上，雙臂交叉抱于胸前。
+		PRINTFORMW 「等著我來解放你。唉……可悲的人啊，放棄了勇者光明的未來去做魔王的爪牙，真是何苦！」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「被全裸地派來戰鬥，真是值得同情啊！」
+		PRINTFORMW 黑方片揮舞著黑亮的大劍發起了襲擊。
+	ENDIF
+;西の砦　白梅花 &4
+ELSEIF TMP_ARCANA == 1
+	IF TALENT:Y_ARCANA:167 || TALENT:Y_ARCANA:168 || TALENT:Y_ARCANA:169 || TALENT:Y_ARCANA:170
+		PRINTFORMW 在西方堡壘遇到了白梅花，發現刺客的她把正在看的書塞回了長袍內。
+		PRINTFORMW 白梅花看著曾經是同伴的%SAVESTR:Y_ARCANA%，瞪大了眼睛。
+		PRINTFORMW 「哎呀呀…你成了魔王的奴隸真令人意外呢，我還以為你會咬舌自盡之類的。」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「而且要全裸著和我對戰啊？稍微有點後悔了嗎？」
+		PRINTFORMW 白梅花眼神突然變得凌厲了起來，舉起雪白的魔杖開始詠唱起咒文！
+	ELSE
+		PRINTFORMW 在西方堡壘遇到了白梅花，發現刺客的她把正在看的書塞回了長袍內。
+		PRINTFORMW 「唉…我才剛開始看這本書沒多久啊…能讓我快點把書看完再來應付你么？…不行么？真沒辦法呢……」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「哇…全裸戰鬥這種事…是魔王的惡趣味？」
+		PRINTFORMW 白梅花無奈地嘆著氣，但雪白的魔杖卻突然開始放出強烈的魔力波動！
+	ENDIF
+;南の砦　銀黑桃 &2
+ELSEIF TMP_ARCANA == 2
+	IF TALENT:Y_ARCANA:167 || TALENT:Y_ARCANA:168 || TALENT:Y_ARCANA:169 || TALENT:Y_ARCANA:170
+		PRINTFORMW 在南方堡壘遇到了銀黑桃，穿著全套黑色的忍者服，完全不像被偷襲的樣子。
+		PRINTFORMW 銀黑桃看著曾經是同伴的%SAVESTR:Y_ARCANA%，發出了一聲吃驚的聲音。
+		PRINTFORMW 「原來如此，與你為敵我也從未想過。既然如此，我也要認真起來了！」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「哪，哪怕你全裸，我也是不會分心的！！」
+		PRINTFORMW 銀黑桃用腳在地上一踏，分出了分身襲擊過來了！
+	ELSE
+		PRINTFORMW 在南方堡壘遇到了銀黑桃，穿著全套黑色的忍者服，完全不像被偷襲的樣子。
+		PRINTFORMW 「哎呀哎呀……這樣引你們過來然後捕獲實在與我的個性不符…不過這也是狂王大人的命令，效忠一個主公也是一件很艱難的事呢。」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「啊……對了……我還想問你們，全裸了防禦力也不下降的么？」
+		PRINTFORMW 銀黑桃分出了分身襲擊過來了！
+	ENDIF
+;北の砦　金紅桃 &8
+ELSEIF TMP_ARCANA == 3
+	IF TALENT:Y_ARCANA:167 || TALENT:Y_ARCANA:168 || TALENT:Y_ARCANA:169 || TALENT:Y_ARCANA:170
+		PRINTFORMW 在北方堡壘遇到了作為親衛隊長的金紅桃，金色的鎧甲閃爍著猶如太陽一樣的光芒，隱約可見有符文在光芒里浮動著。	
+		PRINTFORMW 金紅桃看著曾經是同伴的%SAVESTR:Y_ARCANA%，露出了一瞬間的悲傷，但馬上又重振了精神。
+		PRINTFORMW 「哎呀呀……真令人為難，我也不想和曾經的同伴兵戎相見但這也是狂王大人的命令～所以……」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「呵呵呵……特意全身赤裸地來挑戰是爲了被侵犯的么？」
+		PRINTFORMW 金紅桃微笑著，舉起毫不留情的劍刺過來了！
+	ELSE
+		PRINTFORMW 在北方堡壘遇到了作為親衛隊長的金紅桃，金色的鎧甲閃爍著猶如太陽一樣的光芒，隱約可見有符文在光芒里浮動著。	
+		PRINTFORMW 「歡迎光臨～可憐的魔王奴隸哦♪～請務必讓我愉悅一下呢！」
+		SIF CFLAG:Y_ARCANA:40 == 0
+			PRINTFORMW 「特意全裸出現是爲了展示自己的變態么？那個細嫩的肌膚就讓我刻點什麼上去吧！」
+		PRINTFORMW 金紅桃微笑著，舉起毫不留情的劍刺過來了！
+	ENDIF
+ENDIF
+
+;キャラ追加
+;東の砦　黑方片 &1
+IF TMP_ARCANA == 0
+	ADDCHARA 22
+	CALL ADDCHARA_EX(CHARANUM-1)
+	A_ARCANA = CHARANUM - 1
+	SAVESTR:A_ARCANA = %NAME:A_ARCANA%
+	CSTR:A_ARCANA:1 = %NAME:A_ARCANA%
+	;初期裝備：劍
+	CFLAG:A_ARCANA:550 = 40
+	;初期裝備：強度
+	CFLAG:A_ARCANA:550 += 9000
+	;初期裝備接頭語：ダーク
+	CFLAG:A_ARCANA:550 += 900000
+	;名前決定
+	CFLAG:A_ARCANA:6 = RAND:80
+;西の砦　白梅花 &4
+ELSEIF TMP_ARCANA == 1
+	ADDCHARA 23
+	CALL ADDCHARA_EX(CHARANUM-1)
+	A_ARCANA = CHARANUM - 1
+	SAVESTR:(A_ARCANA) = %NAME:A_ARCANA%
+	CSTR:A_ARCANA:1 = %NAME:A_ARCANA%
+	ABL:A_ARCANA:31 = 1
+	EXP:A_ARCANA:10 = 30
+	;初期裝備：法杖
+	CFLAG:A_ARCANA:550 = 41
+	;初期裝備：強度
+	CFLAG:A_ARCANA:550 += 9000
+	;初期裝備接頭語：アイス
+	CFLAG:A_ARCANA:550 += 600000
+	;名前決定
+	CFLAG:A_ARCANA:6 = RAND:80
+;南の砦　銀黑桃 &2
+ELSEIF TMP_ARCANA == 2
+	ADDCHARA 21
+	CALL ADDCHARA_EX(CHARANUM-1)
+	A_ARCANA = CHARANUM - 1
+	SAVESTR:A_ARCANA = %NAME:A_ARCANA%
+	CSTR:A_ARCANA:1 = %NAME:A_ARCANA%
+	EXP:A_ARCANA:10 = 10
+	;初期裝備：手裡劍
+	CFLAG:A_ARCANA:550 = 44
+	;初期裝備：強度
+	CFLAG:A_ARCANA:550 += 9000
+	;初期裝備接頭語：デス
+	CFLAG:A_ARCANA:550 += 300000
+	;名前決定
+	CFLAG:A_ARCANA:6 = RAND:80
+;北の砦　金紅桃 &8
+ELSEIF TMP_ARCANA == 3
+	ADDCHARA 20
+	CALL ADDCHARA_EX(CHARANUM-1)
+	A_ARCANA = CHARANUM - 1
+	SAVESTR:A_ARCANA = %NAME:A_ARCANA%
+	CSTR:A_ARCANA:1 = %NAME:A_ARCANA%
+	EXP:A_ARCANA:0 = 20
+	;狂王が男か扶她ならば精液經驗
+	SIF FLAG:500 == 0 || FLAG:500 == 2
+		EXP:A_ARCANA:5 = EXP:A_ARCANA:0
+	;初體験の相手は狂王
+	CFLAG:A_ARCANA:15 = 105
+	;初期裝備：細劍
+	CFLAG:A_ARCANA:550 = 50
+	;初期裝備：強度
+	CFLAG:A_ARCANA:550 += 10000
+	;初期裝備接頭語：スラッシュ
+	CFLAG:A_ARCANA:550 += 400000
+	;名前決定
+	CFLAG:A_ARCANA:6 = RAND:80
+ENDIF
+
+;衣裝全裝備
+TARGET = A_ARCANA
+CALL WEARING_CLOTH_ABLE
+CALL CHAR_BODY_GENERATE_WAPPED, A_ARCANA
+
+;レベルアップ処理
+IF FLAG:60 > 0
+	REPEAT FLAG:60
+		CALL ST_UP, A_ARCANA
+	REND
+ENDIF
+
+BASE:A_ARCANA:0 = MAXBASE:A_ARCANA:0
+BASE:A_ARCANA:1 = MAXBASE:A_ARCANA:1
+
+;戦闘
+;Aが元勇者 Bが聖靈ナイト
+A = Y_ARCANA
+B = A_ARCANA
+CALL ARCANA_BATTLE
+
+;勝ち
+IF RESULT == 2
+	DRAWLINE
+	PRINTFORML 聖靈騎士%SAVESTR:A_ARCANA%戰敗了…
+	MONEY += 1000 * CFLAG:A_ARCANA:9
+	EX_FLAG:4444 += 1000 * CFLAG:A_ARCANA:9
+	PRINTFORMW 獲得了{1000 * CFLAG:A_ARCANA:9}G！
+	PRINT 而且
+	;東の砦　黑方片 &1
+	IF TMP_ARCANA == 0
+		PRINTW 獲得了黑方片持有的【方片Ａ】牌。
+		PRINTW 然後，被俘虜了的黑方片被帶到你的地下城了………
+		PRINTW 「我居然輸了………」
+		FLAG:92 |= 1
+	;西の砦　白梅花 &4
+		CALL CHAR_SIZE_GENERATE, A_ARCANA, 21
+	ELSEIF TMP_ARCANA == 1
+		PRINTW 獲得了白梅花持有的【梅花Ａ】牌。
+		PRINTW 然後，被俘虜了的白梅花被帶到你的地下城了………
+		PRINTW 「戰敗也是我的命運么？…我那無法解讀的預言，見到了魔王的話，會明白嗎………」
+		FLAG:92 |= 4
+	;南の砦　銀黑桃 &2
+		CALL CHAR_SIZE_GENERATE, A_ARCANA, 27
+	ELSEIF TMP_ARCANA == 2
+		PRINTW 獲得了銀黑桃持有的【黑桃Ａ】牌。
+		PRINTW 然後，被俘虜了的銀黑桃被帶到你的地下城了………
+		PRINTW 「真是的………放開我！」
+		FLAG:92 |= 2
+	;北の砦　金紅桃 &8
+		CALL CHAR_SIZE_GENERATE, A_ARCANA, 24
+	ELSEIF TMP_ARCANA == 3
+		PRINTW 獲得了金紅桃持有的【紅桃Ａ】牌。
+		PRINTW 然後，被俘虜了的金紅桃被帶到你的地下城了………
+		PRINTW 「怎麼這樣……狂王大人！救救我啊！！」
+		FLAG:92 |= 8
+		CALL CHAR_SIZE_GENERATE, A_ARCANA, 18
+	ENDIF
+	IF GETBIT(FLAG:5,12) || GETBIT(FLAG:5,15)
+		CFLAG:(A_ARCANA):451 = RESULT:0
+		CFLAG:(A_ARCANA):452 = RESULT:1
+		CFLAG:(A_ARCANA):453 = RESULT:2
+		CFLAG:(A_ARCANA):454 = RESULT:3
+		CFLAG:(A_ARCANA):455 = RESULT:4
+		CFLAG:(A_ARCANA):456 = RESULT:5
+		CFLAG:(A_ARCANA):457 = RESULT:6
+	ENDIF
+;負け
+ELSEIF RESULT == 0
+	IF (FLAG:5 & 128)
+		;前回の助手・調教対象だった場合はフラグを空に
+		SIF FLAG:1 == Y_ARCANA
+			FLAG:1 = -1
+		SIF FLAG:2 == Y_ARCANA
+			FLAG:2 = -1
+	ENDIF
+	A_ARCANA = CHARANUM - 1
+	CALL PARTY_CHAR_DEL, A_ARCANA
+	DELCHARA A_ARCANA
+	CALL NAME_RESET
+ENDIF
+
+A = 0
+B = 0
+
+DRAWLINE
+RETURN 1
+
+
+

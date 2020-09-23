@@ -1,0 +1,193 @@
+﻿;------------------------------------------
+@PUBLIC_EXECUTION
+#DIM LV
+#DIMS MATURO
+#DIM FAMILY,3
+;ZはTARGETを儲存してるため使用禁止
+;------------------------------------------
+;公開？処刑コマンド
+
+SIF A == 0
+	RETURN 0
+B = A
+
+FAMILY = CFLAG:A:605
+FAMILY:1 = FAMILY % 10
+CALL SEARCH_FAMILY, A
+FAMILY:2 = RESULT
+
+PRINTL [0] 凌辱刑
+PRINTL [1] 絞刑
+PRINTL [2] 魂粉砕
+PRINTL  
+PRINTL [100] 算了
+
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= 3 && RESULT != 100
+	GOTO INPUT_LOOP
+ENDIF
+
+IF RESULT == 100
+	TARGET = FLAG:1
+	RETURN 0
+ENDIF
+
+TARGET = A
+IF TALENT:TARGET:220 != 1 && EX_TALENT:TARGET:1 != 1 
+	EX_FLAG:99 += 2
+	PRINTFORML 威望值增加
+	ELSE
+	EX_FLAG:99 -= 10
+	PRINTFORML 威望值減少
+	ENDIF
+TFLAG:520 = RESULT
+
+CALL PUBLIC_EXUCUTION_KOUJO
+
+IF TFLAG:520 == 0
+	SIF TALENT:A:85
+		PRINTFORM 深愛著你的%SAVESTR:A%不知道自己為什麼要被做成肉便器，不停地高叫著你的名字，請求饒恕。
+	PRINTFORML 但%SAVESTR:PLAYER%依然給%SAVESTR:A%烙上了封鎖所有力量的封印。
+	PRINTL 直到玩壞為止，讓地下城裡的怪物們隨意地凌辱，
+	PRINTW 爲了一時的娛樂而被公開處刑了。
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%的屍體，作為祭品被怪物鄭重地奉獻給你了。
+	PRINTL  
+	PRINTL 得到了用勇者力量形成的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 凌辱致死
+	
+ELSEIF TFLAG:520 == 1
+	SIF TALENT:A:85
+		PRINTFORM 深愛著你的%SAVESTR:A%不知道自己為什麼要被做成肉便器，不停地高叫著你的名字，請求饒恕。
+	PRINTFORML 但%SAVESTR:PLAYER%依然給%SAVESTR:A%烙上了封鎖所有力量的封印，
+	PRINTW 在地下城的大街上，全裸地被吊起來了。
+	PRINTW 脖子上掛著一塊【我賣淫！！】的牌子，
+	PRINTW 私處和肛門，都被巨大的假陽具貫穿了。
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%的屍體，被懸掛示眾三天之後，%SAVESTR:PLAYER%親自將她火化了。
+	PRINTL  
+	PRINTL 得到了用勇者力量形成的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	MATURO = 淫行懸掛
+	
+ELSEIF TFLAG:520 == 2
+;よおし、この女（の肉體）はくれてやる！好きにしろ！
+	PRINTFORMW 封印了%SAVESTR:A%的力量之後，將她的四肢鎖上。
+	PRINTFORMW 在咒術師的詠唱下，有一隻白色的球狀靈魂從她不停掙扎的身體里被吸出來了。
+	PRINTFORMW %SAVESTR:MASTER%隨意地一伸手，把那靈魂捏碎啦！
+	PRINTW 這光景，以【違逆魔王的勇者】為題，在全地下城裡直播。
+	PRINTFORM 失去靈魂的%SAVESTR:A%的身體，
+		A = RAND:10
+		IF A == 0
+				;匠の手によって実用的な○○に！
+				PRINT 被魔界的鍛造工所回收，作為武具的材料，被加工利用了。
+				MATURO = 武具的素材
+		ELSEIF A == 1
+				;主に武具とか新魔法の威力とか効果とかの検証などに…
+				PRINT 被魔界的魔法公會所回收，作為實驗用的人偶。
+				MATURO = 實驗人形
+		ELSEIF A == 2
+				;小隊共有のダッチワイフ！
+				PRINT 被某個軍官所回收，作為人肉充氣娃娃用了。
+				MATURO = 人肉充氣娃娃
+		ELSEIF A == 3
+				;「使い魔欲しかったんだー☆」などと供述しており
+				PRINT 被喜歡百合的淫魔所回收，作為使魔用了。
+				MATURO = 淫魔的使魔
+		ELSEIF A == 4
+				;ワシはピチピチギャル（死語）になってムフフでアハ～ンなことをしてみたい…いや、されたいんじゃ！
+				PRINT 被隱居的老魔法師所回收，作為自己新的身體用了。
+				MATURO = 魔法師的肉體
+		ELSEIF A == 5
+				;食品化！…というよりただの食材化なんやな…
+				PRINT 被魔界的廚師所回收，作為特別菜色用了。
+				MATURO = 食材
+		ELSEIF A == 6
+				;ヤクい連中が新薬の実験臺に欲しいって…
+				;この実験の結果なんかよくわからないモンスターが生まれるのもありだと思います
+				PRINT 被魔術學院所回收，作為人體實驗的材料用了。
+				MATURO = 人體實驗的素材
+		ELSEIF A == 7
+				;丁度良い身體もあるしとりあえず使ってみるスタイル
+				PRINT 被奇妙的組織領走了，成爲了他們可疑信仰的降神傀儡。
+				MATURO = 降神的傀儡
+		ELSE
+				;特に意味の無い慾望が勇者の身體を襲う！（食慾的な意味で
+				PRINT 被下級怪物們分食了。
+				MATURO = 怪獸口糧
+		ENDIF
+	PRINTW  
+	PRINTL 得到了用勇者力量形成的勳章
+	PRINTW 勳章經驗+1
+	EXP:0:81 += 1
+	
+	
+
+ENDIF
+
+SIF FAMILY:2 >= 0
+	CSTR:(FAMILY:2):5 = %MATURO%
+
+A = TARGET
+TSTR:30 = %MATURO%%SAVESTR:A%
+CALL VIDEO_MATURO
+
+;武器解除
+W:0 = CFLAG:A:550
+CALL EQUIP_GET
+CFLAG:A:550 = -1
+;指輪解除
+W:0 = CFLAG:A:551
+CALL EQUIP_GET
+CFLAG:A:551 = -1
+;指輪解除
+W:0 = CFLAG:A:552
+CALL EQUIP_GET
+CFLAG:A:552 = -1
+
+LV = CFLAG:A:9
+
+X = NO:A + 199
+FLAG:X = 1
+
+;前回の助手・調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手・調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, A
+
+DELCHARA A
+
+CALL NAME_RESET
+
+
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+PRINTFORMW 《封印把勇者的力量吸收了，你獲得了{LV}的經驗值！》
+
+
+RETURN 0
+

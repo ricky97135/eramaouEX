@@ -1,0 +1,536 @@
+﻿;怪物たちとイチャイチャ
+;とりあえずやっつけ。改変パッチも歓迎
+
+;-----------------------------------
+@MONSTER_PLAY
+;-----------------------------------
+DRAWLINE
+PRINTL 請選擇怪物
+DRAWLINE
+CALL MONSTERPLAY_LIST
+
+SIF ITEM:22 >= 1
+	PRINT [900] 野狗
+PRINTL [999] 返回
+
+$INPUT_LOOP
+INPUT
+
+IF RESULT == 999
+	RETURN 0
+ELSEIF ITEM:RESULT <= 0 && RESULT != 900
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 900 && ITEM:22 <= 0
+	CLEARLINE 1
+	GOTO INPUT_LOOP
+ENDIF
+
+LOCAL:0 = RESULT
+IF LOCAL:0 != 900
+	CALL MONSTER_DATA, LOCAL:0, 5
+	LOCAL:1 = E:507
+ENDIF
+
+A = 0
+Y = RAND:5 + 3
+
+IF LOCAL:0 == 900
+	CALL MONSTER_PLAY_DOG
+ELSEIF LOCAL:1 == 1
+	CALL ORC_MONSTER_PLAY
+ELSEIF LOCAL:1 == 2
+	CALL SLIME_MONSTER_PLAY
+ELSEIF LOCAL:1 == 3
+	CALL INSECT_MONSTER_PLAY
+ELSEIF LOCAL:1 == 4
+	CALL IVY_MONSTER_PLAY
+ELSEIF LOCAL:1 == 5
+	CALL SYOKUSYU_MONSTER_PLAY
+ELSEIF LOCAL:1 == 6
+	CALL FAILY_MONSTER_PLAY
+ELSEIF LOCAL:1 == 7
+	CALL GIANT_MONSTER_PLAY
+ELSEIF LOCAL:1 == 8
+	CALL MAN_MONSTER_PLAY
+ELSEIF LOCAL:1 == 9
+	CALL GIRL_MONSTER_PLAY
+ELSEIF LOCAL:1 == 10
+	CALL BEAST_MONSTER_PLAY
+ELSEIF LOCAL:1 == 11
+	CALL BRAIN_MONSTER_PLAY
+ELSEIF LOCAL:1 == 12
+	CALL HORSE_MONSTER_PLAY
+ENDIF
+
+IF TALENT:A:0 == 1 && EXP:A:0 > 0
+	PRINTW 【處女喪失】
+	TALENT:A:0 = 0
+ENDIF
+
+
+
+BEGIN TURNEND
+RETURN 1
+
+;-------------------------------------
+@MONSTERPLAY_LIST
+;-------------------------------------
+
+LOCAL:1 = 0
+FOR LOCAL:0, 100, 200
+	IF ITEM:(LOCAL:0) >= 1
+		PRINTFORM [{LOCAL:0}] %ITEMNAME:(LOCAL:0), 12, LEFT%
+		LOCAL:1 += 1
+	ENDIF
+	
+	IF LOCAL:1 >= 3
+		PRINTL  
+		LOCAL:1 = 0
+	ENDIF
+NEXT
+
+SIF LOCAL:1 != 0
+	PRINTL  
+
+RETURN 0
+
+;-----------------------------------------
+@MONSTER_PLAY_DOG
+;-----------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你為狗做了點心。
+	RETURN 0
+ENDIF
+
+
+PRINTW 『汪汪，汪汪汪～～』
+
+PRINTFORMW %SAVESTR:A%用甜美的聲音把狗引到懷裡，%SAVESTR:A%四肢分開，把野狗膨脹的陰莖引入了私處。
+PRINTFORML 私處經驗+{Y}
+EXP:A:0 += Y
+PRINTFORMW 獸姦經驗+{Y}
+EXP:A:56 += Y
+CFLAG:A:106 += Y
+
+RETURN 0
+
+
+;--------------------------------------------
+@ORC_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 『魔王大人，請饒了我吧…』
+	RETURN 0
+ENDIF
+
+X = RAND:5
+IF X == 0
+	PRINTW 『魔…魔王大人的愛愛……啊…！』
+ELSEIF X == 1
+	PRINTW 『有這寵幸，太感謝了…』
+ELSEIF X == 2
+	PRINTW 『魔王大人真的合適嗎，和我這樣的？』
+ELSEIF X == 3
+	PRINTW 『呃…呃……啊……魔王大人…啊……』
+ELSE
+	PRINTW 『哼啊啊～～噢～魔王……大……人…』
+ENDIF
+
+
+X = RAND:2
+IF X == 0
+	PRINTW 『魔王大人…我的雞雞快要…！』
+	PRINTFORMW %SAVESTR:A%全裸著玩弄獸人的陰莖。濃厚的精液流入%SAVESTR:A%的嘴裡了…
+	PRINTFORML 口交經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	EXP:A:22 += Y
+	EXP:A:20 += Y
+ELSEIF X == 1
+	PRINTW 『大家，一起向魔王大人齊射…！』
+	PRINTFORMW %SAVESTR:A%的膣內，嘴裡，肛門，所有洞里都插著獸人們的陰莖，被精液注射的滿滿的！
+	PRINTW 空洞的眼睛望著地下城那微暗的天花板，失去了焦點。
+	PRINTFORMW {Y}人份的存貨，沾滿了臉和性器，看到這個樣子，獸人們更加興奮了。
+	PRINTFORML 私處經驗+{Y}
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 口交經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	EXP:A:0 += Y
+	EXP:A:1 += Y
+	EXP:A:22 += Y
+	EXP:A:20 += Y
+	CFLAG:A:107 += Y
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@SLIME_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你把雙腳放入黏液里，充分地感受那冷冷的觸感。
+	RETURN 0
+ENDIF
+
+PRINTW 黏液怪蠢動著………
+
+X = RAND:2
+IF X == 0
+	PRINTFORMW %SAVESTR:A%享受著黏液浴。
+	PRINTFORMW …黏黏糊糊的！
+	PRINTFORML 恥情點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+	JUEL:A:8 += Y * 10
+ELSEIF X == 1
+	PRINTFORMW %SAVESTR:A%享受著黏液浴。
+	PRINTFORMW %SAVESTR:A%的肛門被大量的黏液逆流進去，正品味著那美妙的感覺。
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 恥情點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+	JUEL:A:8 += Y * 10
+	EXP:A:1 += Y
+ELSEIF X == 2
+	
+ELSE
+	
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@INSECT_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你充滿興趣地觀察了昆蟲。
+	RETURN 0
+ENDIF
+
+PRINTW 在節肢動物的甲殼上摩擦著…
+
+
+X = RAND:2
+IF X == 0
+	PRINTW 『嗯…嗯…嗯嗯……』
+	PRINTFORMW %SAVESTR:A%用嘴吸啜了輸卵管。
+;	PRINTFORML 習得點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+;	JUEL:A:7 += Y * 10
+	JUEL:A:5 += Y * 10
+ELSEIF X == 1
+	PRINTW 『咦～～呀～～』
+	PRINTFORMW %SAVESTR:A%的肛門被輸卵管貫通，在裡面產卵了。
+	PRINTFORMW %SAVESTR:A%四肢大張，準備著產卵。
+	PRINTFORMW {Y}只輪流從體內滾落到身下，從臀部到背部全被卵覆蓋了。
+	PRINTFORML 肛門經驗+{Y}
+	EXP:A:1 += Y
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@IVY_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你充滿興趣地觀察了植物。
+	RETURN 0
+ENDIF
+
+PRINTW 『嘿喲～…』
+
+
+X = RAND:2
+IF X == 0
+	PRINTW 藤蔓緊緊地纏繞著！
+	PRINTFORMW 不知輕重的藤蔓勒得%SAVESTR:A%非常痛苦，在被開放的瞬間，大口大口地喘著粗氣。
+	PRINTFORML 苦痛點數+{Y * 10}
+	PRINTFORML 恐怖點數+{Y * 10}
+	JUEL:A:9 += Y * 10
+	JUEL:A:10 += Y * 10
+ELSEIF X == 1
+	PRINTW 藤蔓在肛門裡紮根了。
+	PRINTFORMW %SAVESTR:A%的肛門被蹂躪著，發出了聲嘶力竭的尖叫。
+	PRINTW 藤蔓吸收到了養分，一口氣從直腸中拔出來了。
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 苦痛點數+{Y * 10}
+	PRINTFORML 恐怖點數+{Y * 10}
+	JUEL:A:9 += Y * 10
+	JUEL:A:10 += Y * 10
+	EXP:A:1 += Y
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@SYOKUSYU_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 觸手蜿蜒地動著…
+	RETURN 0
+ENDIF
+
+PRINTW 觸手蠢蠢欲動………
+
+
+X = RAND:4
+IF X == 0
+	PRINTFORMW %SAVESTR:A%用嘴吸啜著觸手前端流出的粘液，
+	PRINTFORMW 大量的體液迸發，被嗆到了，不久之後意識漸漸地迷糊………
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+ELSEIF X == 1
+	PRINTFORMW 觸手在%SAVESTR:A%的肛門裡不斷深入著，
+	PRINTFORMW 肛門不斷吸收著觸手灑在直腸內的體液，
+	PRINTW 最後，菊門放鬆，淫穢的肛門裡開始流出大量的渾濁體液。
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+	EXP:A:1 += Y
+ELSEIF X == 2
+	PRINTFORMW %SAVESTR:A%的性器接受了觸手的侵犯，
+	PRINTFORMW 粗大的觸手，分泌著媚藥的成分，在私處里不斷抽插著。
+	PRINTFORML 私處經驗+{Y}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+	EXP:A:0 += Y
+	CFLAG:A:107 += Y
+ELSEIF X == 3
+	PRINTFORMW %SAVESTR:A%嘴也好，肛門也好，私處也好，所有被觸手入侵的地方，都流出了大量的體液，
+	PRINTFORMW 裡面還帶有媚藥的成分，%SAVESTR:A%完全沉醉其中了…
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 私處經驗+{Y}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:5 += Y * 10
+	EXP:A:0 += Y
+	EXP:A:1 += Y
+	CFLAG:A:107 += Y
+ENDIF
+PRINTFORMW 觸手經驗+{Y}
+EXP:A:55 += Y
+RETURN 0
+
+;--------------------------------------------
+@FAILY_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:A:122 == 1
+	PRINTW 『要奴家這麼小的？真的沒關係么？』
+ELSE
+	PRINTW 『魔王大人！大變態！』
+ENDIF
+
+IF TALENT:A:122 == 1 || TALENT:A:121 == 1
+	PRINTW 『這就是，魔王大人的雞雞……』
+	PRINTFORMW %SAVESTR:A%的陰莖，妖精用全身仔細地侍奉著
+	PRINTFORML 陰核點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:0 += Y * 10
+	JUEL:A:5 += Y * 10
+ELSE
+	PRINTW 『舔了哦！』
+	PRINTFORMW %SAVESTR:A%的陰蒂和兩個乳頭，被妖精們不停舔舐著，
+	PRINTW 由於妖精們的舌頭運用身體感到越來越苦悶了。
+	PRINTFORML 陰核點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:0 += Y * 10
+	JUEL:A:5 += Y * 10
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@GIANT_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 『魔王大人，請饒了我吧…』
+	RETURN 0
+ENDIF
+
+PRINTW 『魔王大人，被弄壞了也可以么？』
+
+X = 0
+IF X == 0
+	PRINTFORMW 『灑家這輩子值了！！！』
+	PRINTFORMW %SAVESTR:A%的腰被巨人抓著，雄壯的陰莖在體內抽插著，
+	PRINTFORMW 『嗯！魔王大人！真舒服！！』
+	PRINTFORMW 一瞬間，腹部誇張地膨脹起來，大量的精液噴涌而出了…
+	PRINTFORML 私處經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	PRINTFORML 陰道擴張經驗+{Y}
+	EXP:A:0 += Y
+	EXP:A:20 += Y
+	EXP:A:53 += Y
+	CFLAG:A:107 += Y
+ELSEIF X == 1
+ELSEIF X == 2
+ELSEIF X == 3
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@MAN_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 『魔王大人真會開玩笑……』
+	RETURN 0
+ENDIF
+
+PRINTW 『真，真的可以嗎！？魔王大人！…真不敢相信…』
+
+X = RAND:2
+IF X == 0
+	PRINTW 『啊噢…魔王大人…好舒服…』
+	PRINTFORMW %SAVESTR:A%全裸著侍奉魔族的陰莖。%SAVESTR:A%的舌頭，讓魔族男身體越發苦悶了。
+	PRINTFORML 口交經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	EXP:A:22 += Y
+	EXP:A:20 += Y
+ELSEIF X == 1
+	PRINTW 『魔王大人…這麼漂亮的屁股…！』
+	PRINTFORMW %SAVESTR:A%手扶墻壁，向男魔族們抬起屁股誘惑著，
+	PRINTFORMW 魔族們爭先恐後地勃起了，搶著侵犯%SAVESTR:A%，
+	PRINTFORMW %SAVESTR:A%的呻吟越來越大聲，正享受著這份快感。
+	PRINTFORML 私處經驗+{Y}
+	PRINTFORML 肛門經驗+{Y}
+	PRINTFORML 精液經驗+{Y}
+	EXP:A:0 += Y
+	EXP:A:1 += Y
+	EXP:A:20 += Y
+	CFLAG:A:107 += Y
+ELSEIF X == 2
+	
+ELSEIF X == 3
+	
+ELSE
+	
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@GIRL_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:A:122 == 1
+	PRINTW 『啊啦啦？魔王大人想和我們玩嗎？♡♡♡嘻嘻～讓我們來侍奉魔王大人吧，絕對比那些臭勇者好多了我們！！』
+ELSE
+	PRINTW 『魔王大人…還有這樣的愛好啊～』
+ENDIF
+
+IF TALENT:A:122 == 1
+	PRINTW 『噢～啊～魔王大人～好棒♡♡♡可以的話，每晚都讓我們來侍奉你吧？我們會為魔王大人做任何事情～怎麼玩都可以哦！』
+	PRINTFORMW %SAVESTR:A%的陰莖旁，圍著一群懇求著的魔族女孩。
+	PRINTFORML 陰核點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	JUEL:A:0 += Y * 10
+	JUEL:A:5 += Y * 10
+ELSE
+	PRINTW 『啊～魔王大人！我是你的奴隸♪』
+	PRINTFORM %SAVESTR:A%的
+	IF TALENT:A:121 == 1
+		PRINT 陰莖
+	ELSE
+		PRINT 假陽具
+	ENDIF
+	PRINTFORMW 侵犯著魔族女孩，
+	PRINTW 同爲女人，感受到了與衆不同的快感。
+	PRINTFORML 陰核點數+{Y * 10}
+	PRINTFORML 欲情點數+{Y * 10}
+	PRINTFORML 百合經驗+{Y}
+	JUEL:A:0 += Y * 10
+	JUEL:A:5 += Y * 10
+	EXP:A:40 += Y
+ENDIF
+
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@BEAST_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你把魔獸拉進懷裡，盡情地撫摸著它的毛髮。
+	RETURN 0
+ENDIF
+
+PRINTW 『呼～呼～～』
+
+PRINTFORMW %SAVESTR:A%用甜美的聲音把魔獸引到懷裡，%SAVESTR:A%四肢分開，把魔獸膨脹的陰莖引入了私處。
+PRINTFORML 私處經驗+{Y}
+EXP:A:0 += Y
+PRINTFORMW 獸姦經驗+{Y}
+EXP:A:56 += Y
+CFLAG:A:107 += Y
+RETURN 0
+
+;--------------------------------------------
+@BRAIN_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 『魔王大人，請饒了我吧…』
+	RETURN 0
+ENDIF
+
+PRINTW 『魔王大人，請饒了我吧…』
+RETURN 0
+
+
+X = RAND:40
+IF X == 0
+	PRINTL 「啊…啊…啊！啊，啊～！」
+	PRINTFORML 食腦魔的觸手，直接貫通%SAVESTR:A%的頭蓋骨，刺激著腦部，
+	PRINTL 四肢狂亂地揮動，失禁，死掉了……
+	BASE:A:0 = 0
+	PRINTFORML 異常經驗+1
+	EXP:A:50 += 1
+ELSE
+	PRINTW 食腦魔的觸手抓住了勇者。勇者死命地掙扎也無法逃掉。
+	PRINTFORMW 食腦魔的觸手，直接突入到%SAVESTR:A%的腦子裡，往腦髓注入媚藥成分。
+	PRINTFORMW %SAVESTR:A%被過度的快感弄失禁了，成了廢人。
+	PRINTFORMW 幸好，軀幹還是完好的。
+	PRINTFORML 異常經驗+1
+	EXP:A:50 += 1
+ENDIF
+WAIT
+RETURN 0
+
+;--------------------------------------------
+@HORSE_MONSTER_PLAY
+;--------------------------------------------
+
+IF TALENT:MASTER:122 == 1
+	PRINTW 你充分享受了騎馬的樂趣。
+	RETURN 0
+ENDIF
+
+PRINTW 『吁～吁！』
+
+PRINTFORMW %SAVESTR:A%哄著馬的同時，屏息彎腰潛入到馬的下腹處，
+PRINTFORMW 馬的巨大陰莖，即使對於%SAVESTR:A%來說也相當大了。
+PRINTFORML 苦痛點數+{Y * 10}
+PRINTFORML 恐怖點數+{Y * 10}
+PRINTFORML 私處經驗+{Y}
+EXP:A:0 += Y
+JUEL:A:9 += Y * 10
+JUEL:A:10 += Y * 10
+CFLAG:A:107 += Y
+PRINTFORMW 獸姦經驗+{Y}
+EXP:A:56 += Y
+RETURN 0
+
+
+
+
+

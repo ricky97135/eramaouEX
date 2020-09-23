@@ -1,0 +1,684 @@
+﻿;--------------------------------------------------
+@GET_ADV_COM, ARG
+; 獲取目前COM的高級COM的序號
+; ARG	目前COM
+;--------------------------------------------------
+
+SELECTCASE ARG
+
+
+
+CASE 6
+;--------------------------------------------------
+;COM6_接吻
+;--------------------------------------------------
+
+	;前回と今回の調教者が同じ
+	IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+		;前回の調教が正常位、正常位・胸愛撫、正常位SPだと正常位・接吻に
+		IF PREVCOM == 20 || PREVCOM == 129 || PREVCOM == 130
+			CALL COM_ABLE128
+			SIF RESULT == 1
+				RETURN 128
+		ENDIF
+		;***Gスポ・子宮口攻めからの分岐***
+		;前々回のコマンドが正常位、正常位・接吻、正常位・胸愛撫、正常位ＳＰで、前回の調教が挿入Ｇスポット攻めか挿入子宮口攻めだと正常位・接吻に
+		IF (TFLAG:59 == 20 || TFLAG:59 == 128 || TFLAG:59 == 129 || TFLAG:59 == 130) && (PREVCOM == 120 || PREVCOM == 121)
+			CALL COM_ABLE128
+			SIF RESULT == 1
+				RETURN 128
+		ENDIF
+	ENDIF
+
+	;前回と今回の調教者が同じ
+	IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+		;前回の調教が背後位・胸愛撫、背後位・打屁股、背後位SPだと站立背後位に
+		IF PREVCOM == 131 || PREVCOM == 132 || PREVCOM == 134
+			CALL COM_ABLE133
+			SIF RESULT == 1
+				RETURN 133
+		ENDIF
+		;***Gスポ・子宮口攻めからの分岐***
+		;前々回のコマンドが背後位、背後位・胸愛撫、背後位・打屁股、背後位SPで、前回の調教が挿入Ｇスポット攻めか挿入子宮口攻めだと站立背後位に
+		IF (TFLAG:59 == 131 || TFLAG:59 == 132 || TFLAG:59 == 134) && (PREVCOM == 120 || PREVCOM == 121)
+			CALL COM_ABLE133
+			SIF RESULT == 1
+				RETURN 133
+		ENDIF
+	ENDIF
+
+
+CASE 1
+;--------------------------------------------------
+;COMF1_舔陰
+;--------------------------------------------------
+	;前回と今回の調教者が同じで
+	IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0) && TEQUIP:89 == 0
+		;繩子使用中でなく、前回の調教が口交か強制舔陰か六九式だと六九式に
+		IF (PREVCOM == 31 || PREVCOM == 61 || PREVCOM == 69) && TEQUIP:44 == 0
+			CALL COM_ABLE69
+			SIF RESULT == 1
+				RETURN 69
+		ENDIF
+	ENDIF
+
+
+CASE 3
+;--------------------------------------------------
+;COMF3_
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教がフェラか乳夾口交か深喉か手搓口交か真空口交だと口交時自慰に
+	IF PREVCOM == 31 || PREVCOM == 123 || PREVCOM == 124 || PREVCOM == 126 || PREVCOM == 127
+		CALL COM_ABLE125
+		SIF RESULT == 1
+			RETURN 125
+	ENDIF
+ENDIF
+
+
+CASE 4
+;--------------------------------------------------
+;COMF4_
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;繩子使用中や獣姦中でなく、でなく、前回の調教が口交か強制舔陰か六九式だと六九式に
+	IF (PREVCOM == 31 || PREVCOM == 61 || PREVCOM == 69) && TEQUIP:44 == 0 && TEQUIP:89 == 0
+		CALL COM_ABLE69
+		SIF RESULT == 1
+			RETURN 69
+	ENDIF
+ENDIF
+
+
+CASE 5
+;--------------------------------------------------
+;COMF5_
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が正常位、正常位キス、正常位SPだと正常位・胸愛撫に
+	IF PREVCOM == 20 || PREVCOM == 128 || PREVCOM == 130
+		CALL COM_ABLE129
+		SIF RESULT == 1
+			RETURN 129
+	ENDIF
+	;***Gスポ・子宮口攻めからの分岐***
+	;前々回のコマンドが正常位、正常位・接吻、正常位・胸愛撫、正常位ＳＰで、前回の調教が挿入Ｇスポット攻めか挿入子宮口攻めだと正常位・胸愛撫に
+	IF (TFLAG:59 == 20 || TFLAG:59 == 128 || TFLAG:59 == 129 || TFLAG:59 == 130) && (PREVCOM == 120 || PREVCOM == 121)
+		CALL COM_ABLE129
+		SIF RESULT == 1
+			RETURN 129
+	ENDIF
+ENDIF
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が背後位、背後位・打屁股、站立背後位、背後位ＳＰだと背後位・胸愛撫に
+	IF PREVCOM == 21 || PREVCOM == 132 || PREVCOM == 133 || PREVCOM == 134
+		CALL COM_ABLE131
+		SIF RESULT == 1
+			RETURN 131
+	ENDIF
+	;***Gスポ・子宮口攻めからの分岐***
+	;前々回のコマンドが背後位、背後位・胸愛撫、背後位・打屁股、站立背後位、背後位SPで、前回の調教が挿入Ｇスポット攻めか挿入子宮口攻めだと背後位・胸愛撫に
+	IF (TFLAG:59 == 21 || TFLAG:59 == 131 || TFLAG:59 == 132 || TFLAG:59 == 133 || TFLAG:59 == 134) && (PREVCOM == 120 || PREVCOM == 121)
+		CALL COM_ABLE131
+		SIF RESULT == 1
+			RETURN 131
+	ENDIF
+ENDIF
+
+
+CASE 8
+;--------------------------------------------------
+;COMF8_
+;--------------------------------------------------
+;前回の調教が插入手指かつプレイヤの技巧３以上だと刺激Ｇ點に
+SIF PREVCOM == 8 && ABL:PLAYER:12 >= 3
+	RETURN 84
+;前回の調教がGスポットならさらに刺激Ｇ點に
+SIF PREVCOM == 84
+	RETURN 84
+	
+
+CASE 20
+;--------------------------------------------------
+;COMF20_正常位
+;--------------------------------------------------
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;正常位・接吻と正常位・胸愛撫を連続実行し（逆順可）、かつ実行條件を満たすと正常位SPに
+	;(前々回のコマンドが正常位・極で正常位・接吻or胸愛撫でも可能)
+	IF (TFLAG:59 == 128 && PREVCOM == 129) || (TFLAG:59 == 129 && PREVCOM == 128) || TFLAG:59 == 130 && (PREVCOM == 128 || PREVCOM == 129)
+		CALL COM_ABLE130
+		SIF RESULT == 1
+			RETURN 130
+	ENDIF
+ENDIF
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50)
+	;前回の調教が背後位肛交か口交か強制口交のとき3Pへ
+	IF PREVCOM == 27 || PREVCOM == 31 || PREVCOM == 80
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+;前のプレイが正常位か正常位・接吻か正常位・胸愛撫か正常位SPかつ調教者の技巧3以上の場合、插入Ｇ點蹂躪または插入子宮口蹂躪へ派生
+;私處感覺が高く欲情しているほど子宮口へ行きやすい
+;***FLAG:71の判定をキャンセル
+IF (PREVCOM == 20 || PREVCOM == 128 || PREVCOM == 129 || PREVCOM == 130) && ABL:PLAYER:12 > 2 && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0))
+    IF FLAG:71 / 1000 != 1
+		;欲情
+		IF PALAM:5 < PALAMLV:1
+			A = 1
+		ELSEIF PALAM:5 < PALAMLV:2
+			A = 2
+		ELSEIF PALAM:5 < PALAMLV:3
+			A = 3
+		ELSEIF PALAM:5 < PALAMLV:4
+			A = 4
+		ELSE
+			A = 5
+		ENDIF
+		B = RAND:11
+		A *= B
+		B = RAND:11
+		A += B*ABL:2
+		;Aの値は0～100
+		;正常位だと40以上で子宮口
+		IF A >= 40
+			CALL COM_ABLE121
+			IF RESULT == 1
+			    FLAG:71 = 1121
+				RETURN 121
+			ENDIF
+		ELSE
+			CALL COM_ABLE120
+			IF RESULT == 1
+			    FLAG:71 = 1120
+			    RETURN 120
+			ENDIF
+		ENDIF
+	ELSE 
+	    RETURN FLAG:71 % 1000
+		DRAWLINE
+	ENDIF
+ENDIF
+
+
+
+
+CASE 21
+;--------------------------------------------------
+;COMF21_背後位
+;--------------------------------------------------
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;まず背後位・胸愛撫か背後位・打屁股、次に站立背後位を実行し、かつ実行條件を満たすと背後位SPに
+	;(前々回のコマンドが背後位ＳＰで站立背後位からでも可能)
+	IF (TFLAG:59 == 131 || TFLAG:59 == 132 || TFLAG:59 == 134) && PREVCOM == 133
+		CALL COM_ABLE134
+		SIF RESULT == 1
+			RETURN 134
+	ENDIF
+ENDIF
+
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50)
+	;前回の調教が背後位肛交か口交か強制口交のときは3Pへ
+	IF PREVCOM == 27 || PREVCOM == 31 || PREVCOM == 80
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+
+;前のプレイが背後位か背後位・胸愛撫か背後位・打屁股か站立背後位か背後位SPかつ調教者の技巧3以上の場合、插入Ｇ點蹂躪または插入子宮口蹂躪へ派生
+;私處感覺が高く欲情しているほど子宮口へ行きやすい
+;***FLAG:71の判定をキャンセル
+IF (PREVCOM == 21 || PREVCOM == 131 || PREVCOM == 132 || PREVCOM == 133 || PREVCOM == 134) && ABL:PLAYER:12 > 2 && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0))
+    IF FLAG:71 / 1000 != 2
+		;欲情
+		IF PALAM:5 < PALAMLV:1
+			A = 1
+		ELSEIF PALAM:5 < PALAMLV:2
+			A = 2
+		ELSEIF PALAM:5 < PALAMLV:3
+			A = 3
+		ELSEIF PALAM:5 < PALAMLV:4
+			A = 4
+		ELSE
+			A = 5
+		ENDIF
+		B = RAND:11
+		A *= B
+		B = RAND:11
+		A += B*ABL:2
+		;Aの値は0～100
+		;背後位だと50以上で子宮口
+		IF A >= 50
+			CALL COM_ABLE121
+			IF RESULT == 1
+			    FLAG:71 = 2121
+				RETURN 121
+			ENDIF
+		ELSE
+			CALL COM_ABLE120
+			IF RESULT == 1
+			    FLAG:71 = 2120
+				RETURN 120
+			ENDIF
+		ENDIF
+	ELSE
+	    RETURN FLAG:71 % 1000
+	ENDIF
+ENDIF
+
+
+CASE 22
+;--------------------------------------------------
+;COMF22_
+;--------------------------------------------------
+;前のプレイが對面座位かつ調教者の技巧3以上の場合、插入Ｇ點蹂躪または插入子宮口蹂躪へ派生
+;私處感覺が高く欲情しているほど子宮口へ行きやすい
+;***FLAG:71の判定をキャンセル
+IF PREVCOM == 22 && ABL:PLAYER:12 > 2 && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0))
+    IF FLAG:71 / 1000 != 3
+		;欲情
+		IF PALAM:5 < PALAMLV:1
+			A = 1
+		ELSEIF PALAM:5 < PALAMLV:2
+			A = 2
+		ELSEIF PALAM:5 < PALAMLV:3
+			A = 3
+		ELSEIF PALAM:5 < PALAMLV:4
+			A = 4
+		ELSE
+			A = 5
+		ENDIF
+		B = RAND:11
+		A *= B
+		B = RAND:11
+		A += B*ABL:2
+		;Aの値は0～100
+		;對面座位だと30以上で子宮口
+		IF A >= 30
+			CALL COM_ABLE121
+			IF RESULT == 1
+			    FLAG:71 = 3121
+				RETURN 121
+			ENDIF
+		ELSE
+			CALL COM_ABLE120
+			IF RESULT == 1
+			    FLAG:71 = 3120
+				RETURN 120
+			ENDIF
+		ENDIF
+	ELSE 
+	    RETURN FLAG:71 % 1000
+	ENDIF
+ENDIF
+
+
+
+CASE 23
+;--------------------------------------------------
+;COMF23_背面座位
+;--------------------------------------------------
+;設定が有効で、前のプレイが背面座位かつ調教者の技巧3以上の場合、插入Ｇ點蹂躪または插入子宮口蹂躪へ派生
+;私處感覺が高く欲情しているほど子宮口へ行きやすい
+;***FLAG:71の判定をキャンセル
+IF PREVCOM == 23 && ABL:PLAYER:12 > 2 && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0))
+    IF FLAG:71 / 1000 != 4
+		;欲情
+		IF PALAM:5 < PALAMLV:1
+			A = 1
+		ELSEIF PALAM:5 < PALAMLV:2
+			A = 2
+		ELSEIF PALAM:5 < PALAMLV:3
+			A = 3
+		ELSEIF PALAM:5 < PALAMLV:4
+			A = 4
+		ELSE
+			A = 5
+		ENDIF
+		B = RAND:11
+		A *= B
+		B = RAND:11
+		A += B*ABL:2
+		;Aの値は0～100
+		;背面座位だと60以上で子宮口
+		IF A >= 60
+			CALL COM_ABLE121
+			IF RESULT == 1
+			    FLAG:71 = 4121
+				RETURN 121
+			ENDIF
+		ELSE
+			CALL COM_ABLE120
+			IF RESULT == 1
+			    FLAG:71 = 4120
+				RETURN 120
+			ENDIF
+		ENDIF
+	ELSE 
+	    RETURN FLAG:71 % 1000
+	ENDIF
+ENDIF
+
+
+CASE 26
+;--------------------------------------------------
+;COMF26_正常位肛交
+;--------------------------------------------------
+
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50)
+	;前回の調教が口交か強制口交のときは3Pへ
+	IF PREVCOM == 31 || PREVCOM == 80
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+
+CASE 27
+;--------------------------------------------------
+;COMF27_背後位肛交
+;--------------------------------------------------
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50)
+	;前回の調教が正常位か背後位か口交か強制口交のときは3Pへ
+	IF PREVCOM == 20 || PREVCOM == 21 || PREVCOM == 31 || PREVCOM == 80
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+
+CASE 30
+;--------------------------------------------------
+;COMF30_手淫
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教がフェラか乳夾口交か深喉か口交時自慰か真空口交だと手搓口交に
+	IF PREVCOM == 31 || PREVCOM == 123 || PREVCOM == 124 || PREVCOM == 125 || PREVCOM == 127
+		CALL COM_ABLE126
+		SIF RESULT == 1
+			RETURN 126
+	ENDIF
+ENDIF
+
+
+CASE 31
+;--------------------------------------------------
+;COMF31_口交
+;--------------------------------------------------
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が舔陰か口交か六九式だと六九式に
+	IF PREVCOM == 1 || PREVCOM == 4 || PREVCOM == 69
+		CALL COM_ABLE69
+		SIF RESULT == 1
+			RETURN 69
+	ENDIF
+ENDIF
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が乳交だと乳夾口交に
+	IF PREVCOM == 32
+		CALL COM_ABLE123
+		SIF RESULT == 1
+			RETURN 123
+	ENDIF
+ENDIF
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が自慰だと口交時自慰に
+	IF PREVCOM == 3
+		CALL COM_ABLE125
+		SIF RESULT == 1
+			RETURN 125
+	ENDIF
+ENDIF
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教がフェラか乳夾口交か口交時自慰か手搓口交だとランダムで深喉か真空口交に
+	IF PREVCOM == 31 || PREVCOM == 123 || PREVCOM == 125 || PREVCOM == 126
+		A = RAND:11
+		IF A > 5
+			CALL COM_ABLE124
+			SIF RESULT == 1
+			RETURN 124
+		ELSE
+			CALL COM_ABLE127
+			SIF RESULT == 1
+			RETURN 127
+		ENDIF
+	ENDIF
+ENDIF
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が手淫だと手搓口交に
+	IF PREVCOM == 30
+		CALL COM_ABLE126
+		SIF RESULT == 1
+			RETURN 126
+	ENDIF
+ENDIF
+
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50) && TEQUIP:89 == 0
+	;前回の調教が正常位か背後位か背後位肛交のときは3Pへ
+	IF PREVCOM == 20 || PREVCOM == 21 || PREVCOM == 27
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+
+
+CASE 32
+;--------------------------------------------------
+;COMF32_乳交
+;--------------------------------------------------
+
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教がフェラか深喉か手搓口交か口交時自慰か真空口交だと乳夾口交に
+	IF PREVCOM == 31 || PREVCOM == 124 || PREVCOM == 125 || PREVCOM == 126 || PREVCOM == 127
+		CALL COM_ABLE123
+		SIF RESULT == 1
+			RETURN 123
+	ENDIF
+ENDIF
+
+
+CASE 33
+;--------------------------------------------------
+;COMF33_股間性交
+;--------------------------------------------------
+;調教者が主人で、前回の調教が磨鏡(助手)か雙人股間性交だと雙人股間性交に
+IF ASSIPLAY == 0 && (PREVCOM == 70 || (TFLAG:50 && PREVCOM == 63))
+	CALL COM_ABLE70
+	SIF RESULT == 1
+		RETURN 70
+ENDIF
+
+
+CASE 34
+;--------------------------------------------------
+;COMF34_騎乘位
+;--------------------------------------------------
+;前のプレイが騎乘位かつ調教者の技巧3以上の場合、騎乗Ｇスポ責めまたは騎乗子宮口責めへ派生
+;私處感覺が高く欲情しているほど子宮口へ行きやすい
+;***FLAG:71の判定をキャンセル
+IF PREVCOM == 34 && ABL:PLAYER:12 > 2 && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0))
+    IF FLAG:71 / 1000 != 5
+		;欲情
+		IF PALAM:5 < PALAMLV:1
+			A = 1
+		ELSEIF PALAM:5 < PALAMLV:2
+			A = 2
+		ELSEIF PALAM:5 < PALAMLV:3
+			A = 3
+		ELSEIF PALAM:5 < PALAMLV:4
+			A = 4
+		ELSE
+			A = 5
+		ENDIF
+		B = RAND:11
+		A *= B
+		B = RAND:11
+		A += B*ABL:2
+		;Aの値は0～100
+		;騎乘位だと50以上で子宮口
+		IF A >= 50
+			CALL COM_ABLE121
+			IF RESULT == 1
+			    FLAG:71 = 5121
+				RETURN 121
+			ENDIF
+		ELSE
+			CALL COM_ABLE120
+			IF RESULT == 1
+			    FLAG:71 = 5120
+				RETURN 120
+			ENDIF
+		ENDIF
+	ELSE 
+	    RETURN FLAG:71 % 1000
+	ENDIF
+ENDIF
+
+CASE 40
+;--------------------------------------------------
+;COMF40_打屁股
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教が背後位、背後位・胸愛撫、站立背後位、背後位ＳＰだと背後位・打屁股に
+	IF PREVCOM == 21 || PREVCOM == 131 || PREVCOM == 133 || PREVCOM == 134
+		CALL COM_ABLE132
+		SIF RESULT == 1
+			RETURN 132
+	ENDIF
+	;***Gスポ・子宮口攻めからの分岐***
+	;前々回のコマンドが背後位、背後位・胸愛撫、背後位・打屁股、站立背後位、背後位SPで、前回の調教が挿入Ｇスポット攻めか挿入子宮口攻めだと背後位・打屁股に
+	IF (TFLAG:59 == 21 || TFLAG:59 == 131 || TFLAG:59 == 132 || TFLAG:59 == 133 || TFLAG:59 == 134) && (PREVCOM == 120 || PREVCOM == 121)
+		CALL COM_ABLE132
+		SIF RESULT == 1
+			RETURN 132
+	ENDIF
+ENDIF
+
+
+CASE 61
+;--------------------------------------------------
+;COMF61_強制舔陰
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;繩子使用中でなく、前回の調教が舔陰か口交か六九式だと六九式に
+	IF (PREVCOM == 1 || PREVCOM == 4 || PREVCOM == 69) && TEQUIP:44 == 0
+		CALL COM_ABLE69
+		SIF RESULT == 1
+			RETURN 69
+	ENDIF
+ENDIF
+
+
+CASE 80
+;--------------------------------------------------
+;COMF80_強制口交
+;--------------------------------------------------
+;前回の調教が3Pのとき3Pへ
+TFLAG:42 = 0
+IF PREVCOM == 64
+	CALL COM_ABLE64
+	IF RESULT == 1
+		TFLAG:42 = 1
+		RETURN 64
+	ENDIF
+;調教者が前回:助手で今回:主人か、前回:主人で今回:助手のとき
+ELSEIF (ASSIPLAY && TFLAG:50 == 0) || (ASSIPLAY == 0 && TFLAG:50)
+	;前回の調教が正常位か背後位か背後位肛交か3Pのときは3Pへ
+	IF PREVCOM == 20 || PREVCOM == 21 || PREVCOM == 27 || PREVCOM == 64
+		CALL COM_ABLE64
+		SIF RESULT == 1
+			RETURN 64
+	ENDIF
+ENDIF
+
+
+
+CASE 135
+;--------------------------------------------------
+;COMF135_自助舔舐
+;--------------------------------------------------
+;前回と今回の調教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の調教がフェラか乳夾口交か深喉か手搓口交か真空口交だと口交時自慰に
+	IF PREVCOM == 31 || PREVCOM == 123 || PREVCOM == 124 || PREVCOM == 126 || PREVCOM == 127
+		CALL COM_ABLE125
+		SIF RESULT == 1
+			RETURN 125
+	ENDIF
+ENDIF
+
+
+
+
+ENDSELECT
+RETURN ARG

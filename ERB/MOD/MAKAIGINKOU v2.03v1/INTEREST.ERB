@@ -1,0 +1,166 @@
+﻿@INTEREST
+SIF GETBIT(EX_FLAG:9000,0) == 0
+	RETURN 0
+A=DAY
+EX_FLAG:9001= EX_FLAG:9001+EX_FLAG:9001*(A-EX_FLAG:9002)*(20+RAND:5)/1000
+
+IF EX_FLAG:9003 <= 0
+   EX_FLAG:9004 = 0
+ELSE
+	EX_FLAG:9004 = 1
+ENDIF	
+
+IF EX_FLAG:9004 == 0
+	EX_FLAG:9005 = 30
+ELSEIF EX_FLAG:9004 == 1
+	EX_FLAG:9005 -= A-EX_FLAG:9002
+ENDIF
+
+IF EX_FLAG:9005 < 10 && EX_FLAG:9005 > 0
+	PRINTFORMW 距離最後還款期限只剩{EX_FLAG:9005}天，請注意及時還款
+	PRINTW
+ELSEIF EX_FLAG:9005 <= 0
+	PRINTW 因逾期未還款，銀行強制徵收了欠款並收取了滯納金
+	PRINTW
+	MONEY += EX_FLAG:9001
+	EX_FLAG:9001 = 0
+	MONEY -= EX_FLAG:9003 * 15 / 10
+	EX_FLAG:4444 -= EX_FLAG:9003 * 15 / 10
+	EX_FLAG:9003 = 0
+	EX_FLAG:9004 = 0
+ENDIF
+
+IF MONEY < 0
+	PRINTW 你因為經營不善導致地下城負債累累，最近更是陷入了財政赤字的狀況
+	PRINTW 這天，你正為改善地下城經濟狀況冥思苦想時，一位神秘男子突然出現在你面前
+	PRINTW ^O^)ノ 
+	IF TALENT:MASTER:122
+		PRINT Yooooooooo!Brother!
+	ELSEIF TALENT:MASTER:121
+		PRINT Hey!Honey❤❤♪
+	ELSE
+		IF RAND:2
+			PRINT Dumala Ma!
+		ELSE 
+			PRINT Hey!Honey❤❤♪
+		ENDIF
+	ENDIF
+	PRINT 聽說最近為錢所困，我有一份很賺錢的工作可以介紹給你
+	PRINTW 目前各個位面哲學水平普遍偏低，爲了改善這一狀況，我們正廣招哲學學徒
+	PRINTW 只要跟我們學習哲學30天，我們就幫你還清所有欠款並額外提供10W補助
+	PRINTW 怎麼樣，要不要一起加入哲學的大家庭？
+	PRINTW 你感覺到神秘男子散發著危險的氣息，總覺得不要加入他們比較好。
+	PRINTL [0] 不過仔細想想，似乎也沒別的辦法了
+	PRINTL [1] 你覺得神秘男子太過危險，決定繼續揹負債務
+	INPUT
+	IF RESULT == 0
+		$POINT1
+		PRINTW Yooooooooo!Nice choice!從此以後你就是哲♂學大家庭的一員了。現在，先讓我們回家吧
+		PRINTW 神秘男子話音剛落，你便感覺眼前景色極速的變化著，持續數秒後景色停止了變化
+		PRINTW 到了，這就是我們一起研♂究與學♂習的地方，希望未來30天你能有個愉快的回憶
+		PRINTW 你觀察了一下四周，腦海裡突然多出了一些資訊
+		PRINTW 你得知這裡並不是之前的位面，而是一個叫哲♂學位面的獨立位面
+		PRINTW 抱著疑惑與期待，你開始了在這個位面的新生活
+		DAY += 30
+		DAY:1 += 1
+		FLAG:60 += 5
+		MONEY = 100000
+		EX_FLAG:4444 = 100000 - 8766
+		MAXBASE:MASTER:0 += 10000
+		MAXBASE:MASTER:1 += 10000
+		EXP:MASTER:1 += 3000
+		EXP:MASTER:2 += 3000
+		EXP:MASTER:3 += 3000
+		EXP:MASTER:5 += 3000
+		EXP:MASTER:8 += 300
+		EXP:MASTER:10 += 3000
+		EXP:MASTER:11 += 3000
+		EXP:MASTER:20 += 3000
+		EXP:MASTER:21 += 3000
+		EXP:MASTER:22 += 3000
+		EXP:MASTER:23 += 3000
+		EXP:MASTER:35 += 3000
+		EXP:MASTER:41 += 3000
+		EXP:MASTER:50 += 30
+		EXP:MASTER:53 += 30
+		MARK:MASTER:1 = 3
+		MARK:MASTER:2 = 3
+		ABL:MASTER:1 = 10
+		ABL:MASTER:2 = 10
+		ABL:MASTER:3 = 10
+		ABL:MASTER:10 = 10
+		ABL:MASTER:11 = 10
+		ABL:MASTER:12 = 10
+		ABL:MASTER:13 = 10
+		ABL:MASTER:14 = 10
+		ABL:MASTER:15 = 10
+		ABL:MASTER:16 = 10
+		ABL:MASTER:17 = 10
+		ABL:MASTER:23 = 99
+		ABL:MASTER:30 = 10
+		ABL:MASTER:31 = 10
+		ABL:MASTER:32 = 10
+		TALENT:MASTER:50 = 1
+		TALENT:MASTER:52 = 1
+		TALENT:MASTER:64 = 1
+		TALENT:MASTER:91 = 1
+		TALENT:MASTER:92 = 1
+		TALENT:MASTER:93 = 1
+		TALENT:MASTER:111 = 1
+		TALENT:MASTER:74 = 1
+		TALENT:MASTER:75 = 1
+		TALENT:MASTER:77 = 1
+		TALENT:MASTER:1 = 0
+		PRINTW 就這樣30天過去了
+		PRINTW 勇者初始等級提高了5
+		PRINTW 你現在的資金為10W
+		PRINTW 你的體力上限和氣力上限增加了10000
+		IF TALENT:MASTER:122
+			PRINTW 你掌握了大量的知♂識與技♂巧
+			PRINTW 30天的哲♂學生活讓你感受到了哲♂學的勃大莖深
+			PRINTW 你突然覺得你與哲♂學再也無法分開
+			PRINTL [0]你決定放棄魔王的工作，繼續尋找哲♂學之路的終點
+		ELSE
+			PRINTW 神秘男子所言的哲♂學體♀驗，在中途就已經變味了
+			PRINTW 你被當做了這個位面的所謂上流社會的玩物
+			PRINTW 在日復一日地體♀驗中掌握了大量的知♂識與技♀巧
+			PRINTW 30天的哲♂學生♀活讓你感受到了哲♂學的樂♀趣無♂窮
+			PRINTW 你突然覺得你與哲♂學♀再也無法分開
+			PRINTL [0]你決定放棄魔王的工作，繼續尋找更美♂妙♀的終點
+		ENDIF
+		PRINTL [1]你還是無法放棄魔王的工作
+		INPUT
+		IF RESULT == 0
+			PRINTW 你無法抵抗哲♂學的誘惑，毅然決定投身於哲學的事業並繼續留在哲♂學位面深造
+			PRINTW 數萬年的苦修之後，你感覺你已經達到了你的極限，然而你知道，哲♂學之路的終點並不在此
+			PRINTW 爲了繼續探尋哲♂學之路，你決定對自己使用轉生的秘法，並封印自己的記憶
+			PRINTW 通過成為不同的物種並體驗不同的成長曆程，一定能讓自己在哲學之路上更進一步
+			PRINTW 如此堅信著的你離開了哲♂學位面，在無數位面中隨機選擇了一個已具有文明的星球
+			PRINTW 你發動了轉生的秘法，並開始封印自己的記憶
+			PRINTW 你重新回到了靈魂狀態，你感覺記憶正離你而去
+			PRINTW 你腦海你閃過的最後兩個資訊是這是這個文明公元曆法的1969年7月14日，這個地方叫LongIsland
+			PRINTW 一個新的故事即將開始，而舊的故事已經結束
+			PRINTW 警告：遊戲即將結束，請在此處返回標題畫面已防止程式關閉
+			PRINTW 
+			PRINTW 
+			QUIT
+		ELSEIF RESULT == 1
+			PRINTW 你離開了哲♂學位面，回到了魔♂界，不，魔界通訊中心
+		ENDIF
+	ELSEIF RESULT == 1
+		PRINTW 你無視了神秘男子，向魔界通訊中心走去
+		PRINTW 感覺到背後傳來了銳利的視線
+		PRINTW 你不由菊花一緊
+		IF TALENT:MASTER:77 == 1
+			PRINTW 身為尻穴狂的你,瞬間達到了前所未有的高潮
+			PRINTW 這是何等逆天的技術！僅僅只靠視奸便達到了其他人口手莖並用都無法企及的高度！
+			PRINTL [0] 你拜服於神秘男子的技術之下，決定走上哲學，不，是哲♂學♀的道路
+			PRINTL [1] 你感受到了前所未有的挫敗感，如喪家犬一般走進魔界銀行
+			INPUT
+			SIF RESULT == 0
+			GOTO POINT1
+		ELSE
+			PRINTW 你不由加快步伐遠離神秘男子
+		ENDIF
+	ENDIF
+ENDIF

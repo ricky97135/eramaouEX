@@ -1,0 +1,5958 @@
+﻿;=================================================
+;eramaou専用口上テンプレート
+;=================================================
+;-------------------------------------------------------------------------------
+;【ライセンス詳細】
+;	・基本項目(許可する項目を"○"に、許可しない項目を"×"に変更してください。)
+;	+----+----+-------------------------------+
+;	|番號|許可|ライセンス內容                 |
+;	+----+----+-------------------------------+
+;	|   1| ○ | 処理上のバグ修正              |
+;	+----+----+-------------------------------+
+;	|   2| ○ | 口上の誤字・脫字の修正        |
+;	+----+----+-------------------------------+
+;	|   3| ○ | 口上まとめへの収録            |
+;	+----+----+-------------------------------+
+;	|   4| ○ | 口上の新規追加                |
+;	+----+----+-------------------------------+
+;	|   5| ○ | 既存口上の改変                |
+;	+----+----+-------------------------------+
+;	|   6| ○ | 改変した口上の自由な再配布    |
+;	+----+----+-------------------------------+
+;	|   7| ○ | 口上內容の移植・転載          |
+;	+----+----+-------------------------------+
+;
+;【ライセンス特記】
+;特に無。ライセンスフリー。加筆・改変・流用・再配布等も可（許可不要）
+;-------------------------------------------------------------------------------
+;まずX1と12をキャラ番號に置換し、Y1を助手のキャラ番號に置換してください
+;ただし、キャラ番號が一桁のキャラの場合、X1,Y1は1、12は01のように変える必要があります
+;コマンド內の各條件の下にあるPRINTFORMWの後ろに、半形スペースを置いてセリフを追加してください。
+;口上を追加しないコマンドには行頭に『;』をつけたほうが、
+;予期せぬ不具合などが起こるのをある程度防げるかもしれません
+;最後になりますが、read meもできるかぎり読んで下さい
+;eratohoU専用口上テンプレートを改造して流用
+;erapoke専用口上テンプレート（簡略版）をさらに改造
+;【淫亂】追加
+;CFLAG:372以降に著脫フラグ
+;壺蟲 CFLAG:312　CFLAG:372
+;肛門蟲 CFLAG:314　CFLAG:374
+;陰蒂夾 CFLAG:315　CFLAG:375
+;ニプルキャップ CFLAG:316　CFLAG:376
+;榨乳器(母乳體質のみ) CFLAG:317　CFLAG:377
+;飛機杯(扶她/男人のみ) CFLAG:318　CFLAG:378
+;肛珠 CFLAG:320　CFLAG:379
+;眼罩 CFLAG:344　CFLAG:380
+;繩子 CFLAG:345　CFLAG:385
+;口塞 CFLAG:346　CFLAG:386
+;穿環　CFLAG:348
+;-------------------------------------------------
+
+;-------------------------------------------------
+;智慧口上
+;いわゆる博士タイプ。むっつりスケベで性知識も豊富です
+;愛だと、魔界知識を研究する悪の研究者となります
+;淫亂だと、淫魔知識を研究して性知識をさらに高めます
+;
+;一人稱＝%SELF_CALL(TARGET)%
+;二人稱＝キミ
+;陰莖＝陰莖、陰莖　女性器＝性器、ヴァギナ　アヌス＝アヌス、肛門（學術的な言葉に徹する）
+;ボーイッシュな喋り方をするけど丁寧なですますはあまり使わない、そんなかんじ
+;愛だと孕みたガールと化します
+;-------------------------------------------------
+
+;--------------------------------------------------
+;口上ファイルの存在判定（12をキャラ番號に置換）
+;--------------------------------------------------
+@EVENTTRAIN
+#PRI
+FLAG:112 = 1
+SIF FLAG:7 == 0
+	FLAG:7 = 2
+
+@EVENTEND
+#LATER
+FLAG:112 = 0
+
+;--------------------------------------------------
+;EVENTTRAIN関係（12をキャラ番號に置換）
+;調教開始時のセリフ CFLAG 201～219を使用
+;-------------------------------------------------
+@EVENTTRAIN
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF TALENT:172 != 1
+	RETURN 0
+
+;-------------------------------------------------
+;初調教時 CFLAG:201
+;-------------------------------------------------
+IF CFLAG:201 == 0
+	DRAWLINE
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW 「就表揚你一下吧。這是超出了%SELF_CALL(TARGET)%預想的力量」
+		PRINTFORMW 「但是沒用的哦。%SELF_CALL(TARGET)%作為自豪的人狼、還擁有最高的智慧……」
+		PRINTFORMW %SAVESTR:TARGET%雖然帶著清爽的表情逞強著、但輕飄飄的耳朵害怕的低了下來。
+	ELSE
+		PRINTFORMW 「看起來你比%SELF_CALL(TARGET)%更厲害呢」
+		PRINTFORMW 「但%SELF_CALL(TARGET)%可是接受過特殊訓練的。不管對我做什麼都是沒用的」
+		PRINTFORMW %SAVESTR:TARGET%表情冷淡強裝鎮定、聲音微微發顫
+	ENDIF
+	CFLAG:201 = 1
+	RETURN 1
+;-------------------------------------------------
+;NTR再捕獲 CFLAG:650～660
+;-------------------------------------------------
+ELSEIF CFLAG:201 >= 1 && CFLAG:650 == 1
+	IF TALENT:85 || TALENT:76
+		DRAWLINE
+		PRINTFORMW 「對不住了呢……在其他人的身體上做了活塞運動的確是事實呢」
+		PRINTFORMW 「但是從生物學上看這並沒有什麼問題、只是感情上的問題哦、所以原諒我吧」
+		PRINTFORMW %SAVESTR:TARGET%低著頭小聲辯解道
+		;NTRスイッチ解除
+		CFLAG:650 = 0
+	ELSE
+		DRAWLINE
+		PRINTFORMW 「又被抓住了呢……%SELF_CALL(TARGET)%的運氣真不好」
+		PRINTFORMW 「是要繼續調教我嗎？　還是當成肉便器處理？　隨便你吧」
+		PRINTFORMW %SAVESTR:TARGET%冷冷的看著你
+		;NTRスイッチ解除
+		CFLAG:650 = 0
+	ENDIF
+	RETURN 1
+;-------------------------------------------------
+;屈服刻印（各Lv一回のみ） CFLAG:201
+;-------------------------------------------------
+;屈服刻印Lv1
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	DRAWLINE
+	PRINTFORMW 「看起來你的能力好像比資料上要高呢……」
+	CFLAG:201 = 2
+	RETURN 1
+
+;屈服刻印Lv2
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	DRAWLINE
+	PRINTFORMW 「你到底是……何方神聖、能把%SELF_CALL(TARGET)%逼到這種地步……」
+	CFLAG:201 = 3
+	RETURN 1
+
+;屈服刻印Lv3
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「難以置信……這樣的情況、不管是數據還是資料上都從未見過呢！？」
+	CFLAG:201 = 4
+	RETURN 1
+
+;淫亂
+ELSEIF CFLAG:201 < 5 && TALENT:TARGET:76 == 1 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「竟然還存在著如此美妙的新世界……讓%SELF_CALL(TARGET)%更多地對此進行研究吧、拜託了！」
+	PRINTFORMW 「想嘗試一下、%SELF_CALL(TARGET)%的身體能淫靡化到什麼地步……已經、睡不著了！」
+	PRINTFORMW %SAVESTR:TARGET%一邊流著口水一邊用腰蹭著你的腿
+	PRINTFORMW 她的腦海中已經填滿了對性知識的渴求了……
+	CFLAG:201 = 5
+	RETURN 1
+
+;愛慕
+ELSEIF CFLAG:201 < 6 && TALENT:TARGET:85 == 1
+	DRAWLINE
+	PRINTFORMW 「竟然還存在著如此美妙的新世界……拜託了！　讓我和你一起來研究吧」
+	PRINTFORMW 「魔界的動植物和文化、魔法……全都是我還不懂的東西呢」
+	PRINTFORMW 進入房間的%SAVESTR:TARGET%正專心致志地在筆記本上寫著什麼
+	PRINTFORMW 完全被魔之知識迷住了的樣子……
+	CFLAG:201 = 6
+	RETURN 1
+
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+ELSEIF ASSI < 0 
+	CALL K12_KOJO2
+
+;-------------------------------------------------
+;簡易助手口上 CFLAG:202～210
+;Ynを調教対象12との會話が発生する助手のキャラ番號に変更する
+;會話が発生する助手を2人以上に増やす場合は、
+;コピー＆ペーストをしてCFLAGの數を203、204と増やす（210が上限）
+;-------------------------------------------------
+;助手○○（○○にY1のキャラ名を入れる）
+;ELSEIF NO:ASSI == Y1
+;	DRAWLINE
+;	;初めて
+;	IF CFLAG:202 == 0
+;		;既に愛持ちで愛取得時初口上（陥落イベント）が発生済み
+;		IF TALENT:TARGET:85 == 1 && CFLAG:201 >= 5
+;			PRINTFORMW 
+;		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:202 = 1
+;		RETURN 1
+;	;二回目以降
+;	ELSE CFLAG:202 == 1 && FLAG:7 ==2
+;		;愛慕
+;		IF TALENT:TARGET:85 == 1
+;			PRINTFORMW 
+;		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		RETURN 1
+;	ENDIF
+;助手○○（○○にY2のキャラ名を入れる）
+;ELSEIF NO:ASSI == Y2
+;	DRAWLINE
+;	;初めて
+;	IF CFLAG:203 == 0
+;		;既に愛持ちで愛取得時初口上（陥落イベント）が発生済み
+;		IF TALENT:TARGET:85 == 1 && CFLAG:201 >= 5
+;			PRINTFORMW 
+;		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:203 = 1
+;		RETURN 1
+;	;二回目以降
+;	ELSE CFLAG:203 == 1 && FLAG:7 ==2
+;		;愛慕
+;		IF TALENT:TARGET:85 == 1
+;			PRINTFORMW 
+;		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		RETURN 1
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL K12_KOJO2
+ENDIF
+
+
+;-------------------------------------------------
+;調教開始時（2回目以降、12をキャラ番號に変更する） CFLAG無 
+;-------------------------------------------------
+@K12_KOJO2
+;反抗刻印Lv3
+IF MARK:3 == 3 && FLAG:7 == 2
+	DRAWLINE
+	PRINTFORMW 「不要再進入我的視線里……我很不高興」
+	RETURN 1
+
+;屈服刻印Lv0
+ELSEIF MARK:2 == 0 && FLAG:7 == 2
+	DRAWLINE
+	PRINTFORMW 「根據%SELF_CALL(TARGET)%的計算、即使是你的力量也無法讓%SELF_CALL(TARGET)%屈服哦」
+	RETURN 1
+
+;屈服刻印Lv1
+ELSEIF MARK:2 == 1 && FLAG:7 == 2
+	DRAWLINE
+	PRINTFORMW 「不管你使出什麼手段、都在我計算之中！」
+	RETURN 1
+
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && FLAG:7 == 2
+	DRAWLINE
+	PRINTFORMW 「噫、好卑鄙……居然這樣對待%SELF_CALL(TARGET)%……」
+	RETURN 1
+
+;屈服刻印Lv3＋愛/淫亂無し
+ELSEIF MARK:2 == 3 && TALENT:TARGET:85 == 0 && TALENT:TARGET:76 == 0 && FLAG:7 == 2
+	DRAWLINE
+	PRINTFORMW 「我知道了、就按你說的做……是%SELF_CALL(TARGET)%輸了」
+	RETURN 1
+
+;淫亂
+ELSEIF TALENT:TARGET:76 == 1 && FLAG:7 == 2
+	DRAWLINE
+	;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+	IF RAND:3 == 0
+		PRINTFORMW 「今天要研究什麼Play呢、好期待啊♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「再多多開發%SELF_CALL(TARGET)%的身體嘛、還完全不夠呢」
+	ELSE
+		PRINTFORMW 「今天也被開発了一番呢、好開心啊、真想再提升一下敏感度呢」
+	ENDIF
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW %SAVESTR:TARGET%像狗一樣伸出舌頭，吐出慌亂的吐息迎接了出來。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%從研究中的桌子旁站了起來，迎了出來。
+	ENDIF
+	RETURN 1
+
+;愛慕
+ELSEIF TALENT:TARGET:85 == 1 && FLAG:7 == 2
+	DRAWLINE
+	;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+	IF RAND:3 == 0
+		PRINTFORMW 「呵呵、你來了啊……正好是我研究的有些疲勞的時候呢」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「今天的研究進展很大。好想被表揚呢」
+	ELSE
+		PRINTFORMW 「啊、已經到休憩的時間了？　饒了我吧……和你做對手的話不是反而會更累嗎」
+	ENDIF
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW %SAVESTR:TARGET%輕飄飄的尾巴像搖出了殘影一樣擺動著迎了出來。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%從研究中的桌子旁站了起來，迎了出來。
+	ENDIF
+	RETURN 1
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係（12をキャラ番號に置換） CFLAG 211～220を使用
+;調教終了時のセリフ
+;-------------------------------------------------
+@EVENTEND
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF TALENT:172 != 1
+	RETURN 0
+
+;キャラ死亡時は口上をスキップ
+SIF BASE:0 <= 0
+	RETURN 0
+
+;--------------------------------------------------
+;調教終了時のセリフ
+;--------------------------------------------------
+;反抗刻印Lv3+愛無
+IF MARK:3 == 3 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「真是無聊的時光呢」
+	RETURN 1
+
+;屈服刻印Lv1以下+愛無
+ELSEIF MARK:2 <= 1 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「已經結束了嗎、這種程度、在我的預料之內呢」
+	RETURN 1
+
+;屈服刻印Lv2+愛無
+ELSEIF MARK:2 == 2 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「原來如此、和資料上一樣呢……果然、好累」
+	RETURN 1
+
+;屈服刻印Lv3+愛無
+ELSEIF MARK:2 == 3 && TALENT:TARGET:85 == 0
+	DRAWLINE
+	PRINTFORMW 「結束了嗎……體力值還挺高的嘛」
+	RETURN 1
+
+;淫亂(體力500以上)
+ELSEIF TALENT:TARGET:76 == 1 && BASE:0 >= 500
+	DRAWLINE
+	PRINTFORMW 「怎麼這樣就停了、再多多開發%SELF_CALL(TARGET)%淫亂的身體吧」
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW %SAVESTR:TARGET%軟綿綿的耳朵立了起來，好像很不滿。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%鼓著臉頰，好像很不滿。
+	ENDIF
+	RETURN 1
+;淫亂(體力500未満)
+ELSEIF TALENT:TARGET:76 == 1 && BASE:0 <= 500
+	DRAWLINE
+	PRINTFORMW 「%SELF_CALL(TARGET)%身體的耐久極限……差不多就是這樣嗎、哈～哈～」
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW %SAVESTR:TARGET%像狗一樣伸出舌頭，混亂的喘息著。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%就那樣倒在床上，不停地喘著粗氣。
+	ENDIF
+	RETURN 1
+
+;愛慕(體力500以上)
+ELSEIF TALENT:TARGET:85 == 1 && BASE:0 >= 500
+	DRAWLINE
+	PRINTFORMW 「哎呀、研究不能繼續了呢。很開心哦、與你的幽會」
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW 背向這邊的%SAVESTR:TARGET%軟綿綿的尾巴呼嚕呼嚕的左右搖動著。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%就那樣以調教中的姿勢回到了研究中的桌子旁，繼續開始了工作。
+	ENDIF
+	RETURN 1
+;愛慕(體力500未満)
+ELSEIF TALENT:TARGET:85 == 1 && BASE:0 <= 500
+	DRAWLINE
+	PRINTFORMW 「果然、這種程度的體力消耗、是對研究的一大障礙呢……」
+	IF TALENT:種族 == 2
+		;人狼
+		PRINTFORMW %SAVESTR:TARGET%打了一個哈欠、用像狗一樣團起來的姿勢打起了瞌睡。
+	ELSE
+		PRINTFORMW %SAVESTR:TARGET%就那樣以調教中的姿勢回到了研究中的桌子旁，繼續開始了工作。
+	ENDIF
+	RETURN 1
+ENDIF
+RETURN 0
+
+;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係（12をキャラ番號に置換）
+;コマンド実行時に出力されます
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞著用時には口上をスキップする
+SIF TEQUIP:45 && SELECTCOM != 45
+	RETURN 0
+;失神時には口上をスキップする
+SIF TFLAG:899
+	RETURN 0
+;獸姦PLAY中は専用口上
+IF TEQUIP:89
+	CALL DOG_KOJO_12
+	RETURN 0
+ENDIF
+;死鬥場中は専用口上
+IF TEQUIP:55
+	CALL COLOSSEUM_KOJO_12
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;コマンド実行時のセリフ CFLAG 301～400を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;愛撫 CFLAG:301
+;-------------------------------------------------
+IF SELECTCOM == 0
+	;初めて
+	IF CFLAG:301 == 0
+		;屈服刻印Lv2以上
+		IF MARK:2 >= 2
+			PRINTFORMW 「你知道這個理論嗎？　一開始要先撫摸女性的肌膚呢」
+		;それ以外
+		ELSE
+			PRINTFORMW 「哼、真無聊呢。跟教科書一樣的步驟呢」
+		ENDIF
+		CFLAG:301 = 1
+		RETURN 0
+	;二回目以降・あなたの子を妊娠
+	ELSEIF TALENT:153 && CFLAG:111 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:301 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「孩子還在裡面看著呢。還請溫柔點哦」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW 「如果是像%SELF_CALL(TARGET)%一樣活潑可愛的孩子就好啦♪」
+			ENDIF
+			CFLAG:301 = 6
+		;愛
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:301 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「又長大了呢、好想快點生下來啊♪」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW 「嗯……就這麼撫摸%SELF_CALL(TARGET)%的頭。叨著『謝謝你懷上孩子哦』」
+			ELSE
+				PRINTFORMW 「嗯……%SELF_CALL(TARGET)%好想多做做腳部按摩啊。挺著大肚子可累了」
+			ENDIF
+			CFLAG:301 = 5
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:301 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「老用這種方式來撫摸、要忍受這種待遇的……可是你的孩子啊。就不能更小心翼翼一些嗎？」
+			CFLAG:301 = 4
+		;屈服刻印Lv2
+		ELSEIF MARK:2 == 2 && (CFLAG:301 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「嗯、咕……別、別摸了啦……」
+			CFLAG:301 = 3
+		;それ以外
+		ELSEIF MARK:2 <= 1 && (CFLAG:301 <= 1 || FLAG:7 == 2)
+			PRINTFORMW 「就算懷上了你的孩子……也別想讓%SELF_CALL(TARGET)%動心」
+			CFLAG:301 = 2
+		ENDIF
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:301 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「不要再挑逗我了……明明知道單是這樣子已經無法滿足我了」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW 「知道%SELF_CALL(TARGET)%感覺舒服的地方嗎？　想讓你撫摸喉嚨呢♪」
+			ENDIF
+			CFLAG:301 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:301 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「最近很疲勞呢。謝謝你為我按摩」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW 「嗯……多按摩一下%SELF_CALL(TARGET)%的腳吧。散步有些累了」
+			ELSE
+				PRINTFORMW 「嗯……多按摩一下%SELF_CALL(TARGET)%的腰吧。在桌子邊坐得有些累了」
+			ENDIF
+			CFLAG:301 = 5
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:301 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「只是被你的手摸著、就想向你屈服了呢……看來%SELF_CALL(TARGET)%的計算錯誤了呢」
+			CFLAG:301 = 4
+		;屈服刻印Lv2
+		ELSEIF MARK:2 == 2 && (CFLAG:301 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「嗯、唔～……繼、繼續吧……」
+			CFLAG:301 = 3
+		;それ以外
+		ELSEIF MARK:2 <= 1 && (CFLAG:301 <= 1 || FLAG:7 == 2)
+			PRINTFORMW 「這種程度全在預料之中呢。%SELF_CALL(TARGET)%的心是不會動搖的」
+			CFLAG:301 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;舔陰 CFLAG:302
+;-------------------------------------------------
+IF SELECTCOM == 1
+	;初めて
+	IF CFLAG:302 == 0
+		;處女
+		IF TALENT:TARGET:0 == 1
+			PRINTFORMW 「哼、性器沒被男人碰過真是對不住呢……」
+		;それ以外
+		ELSE
+			PRINTFORMW 「喂、不要舔性器！　再怎麼說那也是排泄器官！」
+		ENDIF
+		CFLAG:302 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:302 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「再用力點吸吸淫核……呵呵、勃起來了吧？」
+			CFLAG:302 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:302 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「我可以一邊看書嗎？　這樣會輕鬆點……」
+			CFLAG:302 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:302 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「喜歡的話就隨便舔吧。%SELF_CALL(TARGET)%已經不會再反抗了……」
+			CFLAG:302 = 3
+		;それ以外（屈服刻印Lv3未満）
+		ELSEIF CFLAG:302 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「住、住手！　那裡的粘膜很敏感啊！」
+			CFLAG:302 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;アナル愛撫 CFLAG:303
+;-------------------------------------------------
+IF SELECTCOM == 2
+	;初めて
+	IF CFLAG:303 == 0
+		PRINTFORMW 「這是在做肛交的準備嗎、変態」
+		CFLAG:TARGET:303 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		P = PALAM:3 + UP:3
+		;淫亂+潤滑Lv2以上
+		IF TALENT:TARGET:76 == 1 && P >= PALAMLV:2 && (CFLAG:303 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊～、已經做好肛交的準備了哦！　排泄……不、已經變成性器啦♪」
+			CFLAG:303 = 7
+		;淫亂+潤滑Lv2未満
+		ELSEIF TALENT:TARGET:76 == 1 && P < PALAMLV:2 && (CFLAG:303 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「抱歉、還很緊……最好、再潤滑一下呢」
+			CFLAG:303 = 6
+		;愛慕+潤滑Lv2以上
+		ELSEIF TALENT:TARGET:85 == 1 && P >= PALAMLV:2 && (CFLAG:303 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「怎麼樣、%SELF_CALL(TARGET)%的第二性器……這樣一來就能肛交了呢♪」
+			CFLAG:303 = 5
+		;愛慕+潤滑Lv2未満
+		ELSEIF TALENT:TARGET:85 == 1 && P < PALAMLV:2 && (CFLAG:303 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「你、能讓我再濕一點嗎……裡面還沒放鬆下來呢」
+			CFLAG:303 = 4
+		;潤滑Lv2以上＋A感覚Lv3以上
+		ELSEIF P >= PALAMLV:2 && ABL:3 >= 3 && (CFLAG:303 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚～、不行啊……這麼濕漉漉下去的話……性器、會變成性器的啊……」
+			CFLAG:303 = 3
+		;それ以外（愛無し、潤滑Lv2未満、A感覚Lv3未満）
+		ELSEIF CFLAG:223 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「不管再怎麼玩弄排泄器官、都不會有什麼快感的」
+			CFLAG:303 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;自慰 CFLAG304
+;-------------------------------------------------
+IF SELECTCOM == 3
+	;初めて
+	IF CFLAG:304 == 0
+			PRINTFORMW 「自慰什麼的誰都有過吧。誒、讓%SELF_CALL(TARGET)%來……」
+		CFLAG:TARGET:304 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋處女
+		IF TALENT:TARGET:76 == 1 && TALENT:TARGET:0 == 1 && (CFLAG:304 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 「沒有被男人碰過的這個小穴、會疼也是沒辦法的……什麼時候都可以給你哦」
+			CFLAG:304 = 9
+		;淫亂＋自慰中毒Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:31 >= 3 && (CFLAG:304 <= 7 || FLAG:7 == 2)
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:4 == 0
+				PRINTFORMW 「%SELF_CALL(TARGET)%的癡態、沒有被記録下來嗎……？　想作為下次自慰的參考呢」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「猴子……要變成猴子了！　變成自慰猴子了啊！」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「看吧……像猴子一樣玩弄陰核的%SELF_CALL(TARGET)%的姿態……！」
+			ELSE
+				PRINTFORMW 「啊～、啊～、去了、去了、去了……像猴子一樣揉著陰部去了啊」
+			ENDIF
+			CFLAG:304 = 8
+		;淫亂＋自慰中毒Lv3未満
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:31 < 3 && (CFLAG:304 <= 6 || FLAG:7 == 2)
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:2 == 0
+				PRINTFORMW 「%SELF_CALL(TARGET)%對自慰已經很擅長了！」
+			ELSE
+				PRINTFORMW 「這個身體已經快要研究透了呢」
+			ENDIF
+			CFLAG:304 = 7
+		;愛＋處女
+		ELSEIF TALENT:TARGET:85 == 1 && TALENT:TARGET:0 == 1 && (CFLAG:304 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「請看、想吞下你陰莖的性器躁動得沒辦法了呢」
+			CFLAG:304 = 6
+		;愛＋自慰中毒Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:31 >= 3 && (CFLAG:304 <= 4 || FLAG:7 == 2)
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:3 == 0
+				PRINTFORMW 「來吧……拜託了、都一邊自慰一邊求你了啊」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「因為實在太想你了、陰核好像都快磨破了呢」
+			ELSE
+				PRINTFORMW 「已經習慣了呢、陰核已經元氣十足地勃起來了哦」
+			ENDIF
+			CFLAG:304 = 5
+		;愛＋自慰中毒Lv3未満
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:31 < 3 && (CFLAG:304 <= 3 || FLAG:7 == 2)
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:2 == 0
+				PRINTFORMW 「自慰什麼的很正常啊。研究的間隙也會想去做呢」
+			ELSE
+				PRINTFORMW 「嘿欸、你還有這樣的癖好呢」
+			ENDIF
+			CFLAG:304 = 4
+		;屈服刻印Lv3+自慰中毒Lv1以上
+		ELSEIF MARK:2 == 3 &&ABL:31 >= 1 && (CFLAG:304 <= 2 || FLAG:7 == 2)
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:2 == 0
+				PRINTFORMW 「啊～、啊～……好爽～……」
+			ELSE
+				PRINTFORMW 「自慰過度陰核可能會肥大化的……」
+			ENDIF
+			CFLAG:304 = 3
+		;それ以外（愛無し、自慰中毒Lv1未満）
+		ELSEIF CFLAG:304 <= 1 || FLAG:7 == 2
+			;ランダムで口上が変化する（使わない場合はすべて同じにすればよい）
+			IF RAND:2 == 0
+				PRINTFORMW 「無意義的行為呢……白白浪費脳細胞」
+			ELSE
+				PRINTFORMW 「沒有收益的行為呢、沒有意義」
+			ENDIF
+			CFLAG:304 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;胸愛撫 CFLAG:306
+;-------------------------------------------------
+IF SELECTCOM == 5
+	;初めて
+	IF CFLAG:306 == 0
+		;愛慕
+		IF TALENT:TARGET:85 == 1
+			PRINTFORMW 「這麼喜歡胸部……你是小孩子嗎」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「一般意義上說乳頭並不是性感帯哦」
+		ENDIF
+		CFLAG:TARGET:306 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:306 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「連胸部也成性器了你打算怎麼樣嘛♪」
+			ELSE
+				PRINTFORMW 「呵呵、發生幼兒退化現象了嗎……？」
+			ENDIF
+			CFLAG:306 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:306 <= 3 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「胸部已經完全被開發好了呢。都是你的錯呢」
+			ELSE
+				PRINTFORMW 「這就是、母性萌發的現像嗎……」
+			ENDIF
+			CFLAG:306 = 4
+		;B感覚Lv3以上
+		ELSEIF ABL:1 >= 3 && (CFLAG:306 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「胸部……乳頭好有感覺啊～！」
+			CFLAG:306 = 3
+		;それ以外（愛無し、B感覚Lv3未満）
+		ELSEIF CFLAG:306 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「果然呢、胸部一點感覺都沒有」
+			CFLAG:306 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;接吻 CFLAG:307
+;-------------------------------------------------
+IF SELECTCOM == 6
+	;初吻
+	IF CFLAG:307 == 0 && TFLAG:13
+		;淫亂かつ主人
+		IF TALENT:TARGET:76 == 1 && ASSIPLAY == 0 && TEQUIP:89 == 0 && TEQUIP:90 == 0
+			PRINTFORMW 「初吻什麼的、感傷的感情是不必要的……不過還不錯」
+		;愛かつ主人
+		ELSEIF TALENT:TARGET:85 == 1 && ASSIPLAY == 0 && TEQUIP:89 == 0 && TEQUIP:90 == 0
+			PRINTFORMW 「今天是和你的紀念日呢♪」
+		;それ以外
+		ELSE
+			PRINTFORMW 「初吻什麼的、帶上感情是無意義的」
+		ENDIF
+		CFLAG:307 = 1
+		RETURN 0
+	;（調教では）初めて
+	ELSEIF CFLAG:307 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「通過唾液交換來做性愛的相性確認……你合格了哦♪」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「終於可以和你做唾液交換了呢♪」
+		;それ以外
+		ELSE
+			PRINTFORMW 「既沒有氣氛也沒有技巧……0分呢」
+		ENDIF
+		CFLAG:307 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:307 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「更多的交換唾液吧……你的體液、想要更多」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%雖然閉著眼、但耳朵卻立了起來bikobiko的動著。
+			ENDIF
+			CFLAG:307 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:307 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「把你的全部……都給%SELF_CALL(TARGET)%吧」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%雖然閉著眼、但耳朵卻立了起來bikobiko的動著。
+			ENDIF
+			CFLAG:307 = 4
+		;順從Lv2以上
+		ELSEIF ABL:10 >=2 && (CFLAG:307 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「好吧、體液交換這種程度的事情沒有問題」
+			CFLAG:307 = 3
+		;それ以外
+		ELSEIF CFLAG:307 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚～……你、在磨牙嗎？」
+			CFLAG:307 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;自己扒開 CFLAG:308
+;-------------------------------------------------
+IF SELECTCOM == 7
+	;初めて
+	IF CFLAG:308 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「%SELF_CALL(TARGET)%的大受歡迎的地方、想被更多的看著呢♪」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「不對%SELF_CALL(TARGET)%的重要的地方、來個素描嗎？」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「唔～、做出如此羞人的姿勢什麼的……」
+		ENDIF
+			CFLAG:TARGET:308 = 1
+			RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:308 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「怎麼樣、%SELF_CALL(TARGET)%性器的開發情況……♪　想讓陰核變的多大呢？」
+			CFLAG:306 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:308 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「今天也做了記録呢。來展示一下%SELF_CALL(TARGET)%的性器發生了什麼樣的變化吧」
+			CFLAG:306 = 4
+		;露出癖Lv3以上
+		ELSEIF ABL:17 >= 3 && (CFLAG:308 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「唔……這可真是、羞恥心都被引出來了……吶」
+			CFLAG:306 = 3
+		;それ以外（愛無し、露出癖Lv3未満）
+		ELSEIF CFLAG:306 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「被迫作出這種屈辱的姿勢……但%SELF_CALL(TARGET)%不得不屈服呢」
+			CFLAG:306 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;插入手指 CFLAG:309
+;-------------------------------------------------
+IF SELECTCOM == 8
+	;初めて
+	IF CFLAG:TARGET:309 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「你的指功究竟如何呢？　很期待呢」
+		;屈服刻印Lv3+愛
+		ELSEIF MARK:2 == 3 && TALENT:TARGET:85 == 1
+			PRINTFORMW 「想通過你的手、來做個徹底的放鬆呢」
+		;それ以外
+		ELSE
+			PRINTFORMW 「手指伸進去的地方……只會感到噁心呢」
+		ENDIF
+		CFLAG:TARGET:309 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:309 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「裡面想更多地被來回攪動呢、呼～……咕～、真不錯呢」
+			CFLAG:309 = 5
+		;愛＋屈服刻印Lv3
+		ELSEIF TALENT:TARGET:85 == 1 && MARK:2 == 3 && (CFLAG:309 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「你的手……體貼入微的、一直在%SELF_CALL(TARGET)%很舒服的地方進攻著呢……♪」
+			CFLAG:309 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:309 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕～……陰道、起反應了……」
+			CFLAG:309 = 3
+		;それ以外
+		ELSEIF CFLAG:309 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「額……好惡心……」
+			CFLAG:309 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;舔肛 CFLAG:310
+;-------------------------------------------------
+IF SELECTCOM == 9
+	;初めて
+	IF CFLAG:310 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「想舔排泄器官嗎……真是変態♪」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「那個地方細菌很多呢……真的可以嗎」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「呀啊啊、住手！！」
+		ENDIF
+		CFLAG:TARGET:310 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:310 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「%SELF_CALL(TARGET)%的肛門、被豎著分開了呢……？　想被更多的好好舔舐呢♪」
+			CFLAG:310 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:310 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「被舔著排泄器官……也還不壞嘛♪」
+			CFLAG:310 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:310 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕～、隨便你吧……要舔排泄器官也行……嗯啊～」
+			CFLAG:310 = 3
+		;それ以外（屈服刻印Lv3未満）
+		ELSEIF CFLAG:310 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「盡做些傻事呢……嗯～」
+			CFLAG:310 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ローター CFLAG:311
+;-------------------------------------------------
+IF SELECTCOM == 10
+	;初めて
+	IF CFLAG:TARGET:311 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「有趣的道具呢、快點使用吧♪」
+		;屈服刻印Lv3+愛
+		ELSEIF MARK:2 == 3 && TALENT:TARGET:85 == 1
+			PRINTFORMW 「這道具還挺有意思的呢……真的」
+		;それ以外
+		ELSE
+			PRINTFORMW 「這、這嗡嗡震動的玩意兒是什麼啊！？」
+		ENDIF
+		CFLAG:TARGET:311 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:311 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊啊……淫核好麻……不錯嘛、這個～」
+			CFLAG:311 = 5
+		;愛＋屈服刻印Lv3
+		ELSEIF TALENT:TARGET:85 == 1 && MARK:2 == 3 && (CFLAG:311 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「呼～……咕～、身體……放鬆下來了呢」
+			CFLAG:311 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:311 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「道具的效能已經清楚了……但是、可以不把這個按在陰核上嗎」
+			CFLAG:311 = 3
+		;それ以外
+		ELSEIF CFLAG:311 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「跟往常一樣……嗡嗡的震動著呢。真想看看開發者是長什麼樣的呢」
+			CFLAG:311 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;壺蟲 CFLAG:312　CFLAG:372
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 11 && TEQUIP:11
+	;初めて
+	IF CFLAG:TARGET:312 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「原來如此、將寄生蟲家畜化嗎。有意思……對於獻出處女來說是個不錯的研究対象呢♪」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「比起這種寄生蟲変異體來說、還是更想被你奪走處女呢」
+			;それ以外
+			ELSE
+				PRINTFORMW 「嗚～、寄生蟲的変異體嗎……哼、才不可惜處女什麼的呢……」
+				PRINTFORMW 雖然嘴上這麼說著、%SAVESTR:TARGET%的腰還是顫抖不已
+			ENDIF
+		;非處女
+		ELSE
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「原來如此、將寄生蟲家畜化嗎。有意思……真想快點放進陰道品嚐一下滋味呢♪」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「寄生蟲的変異體嗎。交給我吧。用%SELF_CALL(TARGET)%的陰道來試試看吧」
+			;それ以外
+			ELSE
+				PRINTFORMW 「嗚～、寄生蟲的変異體嗎……無恥！」
+			ENDIF
+		ENDIF
+		CFLAG:312 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:312 <= 4 || FLAG:7 == 2)
+			IF TALENT:TARGET:190 == 1
+				;私處寄生
+				PRINTFORMW 「這就是壷蟲的寄生狀態嗎……嗯～、每次産卵、都會摩擦陰道……♪　要對這個著迷了呢」
+			ELSE
+				PRINTFORMW 「確認壷蟲已進入……嗯～、摩擦著陰道……好舒服♪」
+			ENDIF
+			CFLAG:312 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:312 <= 3 || FLAG:7 == 2)
+			IF TALENT:TARGET:190 == 1
+				;私處寄生
+				PRINTFORMW 「壷蟲寄生狀態有影響敏感度的効果……嗯～、真有意思」
+			ELSE
+				PRINTFORMW 「壷蟲的觸手嗎……都伸到子宮口了呢……嗯～」
+			ENDIF
+			CFLAG:312 = 4
+		;V感覚Lv3以上
+		ELSEIF ABL:2 >= 3 && (CFLAG:312 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「區區寄生生物、%SELF_CALL(TARGET)%是不會輸的。被這種下等生物……」
+			CFLAG:312 = 3
+		;それ以外
+		ELSEIF CFLAG:312 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「你不借助這種下等生物之手就不行嗎？」
+			CFLAG:312 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;脫著時
+ELSEIF SELECTCOM == 11 && TEQUIP:11 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:372 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「実験已經結束了嗎？　再多蹂躙一會兒也可以哦」
+		CFLAG:372 = 3
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:372 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「……真有意思呢。下次再研究看看吧」
+		CFLAG:372 = 2
+	;それ以外
+	ELSEIF CFLAG:372 < 1 || FLAG:7 == 2
+		PRINTFORMW 「……快點把這噁心的寄生生物丟回培養槽里去啊～」
+		CFLAG:372 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;振動杖 CFLAG:313
+;-------------------------------------------------
+IF SELECTCOM == 12
+	;初めて
+	IF CFLAG:313 == 0
+		;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 「有趣的道具呢！　動力有多少？」
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 「這個是……什麼用途的道具呢？　淫具……嗎？」
+		;それ以外
+		ELSE
+			PRINTFORMW 「哼、拿著這種道具到底意欲何為？」
+		ENDIF
+		CFLAG:313 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:76 == 1 && (CFLAG:313 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊啊……好棒、發麻了……下次借給我吧……♪」
+			CFLAG:313 = 5
+		;愛慕
+		ELSEIF TALENT:85 == 1 && (CFLAG:313 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「研究疲勞的時候使用……有不錯的保健效果呢」
+			CFLAG:313 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:313 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕～、機械的振動……一直傳到腰骨上了……嗯」
+			CFLAG:313 = 3
+		;それ以外
+		ELSEIF CFLAG:313 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「這種程度的、脳內物質分泌……對我沒有效果呢……嗯」
+			CFLAG:313 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;肛門蟲 CFLAG:314　CFLAG:374
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 13 && TEQUIP:13
+	;初めて
+	IF CFLAG:TARGET:314 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「好大的寄生蟲呢……難道說、要把這個放進去？　好期待呢♪」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「在腸內生活的寄生蟲嗎……有意思的生物」
+		;それ以外
+		ELSE
+			PRINTFORMW 「原始的寄生蟲嗎……哼、據說體液有催淫作用呢……」
+		ENDIF
+		CFLAG:TARGET:314 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:314 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚～、直腸…･･･被鉆進去了～。停、停不下來了……♪」
+			CFLAG:314 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:314 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「在直腸內運動著呢……據說有催淫作用、快點生效吧」
+			CFLAG:314 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:314 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「被這樣的、下等生物……挖掘著直腸、有感覺了……嗯♪」
+			CFLAG:314 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:314 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「這樣很難有感覺呢……不過據說寄生蟲對健康有益」
+			CFLAG:314 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:314 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「這、這種下等生物……嗯」
+			CFLAG:314 = 3
+		;それ以外
+		ELSEIF  CFLAG:314 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「好惡心的寄生蟲……就好像你一樣」
+			CFLAG:314 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;脫著時
+ELSEIF SELECTCOM == 13 && TEQUIP:13 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:374 < 4 || FLAG:7 == 2)
+		PRINTFORMW 「肛門括約筋變的鬆弛下來了呢……♪　還想被繼續開発呢」
+		CFLAG:374 = 4
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:374 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「異物感不見了、有點寂寞呢」
+		CFLAG:374 = 3
+	;A感覚Lv3以上
+	ELSEIF ABL:3 >= 3 && (CFLAG:374 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「咕嗚～、肛門括約筋……麻麻的～……」
+		CFLAG:374 = 2
+	;それ以外
+	ELSEIF CFLAG:374 < 1 || FLAG:7 == 2
+		PRINTFORMW 「哈啊～……真是噁心的生物……」
+		CFLAG:374 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;陰蒂夾 CFLAG:315　CFLAG:375
+;-------------------------------------------------
+;開始時
+;IF SELECTCOM == 14 && TEQUIP:14
+	;初めて
+;	IF CFLAG:315 == 0
+		;淫亂
+;		IF TALENT:76 == 1
+;			PRINTFORMW 
+		;愛慕
+;		ELSEIF TALENT:85 == 1
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:315 = 1
+;		RETURN 0
+	;二回目以降
+;	ELSE
+		;淫亂
+;		IF TALENT:76 == 1 && (CFLAG:315 <= 3 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:315 = 4
+		;愛慕
+;		ELSEIF TALENT:85 == 1 && (CFLAG:315 <= 2 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:315 = 3
+		;それ以外
+;		ELSEIF CFLAG:315 <= 1 || FLAG:7 == 2
+;			PRINTFORMW 
+;			CFLAG:315 = 2
+;		ENDIF
+;		RETURN 0
+;	ENDIF
+;脫著時
+;ELSEIF SELECTCOM == 14 && TEQUIP:14 == 0
+	;淫亂
+;	IF TALENT:TARGET:76 == 1 && (CFLAG:375 < 3 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:375 = 3
+	;愛慕
+;	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:375 < 2 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:375 = 2
+	;それ以外
+;	ELSEIF CFLAG:375 < 1 || FLAG:7 == 2
+;		PRINTFORMW 
+;		CFLAG:375 = 1
+;	ENDIF
+;	RETURN 0
+;ENDIF
+
+;-------------------------------------------------
+;ニプルキャップ CFLAG:316　CFLAG:376
+;-------------------------------------------------
+;開始時
+;IF SELECTCOM == 15 && TEQUIP:15
+	;初めて
+;	IF CFLAG:316 == 0
+		;淫亂
+;		IF TALENT:76 == 1
+;			PRINTFORMW 
+		;愛慕
+;		ELSEIF TALENT:85 == 1
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:316 = 1
+;		RETURN 0
+	;二回目以降
+;	ELSE
+;		;淫亂
+;		IF TALENT:76 == 1 && (CFLAG:316 <= 3 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:316 = 4
+		;愛慕
+;		ELSEIF TALENT:85 == 1 && (CFLAG:316 <= 2 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:316 = 3
+		;それ以外
+;		ELSEIF CFLAG:316 <= 1 || FLAG:7 == 2
+;			PRINTFORMW 
+;			CFLAG:316 = 2
+;		ENDIF
+;		RETURN 0
+;	ENDIF
+;脫著時
+;ELSEIF SELECTCOM == 15 && TEQUIP:15 == 0
+	;淫亂
+;	IF TALENT:TARGET:76 == 1 && (CFLAG:376 < 3 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:376 = 3
+	;愛慕
+;	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:376 < 2 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:376 = 2
+	;それ以外
+;	ELSEIF CFLAG:376 < 1 || FLAG:7 == 2
+;		PRINTFORMW 
+;		CFLAG:376 = 1
+;	ENDIF
+;	RETURN 0
+;ENDIF
+
+;-------------------------------------------------
+;榨乳器(母乳體質のみ) CFLAG:317　CFLAG:377
+;-------------------------------------------------
+;開始時
+;IF SELECTCOM == 16 && TEQUIP:16
+	;初めて
+;	IF CFLAG:317 == 0
+		;淫亂
+;		IF TALENT:76 == 1
+;			PRINTFORMW 
+		;愛慕
+;		ELSEIF TALENT:85 == 1
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:317 = 1
+;		RETURN 0
+	;二回目以降
+;	ELSE
+		;淫亂
+;		IF TALENT:76 == 1 && (CFLAG:317 <= 3 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:317 = 4
+		;愛慕
+;		ELSEIF TALENT:85 == 1 && (CFLAG:317 <= 2 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:317 = 3
+		;それ以外
+;		ELSEIF CFLAG:317 <= 1 || FLAG:7 == 2
+;			PRINTFORMW 
+;			CFLAG:317 = 2
+;		ENDIF
+;		RETURN 0
+;	ENDIF
+;脫著時
+;ELSEIF SELECTCOM == 16 && TEQUIP:16 == 0
+	;淫亂
+;	IF TALENT:TARGET:76 == 1 && (CFLAG:377 < 3 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:377 = 3
+	;愛慕
+;	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:377 < 2 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:377 = 2
+	;それ以外
+;	ELSEIF CFLAG:377 < 1 || FLAG:7 == 2
+;		PRINTFORMW 
+;		CFLAG:377 = 1
+;	ENDIF
+;	RETURN 0
+;ENDIF
+
+;-------------------------------------------------
+;飛機杯(扶她/男人のみ) CFLAG:318　CFLAG:378
+;-------------------------------------------------
+;開始時
+;IF SELECTCOM == 17 && TEQUIP:17
+	;初めて
+;	IF CFLAG:318 == 0
+		;淫亂
+;		IF TALENT:76 == 1
+;			PRINTFORMW 
+		;愛慕
+;		ELSEIF TALENT:85 == 1
+;			PRINTFORMW 
+		;それ以外
+;		ELSE
+;			PRINTFORMW 
+;		ENDIF
+;		CFLAG:318 = 1
+;		RETURN 0
+	;二回目以降
+;	ELSE
+		;淫亂
+;		IF TALENT:76 == 1 && (CFLAG:318 <= 3 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:318 = 4
+		;愛慕
+;		ELSEIF TALENT:85 == 1 && (CFLAG:318 <= 2 || FLAG:7 == 2)
+;			PRINTFORMW 
+;			CFLAG:318 = 3
+		;それ以外
+;		ELSEIF CFLAG:318 <= 1 || FLAG:7 == 2
+;			PRINTFORMW 
+;			CFLAG:318 = 2
+;		ENDIF
+;		RETURN 0
+;	ENDIF
+;終了時
+;ELSEIF SELECTCOM == 17 && TEQUIP:17 == 0
+	;淫亂
+;	IF TALENT:TARGET:76 == 1 && (CFLAG:378 < 3 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:378 = 3
+	;愛慕
+;	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:378 < 2 || FLAG:7 == 2)
+;		PRINTFORMW 
+;		CFLAG:378 = 2
+	;それ以外
+;	ELSEIF CFLAG:378 < 1 || FLAG:7 == 2
+;		PRINTFORMW 
+;		CFLAG:378 = 1
+;	ENDIF
+;	RETURN 0
+;ENDIF
+
+;-------------------------------------------------
+;肛珠 CFLAG:320　CFLAG:379
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 19 && TEQUIP:19
+	;初めて
+	IF CFLAG:TARGET:320 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「要把這個全部放進去嗎？　好期待呢」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「一個一個的好好放進去哦」
+		;それ以外
+		ELSE
+			PRINTFORMW 「這樣変態的器具……難以理解呢」
+		ENDIF
+		CFLAG:TARGET:320 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:320 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「嗯～……一個接一個的、放進去了呢……好期待拔出來的時候呢」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%的屁股後面、另一條下流的尾巴搖動著。
+			ENDIF
+			CFLAG:320 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:320 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「這可真是……有趣的道具呢。肚子裡面塞得滿滿的呢」
+			CFLAG:320 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:320 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「呼嗚～…哈啊～、全、全部放進去了吧？　想被一口氣拔出來呢」
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%的屁股後面、另一條下流的尾巴搖動著。
+			ENDIF
+			CFLAG:320 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:320 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「想一個一個地被你的手放進去呢」
+			CFLAG:320 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:320 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「嗯～、咕～……哈啊～、肛、肛門……」
+			CFLAG:320 = 3
+		;それ以外
+		ELSEIF  CFLAG:320 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「對這樣的器具拿出幹勁什麼的……做不到呢」
+			CFLAG:320 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;脫著時
+ELSEIF SELECTCOM == 19 && TEQUIP:19 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:379 < 4 || FLAG:7 == 2)
+		PRINTFORMW 「嗯哈啊～♪　這個、太棒了……♪　滑溜溜的拔出來了～」
+		CFLAG:379 = 4
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:379 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「拔出來了……總覺得、好像在產卵呢」
+		CFLAG:379 = 3
+	;A感覚Lv3以上
+	ELSEIF ABL:3 >= 3 && (CFLAG:379 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「嗯～……咕～、哈啊～、哈啊～……」
+		CFLAG:379 = 2
+	;それ以外
+	ELSEIF CFLAG:379 < 1 || FLAG:7 == 2
+		PRINTFORMW 「結束了嗎……？　只感到難受呢」
+		CFLAG:379 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;正常位 CFLAG:321
+;-------------------------------------------------
+IF SELECTCOM == 20
+	;初めて
+	IF CFLAG:TARGET:321 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「這個我知道、是叫做深度授精式吧？　請讓我頭一次的受精吧」
+			;愛＋順從Lv5
+			ELSEIF TALENT:85 == 1 && ABL:10 >= 5
+				PRINTFORMW 「能把處女獻給你……%SELF_CALL(TARGET)%覺得好光栄」
+			;それ以外
+			ELSE
+				PRINTFORMW 「只是粘膜被弄破了而已……在生物學意義上、什麼變化都算不上」
+			ENDIF
+		;非處女
+		ELSE
+			IF TALENT:76 == 1
+				PRINTFORMW 「這個我知道、是叫做深度授精式吧？　請讓我受精吧」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「因為懷孕而產生的母體変化……想試試看呢」
+			;それ以外
+			ELSE
+				PRINTFORMW 「只有懷孕……只有懷孕千萬不要啊！」
+			ENDIF
+		ENDIF
+		CFLAG:321 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:321 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「想被你弄懷孕呢……子宮已經躁動的不得了了呢」
+			CFLAG:321 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:321 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「想懷上和你的孩子呢……把大量的精子射進來吧」
+			CFLAG:321 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:321 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「感、感覺到了……子宮在期盼著受精……？　難以置信……」
+			CFLAG:321 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:321 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「我知道了……%SELF_CALL(TARGET)%的身體、隨便你怎麼使用吧」
+			CFLAG:321 = 3
+		;それ以外
+		ELSEIF CFLAG:321 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「住、住手……敢在%SELF_CALL(TARGET)%的身體里射精可饒不了你哦！」
+			CFLAG:321 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;背後位 CFLAG:322
+;-------------------------------------------------
+IF SELECTCOM == 21
+	;初めて
+	IF CFLAG:TARGET:322 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:76 == 1
+				IF TALENT:種族 == 2
+					;人狼
+					PRINTFORMW 「這是適合野獸的姿態呢、不覺得有些變態嗎？」
+				ELSE
+				PRINTFORMW 「好像野生動物似的呢……這樣的第一次、不覺得太過変態了嗎？」
+				ENDIF
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				IF TALENT:種族 == 2
+					;人狼
+					PRINTFORMW 「這是適合野獸的姿態呢……那麼就這樣讓我懷孕吧♪」
+				ELSE
+					PRINTFORMW 「第一次就是這種野蠻的體位嗎……那麼就這樣讓我懷孕吧♪」
+				ENDIF
+
+				
+			;それ以外
+			ELSE
+				PRINTFORMW 「屈辱啊……咕嗚、屈辱啊！」
+			ENDIF
+		;非處女
+		ELSE
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「好像野生動物似的呢、你喜歡這樣嗎？」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「這是很適合受孕的體位呢」
+			;それ以外
+			ELSE
+				PRINTFORMW 「真野蠻……跟你真配呢」
+			ENDIF
+		ENDIF
+		CFLAG:322 = 1
+		RETURN 0
+	;妊娠
+	ELSEIF TALENT:153 == 1
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:322 <= 5 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「原來還有會給懷孕的雌性授精的雄性呢……♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「居然連孕婦都上……這樣不合理的事、難道是你的興趣嗎……？　真是太棒啦……♪」
+			ELSE
+				PRINTFORMW 「再更用力地操我啊……讓肚子里孩子也一起感受一下吧♪」
+			ENDIF
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%完全拋棄了狼人的的自尊心、淪為一頭純粹的母獸了。
+			ENDIF
+			CFLAG:322 = 6
+		;愛
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:322 <= 4 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「這樣如同動物一般的做愛、就算懷孕也不奇怪啦♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「把你的精液……射在……肚子里……孩子的身上吧！」
+			ELSE
+				PRINTFORMW 「這麼色情的體位、還真有點不想讓裡面的孩子看到呢♪」
+			ENDIF
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%拋棄了狼人的的自尊心、淪為一頭發情的母獸了。
+			ENDIF
+			CFLAG:322 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:322 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「嗚嗚嗚……肚子里……雞巴……在亂撞啊……嗯啊」
+			CFLAG:322 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:322 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「太恥辱了……竟然完全無法抵抗什麼的……」
+			CFLAG:322 = 3
+		;それ以外
+		ELSEIF CFLAG:322 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「可惡……竟然用這種野蠻下等的體位……」
+
+			CFLAG:322 = 2
+		ENDIF
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:322 <= 5 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「現在這個瞬間、只剩下雄性和雌性了哦……♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「這種野生動物般的體位、是你的癖好嗎……？　好棒……♪」
+			ELSE
+				PRINTFORMW 「再使勁點撞我的腰……讓屁股肉也跳動起來吧♪」
+			ENDIF
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%已經捨棄了人狼的自豪，完全變成了一匹雌性。
+			ENDIF
+			CFLAG:322 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:322 <= 4 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「這般像動物似的做愛、絶対會懷……懷孕的♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「讓我確実的受孕吧……用你的精液！」
+			ELSE
+				PRINTFORMW 「就決定用這種下流的體位來受孕吧♪」
+			ENDIF
+			IF TALENT:種族 == 2
+				;人狼
+				PRINTFORMW %SAVESTR:TARGET%已經捨棄了人狼的自豪、變成了爲了懷孕而發情的雌性了。
+			ENDIF
+			CFLAG:322 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:322 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「嗚嗚～……陰莖……在裡面……嘎吱嘎吱地……嗯啊～」
+			CFLAG:322 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:322 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「屈辱啊……什麼也做不了……」
+			CFLAG:322 = 3
+		;それ以外
+		ELSEIF CFLAG:322 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「好恨啊……被這種野蠻下流的體位……」
+
+			CFLAG:322 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;對面座位 CFLAG:323
+;-------------------------------------------------
+IF SELECTCOM == 22
+	IF CFLAG:TARGET:323 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「親個嘴吧……作為第一次的紀念呢♪」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「要成為女人了呢……想被你緊緊的抱住呢」
+			;それ以外
+			ELSE
+				PRINTFORMW 「咕嗚～……處女膜沒了……才沒什麼感想呢」
+			ENDIF
+		;非處女
+		ELSE
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「一邊親吻一邊纏在一起……真不錯呢」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「真想記下受精瞬間的%SELF_CALL(TARGET)%的臉呢」
+			;それ以外
+			ELSE
+				PRINTFORMW 「咕嗚～……不要抱得這麼緊……」
+			ENDIF
+		ENDIF
+		CFLAG:323 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:323 <= 5 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「被抱在你的懷裡……感覺還不壞」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「看到高潮臉了嗎、因為你的突刺而喜悅的%SELF_CALL(TARGET)%的臉」
+			ELSE
+				PRINTFORMW 「嗯～……啊啊～……深深的、插我啊♪」
+			ENDIF
+			CFLAG:323 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:323 <= 4 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「受精了……啊啊、被你抱著受精了啊」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「子宮……降下來了。因為想要你的精液、一顫一顫的呢」
+			ELSE
+				PRINTFORMW 「求你了、射精吧！　在%SELF_CALL(TARGET)%的裡面把精液射出來吧！」
+			ENDIF
+			CFLAG:323 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:323 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚……這種、感覺……不對」
+			CFLAG:323 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:323 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「服從你了嗎……子宮也隨你使喚了」
+			CFLAG:323 = 3
+		;それ以外
+		ELSEIF CFLAG:323 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「咕嗚……這樣子……什麼感覺、也沒有。那是汗……好惡心」
+			CFLAG:323 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;背面座位 CFLAG:324
+;-------------------------------------------------
+IF SELECTCOM == 23
+	IF CFLAG:TARGET:324 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「有鏡子的話真想看一看呢……%SELF_CALL(TARGET)%失去處女的瞬間……」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「拜託了這樣可看不到你的臉啊……一定、會哭出來的」
+			;それ以外
+			ELSE
+				PRINTFORMW 「咕嗚～……處女膜就這樣沒了……才沒有什麼感想呢」
+			ENDIF
+		;非處女
+		ELSE
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「從背後抱著嗎？　好像變成小孩子了呢……」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「被從背後抱住了呢、要在受精的瞬間好好接住呢……」
+			;それ以外
+			ELSE
+				PRINTFORMW 「咕嗚～……不要我耳邊說悄悄話……」
+			ENDIF
+		ENDIF
+		CFLAG:324 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:324 <= 5 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「感覺到了……你胸部的呼吸、從背後傳過來……」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「嗯～、哈啊……好深……感覺到了哦、你的蠢動……」
+			ELSE
+				PRINTFORMW 「這可真是上乘的椅子呢……嗯～、坐起來的感覺、最棒了……！」
+			ENDIF
+			CFLAG:324 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:324 <= 4 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「嗯啊啊啊啊～！　絶対、會受精的♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「要、要死了……你、太激烈了……」
+			ELSE
+				PRINTFORMW 「好深……在這個深處、送出來吧……讓我懷上孩子吧……欸」
+			ENDIF
+			CFLAG:324 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:324 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「嗯～……嗯啊～、感、感覺到了……灼熱的、情慾……」
+			CFLAG:324 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:324 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「身體歸你所有之後、連心也……嗯！」
+			CFLAG:324 = 3
+		;それ以外
+		ELSEIF CFLAG:324 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「這樣子……什麼感覺、也沒有……只不過是摩擦粘膜罷了……」
+			CFLAG:324 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;正常位肛交 CFLAG:327
+;-------------------------------------------------
+IF SELECTCOM == 26
+	;初めて
+	IF CFLAG:TARGET:327 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「快請插進來吧、這個菊穴里～」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「其實、前面更想要的說……」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「這、這麼野蠻的行為……饒不了你……」
+		ENDIF
+		CFLAG:TARGET:327 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:327 <= 6 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「啊啊啊～、肛、肛門、完全、變成性器了！　啊啊啊～」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「肛、肛門……麻麻的樣子、好舒服……」
+			ELSE
+				PRINTFORMW 「把陰莖吞下去了……%SELF_CALL(TARGET)%的肛門、把陰莖完全的吞下去了！」
+			ENDIF
+			CFLAG:327 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:327 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「還、還想再感受一下……肛門、還想再、感受一下陰莖！」
+			CFLAG:327 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:327 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「讓%SELF_CALL(TARGET)%的肛門、好好地和陰莖做遊戲吧……？」
+			ELSE
+				PRINTFORMW 「肛門、%SELF_CALL(TARGET)%的肛門、變得好奇怪……好想要陰莖！」
+			ENDIF
+			CFLAG:327 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:327 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「還、還沒……看起來還沒習慣的樣子……」
+			CFLAG:327 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:327 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚～、肛、肛門、変的好奇怪了～……」
+			CFLAG:327 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:327 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「好痛……呀啊啊！　好痛！」
+			CFLAG:327 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;背後位アナル CFLAG:328
+;-------------------------------------------------
+IF SELECTCOM == 27
+	;初めて
+	IF CFLAG:TARGET:328 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「等待多時了、這下流的體位！」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「已經做好被插入的準備了哦」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「咕嗚～、好、好羞恥……」
+		ENDIF
+		CFLAG:TARGET:328 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:327 <= 6 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「這、這樣子好喜歡～！　野生的、非文明的、下流的姿勢……像這樣地、被操肛門！」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「腦袋都變的傻乎乎的了……肛門像要溶化似的、%SELF_CALL(TARGET)%、要變成白癡了！」
+			ELSE
+				PRINTFORMW 「再深點插肛門！　%SELF_CALL(TARGET)%、好喜歡肛門被穿刺啊……」
+			ENDIF
+			CFLAG:327 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:327 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「還、還不太習慣呢……有進一步開発的必要呢……」
+			CFLAG:327 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:328 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「%SELF_CALL(TARGET)%的肛門、變的好奇怪呢……你要、負起責任哦」
+			ELSE
+				PRINTFORMW 「已經把陰莖的形狀、給記下來了呢……%SELF_CALL(TARGET)%的肛門」
+			ENDIF
+			CFLAG:328 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:328 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「嗯……還、有點痛……」
+			CFLAG:328 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:328 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚……肛門、屁眼、變鬆了……」
+			CFLAG:328 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:328 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「好痛！　肛門……要裂開了……不要這麼粗暴啊」
+			CFLAG:328 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;對面座位アナル CFLAG:329
+;-------------------------------------------------
+IF SELECTCOM == 28
+	;初めて
+	IF CFLAG:TARGET:329 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「可以像這樣面對面的作肛交……好像在做夢一樣呢」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「想親個嘴呢……當然、肛門也請拜託您肏的火熱吧」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「這樣的……這樣的性交、是異常的……」
+		ENDIF
+		CFLAG:TARGET:329 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:329 <= 6 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「%SELF_CALL(TARGET)%淫蕩扭曲的臉……真想好好看看呢、因肛門性交而滿足的表情……」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「嗯～……好深、好深啊！　肛門變得下流起來了！」
+			ELSE
+				PRINTFORMW 「這樣子、好喜歡……肛門、快溶化了……」
+			ENDIF
+			CFLAG:329 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:329 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「不再多多開發肛門可不行呢……%SELF_CALL(TARGET)%、會加油的」
+			CFLAG:329 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:329 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「肛、肛門……變成你的形狀了哦♪」
+			ELSE
+				PRINTFORMW 「哈啊～、呼嗚……感、感覺到了……肛門、變的下流起來了……」
+			ENDIF
+			CFLAG:329 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:329 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「無論什麼部位都能被愛上嗎、不得不仔細研究呢……」
+			CFLAG:329 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:329 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「不行、不行……好有感覺啊啊啊！　肛門、肛門變的不是肛門了啊啊啊啊！」
+			CFLAG:329 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:329 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「噫～、好痛、好痛啊、快住手～！」
+			CFLAG:329 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;背面座位肛交 CFLAG:330
+;-------------------------------------------------
+IF SELECTCOM == 29
+	;初めて
+	IF CFLAG:TARGET:330 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「肛門好感動呢、乳頭那邊也拜託了」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「感覺到你的呼吸了……唔嗯、脖子好癢呢」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「咕嗚……不要碰乳頭～……」
+		ENDIF
+		CFLAG:TARGET:330 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:330 <= 6 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「跳起來了……%SELF_CALL(TARGET)%、因為肛門被串刺而跳動起來了！」
+			ELSE
+				PRINTFORMW 「知道嗎……？　因為肛交、乳頭也昂然聳立了……♪」
+			ENDIF
+			CFLAG:330 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:330 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「%SELF_CALL(TARGET)%的肛門、看起來還沒開発好呢……」
+			CFLAG:330 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:330 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「哈啊～、呼嗚、有、有感覺了！　再激烈點玩弄肛門和乳頭吧！」
+			ELSE
+				PRINTFORMW 「%SELF_CALL(TARGET)%、肛門也要懷孕了！」
+			ENDIF
+			CFLAG:330 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:330 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「還很痛呢……%SELF_CALL(TARGET)%、得多多加油呢」
+			CFLAG:330 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:330 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「肛門、好像變的不是肛門了……好、好有感覺……」
+			CFLAG:330 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:330 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「疼、好痛……咕嗚～」
+			CFLAG:330 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;手淫 CFLAG:331
+;-------------------------------------------------
+IF SELECTCOM == 30
+	;初めて
+	IF CFLAG:TARGET:331 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「為什麼直到現在才讓我碰啊～」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「用%SELF_CALL(TARGET)%的手、來讓它勃起來吧～」
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 「讓%SELF_CALL(TARGET)%搓弄也沒問題是嗎……我知道了」
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 「討厭討厭不要啊、%SELF_CALL(TARGET)%、才不會幹這種事呢！」
+		ENDIF
+		CFLAG:TARGET:331 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋侍奉精神Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 5 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「啊哈～、一副很想要的樣子、一顫一顫的呢……好吧、我擼我擼」
+			ELSE
+				PRINTFORMW 「粘乎乎的東西都已經出來了呢。這種液體、叫什麼名字來著～？　啊哈～」
+			ENDIF
+			CFLAG:331 = 6
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:331 <= 4 || FLAG:7 == 2)
+			IF TALENT:PLAYER:318 == 1
+				;巨根
+				PRINTFORMW 「你這遠超平均值的雞巴……啊哈、一隻手完全把握不住哇%UNICODE(0x2661) *1%」
+			ELSEIF TALENT:PLAYER:318 == 2
+				;短小包莖
+				PRINTFORMW 「不臉紅嗎你？　這種差勁肉棒%UNICODE(0x2661) *1%　得了、就這麼把劣等精子射在手裡吧%UNICODE(0x2661) *1%」
+			ELSEIF TALENT:PLAYER:318 == 3
+				;包莖
+				PRINTFORMW 「包皮肉棒里的髒東西都跑出來了啦%UNICODE(0x2661) *1%　啊哈、好厲害的味道%UNICODE(0x2661) *1%」
+			ELSEIF TALENT:PLAYER:318 == 4
+				;馬ペニス
+				PRINTFORMW 「什麼嘛、根本就不是人的雞巴了吧……啊哈、給你按摩咯%UNICODE(0x2661) *1%」
+			ELSEIF RAND:2 == 0
+				;ふつう・ランダム
+				PRINTFORMW 「射精可不行哦、明明想讓你在%SELF_CALL(TARGET)%的裡面全部射出來的……」
+			ELSE
+				;ふつう
+				PRINTFORMW 「不能再多忍耐一會兒嗎？　已經、想射了嗎？　想射了嗎？」
+			ENDIF
+			CFLAG:331 = 5
+		;愛＋侍奉精神Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「跳動的很厲害呢……快射吧快射吧、忍不住了？」
+			CFLAG:331 = 4
+		;侍奉精神Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「我知道了、用手來輔助自慰行為就行了是吧」
+			CFLAG:331 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:331 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚嗚、熱熱的……好惡心……」
+			CFLAG:331 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;口交 CFLAG:332
+;-------------------------------------------------
+IF SELECTCOM == 31
+	;初めて
+	IF CFLAG:TARGET:332 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「%SELF_CALL(TARGET)%的口活、還沒試過吧？」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「精液、直接喝下去了呢」
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 「我知道了、口交就行了是吧」
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 「這樣子去舔什麼的……嗚誒～」
+		ENDIF
+		CFLAG:TARGET:332 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋侍奉精神Lv5
+		IF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 3 || FLAG:7 == 2)
+				PRINTFORML 「嗞嚕～、嗞嚕～、嗞啾～～……噗哈啊」
+				PRINTFORMW %SAVESTR:TARGET%發出了下流的聲音貪求著陰莖
+			CFLAG:332 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:332 <= 3 || FLAG:7 == 2)
+				PRINTFORMW 「我要多多練習口交、想學會厲害的口活呢」
+			CFLAG:332 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 3 || FLAG:7 == 2)
+				PRINTFORML 「哈啊、這個陰莖、剛才也忍不住噴出了精液的樣子呢……」
+				PRINTFORMW %SAVESTR:TARGET%發出了下流的聲音貪求著陰莖
+			CFLAG:332 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:332 <= 2 || FLAG:7 == 2)
+			PRINTFORML 「口交、變的挺擅長了呢」
+			PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊用嘴巴含著陰莖
+			CFLAG:332 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:332 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚誒……為什麼會一跳一跳的呢。不可思議的肉塊……」
+			CFLAG:332 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;乳交 CFLAG:333
+;-------------------------------------------------
+IF SELECTCOM == 32
+	;初めて
+	IF CFLAG:TARGET:333 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「%SELF_CALL(TARGET)%的乳房、還挺管用的吧」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「乳房好用的話、%SELF_CALL(TARGET)%、就盡情的使勁蹭了哦」
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 「用乳房摩擦還可以吧……」
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 「用胸部來！？　變、変態！」
+		ENDIF
+		CFLAG:TARGET:333 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋侍奉精神Lv5
+		IF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 5 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「這樣擠壓著會舒服嗎？」
+			ELSE
+				PRINTFORMW 「快看快看快看。乳房把你的陰莖吞進去了哦」
+			ENDIF
+			CFLAG:333 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:332 <= 4 || FLAG:7 == 2)
+				PRINTFORMW 「好難啊……你、真的會舒服嗎？」
+			CFLAG:333 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:333 <= 3 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「我會竭盡全力來奉仕的哦。用%SELF_CALL(TARGET)%柔軟的乳房！」
+			ELSE
+				PRINTFORMW 「Biu的射出來也行哦？」
+			ENDIF
+			CFLAG:333 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:333 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「你、真的有感覺嗎？　那就好……」
+			CFLAG:333 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF  CFLAG:333 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚嗚、這樣子到底有什麼好高興的嘛……」
+			CFLAG:333 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;股間性交 CFLAG:334
+;-------------------------------------------------
+IF SELECTCOM == 33
+	;初めて
+	IF CFLAG:TARGET:334 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「快看快看、要進到%SELF_CALL(TARGET)%的陰道里去了哦？」
+		;愛有り
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「只在表面摩擦嗎……好想進到裡面去呢」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「這樣摩擦到底有什麼好高興的……」
+		ENDIF
+		CFLAG:TARGET:334 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂+處女
+		IF TALENT:TARGET:76 == 1 && TALENT:TARGET:0 == 1 && (CFLAG:334 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「吶、只在表面摩擦你會覺得舒服嗎？　%SELF_CALL(TARGET)%……對這不是很瞭解呢」
+			CFLAG:334 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:334 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「吶、只在表面摩擦你會覺得舒服嗎？　%SELF_CALL(TARGET)%……有點遺憾呢」
+			CFLAG:334 = 5
+		;愛有り+處女
+		ELSEIF TALENT:TARGET:85 == 1 && TALENT:TARGET:0 == 1 && (CFLAG:334 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「%SELF_CALL(TARGET)%已經到極限了……明明好想被插進去、明明好想……被插到裡面啊！」
+			CFLAG:334 = 4
+		;愛有り
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:334 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「假如你、一不小心把你的陰莖插進了%SELF_CALL(TARGET)%的陰道里的話……該怎麼辦呢？　啊哈哈～」
+			CFLAG:334 = 3
+		;それ以外（愛無し）
+		ELSEIF CFLAG:334 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「看起來這樣的摩擦讓你很高興嘛……」
+			CFLAG:334 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;騎乘位 CFLAG:335
+;-------------------------------------------------
+IF SELECTCOM == 34
+	;初めて
+	IF CFLAG:TARGET:335 == 0
+		;處女
+		IF TALENT:0 == 1
+			;淫亂
+			IF TALENT:TARGET:76 == 1
+				PRINTFORMW 「我期待已久了！　把你的陰莖、交給我吧」
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1
+				PRINTFORMW 「終於、想要讓我%SELF_CALL(TARGET)%懷孕了嗎！　好開心哦」
+			;それ以外（愛無し）
+			ELSE
+				PRINTFORMW 「讓我自己來……你實在太無恥了」
+			ENDIF
+		;非處女
+		ELSE
+			;淫亂
+			IF TALENT:76 == 1
+				PRINTFORMW 「嘿誒、這麼想讓%SELF_CALL(TARGET)%來嗎」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「這樣子嘎吱嘎吱的……並不討厭哦」
+			;それ以外
+			ELSE
+				PRINTFORMW 「讓我自己來……可惡」
+			ENDIF
+		ENDIF
+		CFLAG:TARGET:335 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:335 <= 5 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORMW 「來吧來吧、更多的從下面來插%SELF_CALL(TARGET)%吧！」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「%SELF_CALL(TARGET)%扭腰的樣子、請多多欣賞吧」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「停不下來了、你也多用陰莖來頂我吧」
+			ELSE
+				PRINTFORMW 「哈啊～、從下面、操我吧～♪」
+			ENDIF
+			CFLAG:335 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:335 <= 4 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORMW 「要把精液一滴不剩的榨乾哦♪」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「快看快看、要出來了哦、精液！」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「想更多的被陰莖操呢、啊哈哈～」
+			ELSE
+				PRINTFORMW 「出來了～！　把精液、更多的、射進來吧！　啊啊啊～♪」
+			ENDIF
+			CFLAG:335 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:335 <= 3 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORMW 「不行了、%SELF_CALL(TARGET)%的腰、自己動起來了！」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「竟然……讓%SELF_CALL(TARGET)%這樣做……不過……」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「哈啊～、哈啊～、咕嗚～♪」
+			ELSE
+				PRINTFORMW 「不行啊、這樣子……往上頂……」
+			ENDIF
+			CFLAG:335 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:335 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「唔～……我知道了。跨在你身上就行了吧？」
+			CFLAG:335 = 3
+		;それ以外（愛無し、順從Lv5未満）
+		ELSEIF CFLAG:335 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「竟讓%SELF_CALL(TARGET)%……這樣做……好屈辱～」
+			CFLAG:335 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;全身擦洗 CFLAG:336
+;-------------------------------------------------
+IF SELECTCOM == 35
+	;初めて
+	IF CFLAG:TARGET:336 == 0
+		;侍奉精神Lv3以上
+		IF ABL:TARGET:16 >= 3
+			PRINTFORMW 「你喜歡提供這種服務的店嗎……？」
+		;それ以外
+		ELSE
+			PRINTFORMW 「跟按摩女似的……額」
+		ENDIF
+		CFLAG:TARGET:336 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋侍奉精神Lv5
+		IF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:336 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「快看快看、被%SELF_CALL(TARGET)%的肌膚哧溜哧溜的摩擦著哦～♪　舒服嗎？」
+			CFLAG:336 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:336 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「這身體是隻屬於你的哦、爲了你……嫩呼呼的呢」
+			CFLAG:336 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:336 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「變的全是泡泡了呢……舒服嗎？」
+			CFLAG:336 = 3
+		;それ以外
+		ELSEIF  CFLAG:336 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「喂、這樣做應該可以了吧……真是的」
+			CFLAG:336 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;騎乘位アナル CFLAG:337
+;-------------------------------------------------
+IF SELECTCOM == 36
+	;初めて
+	IF CFLAG:TARGET:337 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「這樣騎在你的身上就好像做夢一樣呢」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「嗚嗯～……用肛門裹住了呢……♪」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「這麼卑劣的肛交還是第一次……」
+		ENDIF
+		CFLAG:TARGET:337 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:337 <= 6 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「不行了、%SELF_CALL(TARGET)%的肛門要溶化了啊！」
+			ELSE
+				PRINTFORMW 「%SELF_CALL(TARGET)%、一被串刺著……從肛門到大腦、都在迴響！」
+			ENDIF
+		CFLAG:337 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:337 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「%SELF_CALL(TARGET)%一動起來、你就盯著不放呢♪」
+			CFLAG:337 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:337 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 「啊啊、難以置信、肛門要溶化了♪」
+			ELSE
+				PRINTFORMW 「肛、肛門、肛門要……不行～、太有感覺了～♪」
+			ENDIF
+		CFLAG:337 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:337 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「肛門含住陰莖的樣子、好好看看吧」
+			CFLAG:337 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:337 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚、像這樣的肛交什麼的……儘管讓%SELF_CALL(TARGET)%做吧」
+			CFLAG:337 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:337 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「痛、好疼、好痛啊……%SELF_CALL(TARGET)%已經不想再做了啊」
+			CFLAG:337 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;肛門侍奉 CFLAG:338
+;-------------------------------------------------
+IF SELECTCOM == 37
+	;初めて
+	IF CFLAG:TARGET:338 == 0
+		;侍奉精神Lv3以上
+		IF ABL:TARGET:16 >= 3
+			PRINTFORMW 「竟然要我舔這麼髒的地方……你真是變態呢」
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 「討、討厭、竟然要我舔那種地方……嗚嗚～」
+		ENDIF
+		CFLAG:TARGET:338 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋侍奉精神Lv5
+		IF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:338 <= 4 || FLAG:7 == 2)
+				PRINTFORMW 「這樣把舌頭伸進肛門、你喜歡嗎？」
+			CFLAG:338 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:338 <= 3 || FLAG:7 == 2)
+				PRINTFORML 「你的肛門……被%SELF_CALL(TARGET)%弄乾凈了哦♪」
+			CFLAG:338 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:338 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「我知道了……舔就行了吧？　有好好洗過嗎？」
+			CFLAG:338 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:338 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚嗚……咕嗚～、嗚嗚……」
+			CFLAG:338 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;打屁股 CFLAG:341
+;-------------------------------------------------
+IF SELECTCOM == 40
+	;初めて
+	IF CFLAG:TARGET:341 == 0
+		PRINTFORMW 「呀啊～、好痛、住手～、饒了%SELF_CALL(TARGET)%吧！」
+		CFLAG:TARGET:341 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv3
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:341 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊～、再繼續打吧♪　再多教育一下我這隻淫亂受虐狂母豬吧♪　咿～～♪」
+			CFLAG:TARGET:341 = 5
+		;愛＋受虐狂っ気Lv3
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:341 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊～、請再用力點打！　再更多的懲罰一下受虐狂母豬%SAVESTR:TARGET%吧～♪」
+			CFLAG:TARGET:341 = 4
+			RETURN 0
+		;苦痛刻印Lv3+屈服刻印Lv3
+		ELSEIF MARK:0 == 3 && MARK:2 == 3 && (CFLAG:341 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊～、咿～～、啊～～、咿啊～」
+			CFLAG:TARGET:341 = 3
+			RETURN 0
+		;それ以外
+		ELSEIF CFLAG:341 <= 1 && FLAG:7 == 2
+			PRINTFORMW 「痛～、好痛啊～……%SELF_CALL(TARGET)%什麼壞事也沒做啊」
+			CFLAG:TARGET:341 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;鞭 CFLAG:342
+;-------------------------------------------------
+IF SELECTCOM == 41
+	;初めて
+	IF CFLAG:TARGET:342 == 0
+	;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 「咿呀啊啊啊！　好有効～……」
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 「咿呀啊～、咿呀啊～」
+		;それ以外
+		ELSE
+			PRINTFORMW 「住手、住……嗚啊啊！」
+		ENDIF
+		CFLAG:TARGET:342 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv5以上
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:342 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊啊啊！　再來♪　再用力點♪　虐待我這隻淫亂受虐狂母豬吧～～～♪」
+			CFLAG:TARGET:342 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:342 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊啊啊！　再來♪　再用力點♪　有感覺了～……♪」
+			CFLAG:TARGET:342 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:342 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊啊啊！　痛、好痛啊！」
+			CFLAG:TARGET:342 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:342 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊～！　再來！　再用力點！　來教育受虐狂母豬%SAVESTR:TARGET%吧～～～♪」
+			CFLAG:TARGET:342 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:342 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊～！　再來！　再用力點！　再多多教育我！」
+			CFLAG:TARGET:342 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:342 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「咿呀啊～！　痛、好痛啊……」
+			CFLAG:TARGET:342 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:342 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「再來！　再用力點！　再多多教育我！」
+			CFLAG:TARGET:342 = 3
+		;それ以外
+		ELSEIF CFLAG:335 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「住手、痛……好痛啊！」
+			CFLAG:TARGET:342 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;針 CFLAG:343
+;-------------------------------------------------
+IF SELECTCOM == 42
+	;初めて
+	IF CFLAG:TARGET:343 == 0
+		;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 「要刺哪裡呢？　嗯？」
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 「撲哧一下被刺進去、一想到這個、就好像要高潮了呢」
+		;それ以外
+		ELSE
+			PRINTFORMW 「哈哈、注射什麼的我早就習慣了」
+		ENDIF
+		CFLAG:TARGET:343 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv5以上
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:343 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 「刺進去後……使勁、捻動。這是%SELF_CALL(TARGET)%最喜歡做的哦♪」
+			CFLAG:TARGET:343 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:343 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚嗚、一下子……刺進來了～」
+			CFLAG:TARGET:343 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:343 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「嗚～……嗚嗚、看起來%SELF_CALL(TARGET)%的感覚還需要再開発呢……」
+			CFLAG:TARGET:343 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:343 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「感、感覺到了♪　%SELF_CALL(TARGET)%的身體正被冰冷的金屬……穿鑿著♪」
+			CFLAG:TARGET:343 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:343 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「嗯……啊～、進來了～」
+			CFLAG:TARGET:343 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:343 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「嗚～、嗚～……好痛～……」
+			CFLAG:TARGET:343 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:343 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「不行啊……這樣下去……%SELF_CALL(TARGET)%的感覚要變的奇怪了～」
+			CFLAG:TARGET:343 = 3
+		;それ以外
+		ELSEIF CFLAG:343 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「咿呀啊啊～！　咿、咿呀啊啊！」
+			CFLAG:TARGET:343 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;眼罩 CFLAG:344　CFLAG:380
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 43 && TEQUIP:43
+	;初めて
+	IF CFLAG:TARGET:344 == 0
+		;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:344 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv5以上
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:344 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:344 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:344 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:344 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:344 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:344 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:344 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 3
+		;それ以外
+		ELSEIF CFLAG:344 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;終了時
+ELSEIF SELECTCOM == 43 && TEQUIP:43 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:380 < 3 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:380 = 3
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:380 < 2 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:380 = 2
+	;それ以外 
+	ELSEIF CFLAG:380 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:380 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;繩子 CFLAG345　CFLAG:385
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 44 && TEQUIP:44
+	;初めて
+	IF CFLAG:TARGET:345 == 0
+		;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 「緊緊地綁上來吧♪」
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 「我喜歡束縛的緊一點」
+		;それ以外
+		ELSE
+			PRINTFORMW 「嗯……要來束縛這手嗎」
+		ENDIF
+		CFLAG:TARGET:345 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv5以上
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:345 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 「哈……要怎麼處理動不了的%SELF_CALL(TARGET)%呢？　我期待著呢？」
+			CFLAG:TARGET:345 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:345 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 「呵呵、身體動不了了呢。好像觸電一樣麻痹的快感啊……」
+			CFLAG:TARGET:345 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:345 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「嗯、%SELF_CALL(TARGET)%的性癖還沒開發到這方面……對不起」
+			CFLAG:TARGET:345 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:345 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「已經不論如何都逃不了了……這下%SELF_CALL(TARGET)%就是你的俘虜了♪」
+			CFLAG:TARGET:345 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:345 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「呵呵、身體動不了了呢。真是讓人受不了的傢伙呢、你啊」
+			CFLAG:TARGET:345 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:345 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「雖然我不知道繩子的好處……但是被你的話不管什麼都很舒服」
+			CFLAG:TARGET:345 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:345 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「呵呵、身體動不了了呢……好為難好為難」
+			CFLAG:TARGET:345 = 3
+		;それ以外
+		ELSEIF CFLAG:345 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「只是被束縛住而已、早就習慣了」
+			CFLAG:TARGET:345 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;終了時
+ELSEIF SELECTCOM == 44 && TEQUIP:44 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:385 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「已經結束了嗎♪」
+		CFLAG:385 = 2
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:385 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「明明直到最後都束縛住我就好了呢」
+		CFLAG:385 = 2
+	;それ以外
+	ELSEIF CFLAG:385 < 1 || FLAG:7 == 2
+		PRINTFORMW 「已經夠了嗎？」
+		CFLAG:385 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;口塞 CFLAG346　CFLAG:386
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 45 && TEQUIP:45
+	;初めて
+	IF CFLAG:TARGET:346 == 0
+		;淫亂
+		IF TALENT:76 == 1
+			PRINTFORMW 「呼咕嗚♪　呼嗚、呼嗚嗚～～♪」
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 「呼嘎、呼咕嗚……呼咕♪」
+		;それ以外
+		ELSE
+			PRINTFORMW 「嘎呼～……呼咕～……呼嘎啊！」
+		ENDIF
+		CFLAG:TARGET:346 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋受虐狂っ気Lv5以上
+		IF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:346 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 「噗呼嗚♪　呼咕嗚……呼茍、噗呼嗚♪」
+			PRINTFORMW 歡喜的%SAVESTR:TARGET%像豬一樣喘息著
+			CFLAG:TARGET:346 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:346 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 「噗咕嗚、呼咕嗚……呼茍、噗呼嗚♪」
+			PRINTFORMW %SAVESTR:TARGET%像豬一樣喘息著
+			CFLAG:TARGET:346 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:346 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「呼咕嗚♪　呼嗚、呼嗚嗚～～♪」
+			CFLAG:TARGET:346 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:346 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「哈呼嗚♪　哈咕嗚……呼嗚、哈呼嗚♪」
+			PRINTFORMW 歡喜的%SAVESTR:TARGET%激動的喘息著
+			CFLAG:TARGET:346 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:346 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「哈呼嗚、哈呼嗚……呼嗚、哈咕嗚♪」
+			PRINTFORMW %SAVESTR:TARGET%開心的喘息著
+			CFLAG:TARGET:346 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:346 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「呼嘎、呼咕嗚……呼咕♪」
+			CFLAG:TARGET:346 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:346 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「呼嘎、呼咕嗚……呼咕♪」
+			CFLAG:TARGET:346 = 3
+		;それ以外
+		ELSEIF CFLAG:346 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嘎呼～……呼咕嗚……呼嘎啊！」
+			CFLAG:TARGET:346 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;終了時
+ELSEIF SELECTCOM == 45 && TEQUIP:45 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1 && (CFLAG:386 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「噗哈啊……。已、已經結束了嗎？」
+		CFLAG:386 = 3
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:386 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「哈呼嗚……好辛苦呢」
+		CFLAG:386 = 2
+	;それ以外
+	ELSEIF CFLAG:386 < 1 || FLAG:7 == 2
+		PRINTFORMW 「哈啊哈啊……唔、真是屈辱啊」
+		CFLAG:386 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;灌腸+肛塞 CFLAG:347
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 46 && TEQUIP:46
+	;初めて
+	IF CFLAG:TARGET:347 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:347 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂＋A感覚Lv3以上＋受虐狂っ気Lv3以上
+		IF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && ABL:21 >= 3 && (CFLAG:347 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:347 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:347 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:347 = 6
+		;愛＋A感覚Lv3以上＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && ABL:21 >= 3 && (CFLAG:347 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:347 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:347 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:347 = 4
+		;A感覚Lv3以上＋受虐狂っ気Lv3以上
+		ELSEIF ABL:3 >= 3 && ABL:21 >= 3 && (CFLAG:347 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:347 = 3
+		;それ以外
+		ELSEIF  CFLAG:347 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:347 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;放置PLAY CFLAG:356
+;-------------------------------------------------
+IF SELECTCOM == 55
+	;初めて
+	IF CFLAG:356 == 0
+		;愛慕
+		IF TALENT:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:356 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;愛＋欲情Lv3以上
+		IF TALENT:85 == 1 && PALAM:5 >= PALAMLV:3 && (CFLAG:356 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:356 = 4
+		;愛慕
+		ELSEIF TALENT:85 == 1 && (CFLAG:356 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:356 = 3
+		;それ以外
+		ELSEIF CFLAG:356 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:356 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;交談 CFLAG:357
+;「會話」はある意味最も口上が生きるコマンドかも
+;-------------------------------------------------
+IF SELECTCOM == 56
+	;初めて
+	IF CFLAG:357 == 0
+		IF TEQUIP:53
+			;ビデオ自己紹介
+			;淫亂
+			IF TALENT:TARGET:76 == 1
+				PRINTFORMW 「初次見面、我是前勇者%SAVESTR:TARGET%哦。很感謝大家今天的收看」
+				PRINTFORMW 「%SELF_CALL(TARGET)%現在已經對拯救世界啊、爲了大家而戰啊、等諸如此類的事物沒有興趣了」
+				PRINTFORMW 「現在%SELF_CALL(TARGET)%最大的興趣愛好是、如何最舒服的做愛的方法」
+				PRINTFORMW 「這個身體將會產生怎樣的淫亂変化呢、希望大家從現在開始好好看著哦」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊煽情地舒展著身體……
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1
+				PRINTFORMW 「初次見面、我是前勇者%SAVESTR:TARGET%哦。很感謝大家今天的收看」
+				PRINTFORMW 「%SELF_CALL(TARGET)%現在已經對拯救世界啊、與邪惡戰鬥啊、等諸如此類的事物沒有興趣了」
+				PRINTFORMW 「現在%SELF_CALL(TARGET)%最大的興趣愛好是、用這個肉體孕育魔王的孩子」
+				PRINTFORMW 「用這個身體孕育愛的結晶的姿態……希望你們好好看著吧」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊煽情地舒展著身體……
+			;それ以外
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		ELSE
+			;淫亂
+			IF TALENT:TARGET:76 == 1
+				PRINTFORMW 
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1
+				PRINTFORMW 
+			;それ以外
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+		CFLAG:357 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		IF TEQUIP:53
+			;ビデオ自己紹介
+			;淫亂
+			IF TALENT:TARGET:76 == 1 && (CFLAG:357 <= 3 || FLAG:7 == 2)
+				PRINTFORMW 「又見面了呢？　我是肉奴隷%SAVESTR:TARGET%哦。一直以來多謝關照」
+				PRINTFORMW 「%SELF_CALL(TARGET)%的肉體將被培養成什麼樣呢、最近感覺越來越淫亂了呢」
+				PRINTFORMW 「能感受到最高快楽的魔之性愛、今天也要開始研究了哦」
+				PRINTFORMW 「這個身體將會產生怎樣的淫亂変化呢、希望大家從現在開始好好看著哦」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊煽情地舒展著身體……
+				CFLAG:357 = 4
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:357 <= 2 || FLAG:7 == 2)
+				PRINTFORMW 「又見面了呢？　我是愛奴隷%SAVESTR:TARGET%哦。一直以來多謝關照」
+				PRINTFORMW 「爲了最美妙的懷孕、今天也要為生孩子而做愛呢……吶？」
+				PRINTFORMW 「單單是想像這卑微的身體懷上魔王的孩子的時候……哈啊、好像就要高潮了呢」
+				PRINTFORMW 「用這個身體孕育愛的結晶的姿態……希望你們好好看著吧」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊煽情地舒展著身體……
+				CFLAG:357 = 3
+			;それ以外
+			ELSEIF CFLAG:357 <= 1 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:357 = 2
+			ENDIF
+		ELSE
+			;淫亂
+			IF TALENT:TARGET:85 == 1 && (CFLAG:357 <= 3 || FLAG:7 == 2)
+				PRINTFORMW 
+				CFLAG:357 = 4
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:357 <= 2 || FLAG:7 == 2)
+				PRINTFORMW 
+				CFLAG:357 = 3
+			;それ以外
+			ELSEIF CFLAG:357 <= 1 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:357 = 2
+			ENDIF
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;乳夾口交 CFLAG:360
+;-------------------------------------------------
+IF SELECTCOM == 123
+;初めて
+	IF CFLAG:TARGET:360 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:360 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:360 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:360 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:360 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:360 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:360 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:360 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:360 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:360 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;口交時自慰 CFLAG:361
+;-------------------------------------------------
+IF SELECTCOM == 125
+;初めて
+	IF CFLAG:TARGET:361 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:361 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:361 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:361 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:361 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:361 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:361 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:361 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:361 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:361 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;手搓口交 CFLAG:362
+;-------------------------------------------------
+IF SELECTCOM == 126
+;初めて
+	IF CFLAG:TARGET:362 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:362 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:362 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:362 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:362 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:362 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:362 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:362 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:362 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:362 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;真空口交 CFLAG:363
+;-------------------------------------------------
+IF SELECTCOM == 127
+;初めて
+	IF CFLAG:TARGET:363 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:363 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:363 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:363 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:363 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:363 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:363 <= 2 || FLAG:7 == 2)
+			CFLAG:363 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:363 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:363 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;六九式 CFLAG:364
+;-------------------------------------------------
+IF SELECTCOM == 69
+;初めて
+	IF CFLAG:TARGET:364 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:364 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:364 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:364 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:364 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:364 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:364 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:364 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:364 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:364 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;深喉 CFLAG:365
+;-------------------------------------------------
+IF SELECTCOM == 124
+;初めて
+	IF CFLAG:TARGET:365 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:365 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:363 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:365 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:363 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:365 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:363 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:365 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:363 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:365 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;強制口交 CFLAG:381
+;-------------------------------------------------
+IF SELECTCOM == 80
+	;初めて
+	IF CFLAG:TARGET:381 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:381 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1 && (CFLAG:381 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:381 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:381 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:381 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:381 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:381 = 3
+		;それ以外
+		ELSEIF CFLAG:381 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:381 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;--------------------------------------------------------
+;穿環　CFLAG:348
+;ピアスをしていたかという記憶は參照しない
+;処理の問題でEVENT_TRAIN_MESSAGE_B.ERBとは著脫のフラグが逆
+;--------------------------------------------------------
+IF SELECTCOM == 87
+	;初めて
+	;ピアスが初めてという設定だけど念のために外した場合の分岐も有り。
+	IF CFLAG:TARGET:348 == 0
+		;助手
+		IF ASSI > 0 && ASSIPLAY
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1
+			;裝著する
+			IF CFLAG:7 & P
+				PRINTFORMW 
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 「%SELF_CALL(TARGET)%的乳頭、變漂亮了哦」
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 「%SELF_CALL(TARGET)%的肚臍、變漂亮了哦」
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 「%SELF_CALL(TARGET)%的陰唇、變漂亮了哦」
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					;陰莖
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰莖、閃閃發光了呢……」
+					ELSE
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰蒂、變的好下流呢」
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 「不可思議的感覺呢……在嘴裡面……」
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			;裝著する
+			IF CFLAG:7 & P
+				PRINTFORMW 
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 「%SELF_CALL(TARGET)%的乳頭、變漂亮了哦」
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 「%SELF_CALL(TARGET)%的肚臍、變漂亮了哦」
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 「%SELF_CALL(TARGET)%的陰唇、變漂亮了哦」
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					;陰莖
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰莖、閃閃發光了呢……」
+					ELSE
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰蒂、變的好下流呢」
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 「不可思議的感覺……在嘴裡面……」
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		;それ以外
+		ELSE
+			;裝著する
+			IF CFLAG:7 & P
+				PRINTFORMW 
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					;陰莖
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 
+					ELSE
+						PRINTFORMW 
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+		CFLAG:TARGET:348 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;助手
+		IF ASSI > 0 && ASSIPLAY
+			PRINTFORMW
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:348 <= 3 || FLAG:7 == 2)
+			;裝著する
+			IF CFLAG:7 & P
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 「%SELF_CALL(TARGET)%的乳頭、變漂亮了哦」
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 「%SELF_CALL(TARGET)%的肚臍、變漂亮了哦」
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 「%SELF_CALL(TARGET)%的陰唇、變漂亮了哦」
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					;陰莖
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰莖、閃閃發光了呢……」
+					ELSE
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰蒂、變的好下流呢」
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 「嘴裡……感覺好奇怪」
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:348 = 4
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:348 <= 2 || FLAG:7 == 2)
+			;裝著する
+			IF CFLAG:7 & P
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 「%SELF_CALL(TARGET)%的乳頭、變漂亮了哦」
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 「%SELF_CALL(TARGET)%的肚臍、變漂亮了哦」
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 「%SELF_CALL(TARGET)%的陰唇、變漂亮了哦」
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰莖、閃閃發光了呢……」
+					ELSE
+						PRINTFORMW 「%SELF_CALL(TARGET)%的陰蒂、變的好下流呢」
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 「嘴裡……感覺好奇怪」
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:348 = 3
+		;それ以外
+		ELSEIF CFLAG:348 <= 1 || FLAG:7 == 2
+			;裝著する
+			IF CFLAG:7 & P
+				;両乳頭
+				IF P == 1
+					PRINTFORMW 
+				;おへそ
+				ELSEIF P == 2
+					PRINTFORMW 
+				;ラビア
+				ELSEIF P == 4
+					PRINTFORMW 
+				;陰莖orクリトリス
+				ELSEIF P == 8
+					;陰莖
+					IF TALENT:121 || TALENT:122
+						PRINTFORMW 
+					ELSE
+						PRINTFORMW 
+					ENDIF
+				;舌先
+				ELSEIF P == 16
+					PRINTFORMW 
+				;唇
+				ELSEIF P == 32
+					PRINTFORMW 
+				;鼻穴
+				ELSEIF P == 64
+					PRINTFORMW 
+				ENDIF
+			;取り外し
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:348 = 2
+		ENDIF
+	ENDIF
+	RETURN 0
+ENDIF
+
+
+
+;-------------------------------------------------
+;@DOG_KOJO関係（12をキャラ番號に置換）
+;獸姦PLAY用口上を獨立させました
+;-------------------------------------------------
+@DOG_KOJO_12
+
+;-------------------------------------------------
+;獸姦愛撫 CFLAG:301
+;-------------------------------------------------
+IF SELECTCOM == 0
+	;初めて
+	IF CFLAG:301 == 0
+		;屈服刻印Lv2以上
+		IF MARK:2 >= 2
+			PRINTFORMW 「嗚嗚、我知道了、我會乖乖做的……」
+		;それ以外
+		ELSE
+			PRINTFORMW 「討厭！　不要啊！　住手～！！」
+		ENDIF
+		CFLAG:301 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:301 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 「%SELF_CALL(TARGET)%的身體、還想再被舔遍各個角落呢」
+			CFLAG:301 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:301 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「塗上黃油會更好些吧」
+			CFLAG:301 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:301 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「塗上黃油會更好些吧」
+			CFLAG:301 = 5
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:301 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「我知道了、我會乖乖做的……」
+			CFLAG:301 = 4
+		;屈服刻印Lv2
+		ELSEIF MARK:2 == 2 && (CFLAG:301 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「討厭、住手……不要啊」
+			CFLAG:301 = 3
+		;それ以外
+		ELSEIF MARK:2 <= 1 && (CFLAG:301 <= 1 || FLAG:7 == 2)
+			PRINTFORMW 「討厭、討厭！　不要啊！」
+			CFLAG:301 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦舔陰 CFLAG:302
+;-------------------------------------------------
+IF SELECTCOM == 1
+	;初めて
+	IF CFLAG:302 == 0
+		;處女
+		IF TALENT:TARGET:0 == 1
+			PRINTFORMW 「嗚嗚……這麼重要的地方被舔了」
+		;それ以外
+		ELSE
+			PRINTFORMW 「嗚嗚……這麼敏感的地方被舔著」
+		ENDIF
+		CFLAG:302 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:302 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「味道不錯吧、%SELF_CALL(TARGET)%的陰部……呵呵、儘管舔吧」
+			CFLAG:302 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:302 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「這個地方也要塗上黃油嗎？」
+			CFLAG:302 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:302 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「這個地方也要塗上黃油嗎？」
+			CFLAG:302 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:302 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「遵命……塗上黃油就好了吧」
+			CFLAG:302 = 3
+		;それ以外（屈服刻印Lv3未満）
+		ELSEIF CFLAG:302 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚嗚、好惡心……這樣子、違反人倫啊……」
+			CFLAG:302 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;獸姦胸愛撫 CFLAG:306
+;-------------------------------------------------
+IF SELECTCOM == 5
+	;初めて
+	IF CFLAG:306 == 0
+		;愛慕
+		IF TALENT:TARGET:85 == 1
+			PRINTFORMW 「不要、快停下啊」
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 「唔……好奇怪的感覺」
+		ENDIF
+		CFLAG:TARGET:306 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:306 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 「牙咬在乳頭上……bilibili的♪」
+			CFLAG:306 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:306 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 「哈啊、胸部好吃嗎？」
+			CFLAG:306 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:306 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「哈啊、繼續吸胸部吧」
+			CFLAG:306 = 4
+		;B感覚Lv3以上
+		ELSEIF ABL:1 >= 3 && (CFLAG:306 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「咕……被狗、弄得有感覺了……」
+			CFLAG:306 = 3
+		;それ以外（愛無し、B感覚Lv3未満）
+		ELSEIF CFLAG:306 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「卑鄙……這隻會讓我感覺不舒服」
+			CFLAG:306 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;獸姦キス CFLAG:307
+;-------------------------------------------------
+IF SELECTCOM == 6
+	;初吻
+	IF CFLAG:307 == 0 && TFLAG:13
+		;牝犬
+		IF TALENT:TARGET:136 == 1
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:307 = 1
+		RETURN 0
+	;（調教では）初めて
+	ELSEIF CFLAG:307 == 0
+		;牝犬
+		IF TALENT:TARGET:136 == 1
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:307 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:307 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:307 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:307 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:307 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:307 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:307 = 4
+		;順從Lv2以上
+		ELSEIF ABL:10 >=2 && (CFLAG:307 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:307 = 3
+		;それ以外
+		ELSEIF CFLAG:307 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:307 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦舔肛 CFLAG:310
+;-------------------------------------------------
+IF SELECTCOM == 9
+	;初めて
+	IF CFLAG:310 == 0
+		;牝犬
+		IF TALENT:TARGET:136 == 1
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:310 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:310 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:310 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:310 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:310 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:310 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:310 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:310 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:310 = 3
+		;それ以外（屈服刻印Lv3未満）
+		ELSEIF CFLAG:310 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:310 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦背後位 CFLAG:322
+;-------------------------------------------------
+IF SELECTCOM == 21
+	;初めて
+	IF CFLAG:TARGET:322 == 0
+		;處女
+		IF TALENT:0 == 1
+			;牝犬
+			IF TALENT:136 == 1
+				PRINTFORMW 「討厭～！　%SELF_CALL(TARGET)%、終於要成為母狗了呢！」
+			;淫亂
+			ELSEIF TALENT:76 == 1
+				PRINTFORMW 「交配実験嗎……好期待呢♪」
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「要懷上狗寶寶了嗎」
+
+			;それ以外
+			ELSE
+				PRINTFORMW 「咿呀啊、異常、這樣太異常了……」
+			ENDIF
+		;非處女
+		ELSE
+			;牝犬
+			IF TALENT:136 == 1
+				PRINTFORMW 「討厭～！　%SELF_CALL(TARGET)%、終於可以交尾了呢！」
+			;淫亂
+			ELSEIF TALENT:76 == 1
+				PRINTFORMW 「嗯、終於可以做交配実験了呢。讓我來幫忙吧」
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 「真的、要懷孕了嗎……」
+			;それ以外
+			ELSE
+				PRINTFORMW 「咕嗚～、討厭、已經、夠了……」
+			ENDIF
+		ENDIF
+		CFLAG:322 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:322 <= 6 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「汪汪！　狗的陰莖好爽啊♪　%SELF_CALL(TARGET)%、想懷上狗寶寶～♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「嗯啊啊啊～、%SELF_CALL(TARGET)%、要變成母狗了哦♪」
+			ELSE
+				PRINTFORMW 「在交尾呢……%SELF_CALL(TARGET)%、在做異種交配呢♪」
+			ENDIF
+			CFLAG:322 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:322 <= 5 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「哦、今天也是交配実験嗎。讓我來幫忙吧」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「隨時都可以繼續哦？　這個交配実験……」
+			ELSE
+				PRINTFORMW 「我知道了。讓我來幫忙吧」
+			ENDIF
+			CFLAG:322 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:322 <= 4 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 「真的要懷上了？」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「看來不會懷孕呢……」
+			ELSE
+				PRINTFORMW 「很擔心會不會得病呢」
+			ENDIF
+			CFLAG:322 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:322 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 「咕嗚～、被狗弄得……有感覺了……」
+			CFLAG:322 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:322 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 「交配実験嗎。我知道了……」
+			CFLAG:322 = 3
+		;それ以外
+		ELSEIF CFLAG:322 <= 1 || FLAG:7 == 2
+			PRINTFORMW 「嗚咕～、受夠了……這樣子、太異常了……」
+
+			CFLAG:322 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦背後位アナル CFLAG:328
+;-------------------------------------------------
+IF SELECTCOM == 27
+	;初めて
+	IF CFLAG:TARGET:328 == 0
+		;牝犬
+		IF TALENT:TARGET:136 == 1
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;それ以外（愛無し）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:328 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬＋A感覚Lv3以上
+		IF TALENT:TARGET:136 == 1 && ABL:3 >= 3 && (CFLAG:328 <= 6 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:328 = 7
+		;淫亂＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:3 >= 3 && (CFLAG:328 <= 5 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:328 = 6
+		;愛＋A感覚Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:3 >= 3 && (CFLAG:328 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:328 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:328 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:328 = 4
+		;A感覚Lv3以上
+		ELSEIF ABL:3 >= 3 && (CFLAG:328 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:328 = 3
+		;それ以外（愛無し、A感覚Lv3未満）
+		ELSEIF  CFLAG:328 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:328 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦手淫 CFLAG:331
+;-------------------------------------------------
+IF SELECTCOM == 30
+	;初めて
+	IF CFLAG:TARGET:331 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:331 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬＋侍奉精神Lv3以上
+		IF TALENT:TARGET:136 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 6 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:331 = 7
+		;淫亂＋侍奉精神Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 5 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:331 = 6
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:331 <= 4 || FLAG:7 == 2)
+			IF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:331 = 5
+		;愛＋侍奉精神Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:331 = 4
+		;侍奉精神Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 3 && (CFLAG:331 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:331 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:331 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:331 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦口交 CFLAG:332
+;-------------------------------------------------
+IF SELECTCOM == 31
+	;初めて
+	IF CFLAG:TARGET:332 == 0
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:332 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬＋侍奉精神Lv5
+		IF TALENT:TARGET:136 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 6 || FLAG:7 == 2)
+				PRINTFORMW 
+			CFLAG:332 = 7
+		;淫亂＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 5 || FLAG:7 == 2)
+				PRINTFORMW 
+			CFLAG:332 = 6
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:332 <= 4 || FLAG:7 == 2)
+				PRINTFORMW 
+			CFLAG:332 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:332 <= 3 || FLAG:7 == 2)
+				PRINTFORML 
+				PRINTFORMW 
+			CFLAG:332 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:332 <= 2 || FLAG:7 == 2)
+			PRINTFORML 
+			PRINTFORMW 
+			CFLAG:332 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:332 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:332 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦騎乘位 CFLAG:335
+;-------------------------------------------------
+IF SELECTCOM == 34
+	;初めて
+	IF CFLAG:TARGET:335 == 0
+		;處女
+		IF TALENT:0 == 1
+			;牝犬
+			IF TALENT:TARGET:136 == 1
+				PRINTFORMW 
+			;淫亂
+			ELSEIF TALENT:TARGET:76 == 1
+				PRINTFORMW 
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1
+				PRINTFORMW 
+			;それ以外（愛無し）
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		;非處女
+		ELSE
+			;牝犬
+			IF TALENT:TARGET:136 == 1
+				PRINTFORMW 
+			;淫亂
+			ELSEIF TALENT:76 == 1
+				PRINTFORMW 
+			;愛慕
+			ELSEIF TALENT:85 == 1
+				PRINTFORMW 
+			;それ以外
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+		CFLAG:TARGET:335 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:335 <= 6 || FLAG:7 == 2)
+			IF RAND:3 == 0
+				PRINTFORMW 
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:335 = 7
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:335 <= 5 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORMW 
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:335 = 6
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:335 <= 4 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORML 
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:335 = 5
+		;屈服刻印Lv3＋V感覚Lv3以上
+		ELSEIF MARK:2 == 3 && ABL:2 >= 3 && (CFLAG:335 <= 3 || FLAG:7 == 2)
+			IF RAND:4 == 0
+				PRINTFORMW
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 
+			ELSE
+				PRINTFORMW 
+			ENDIF
+			CFLAG:335 = 4
+		;屈服刻印Lv3
+		ELSEIF MARK:2 == 3 && (CFLAG:335 <= 2 || FLAG:7 == 2)
+			PRINTFORML 
+			PRINTFORMW 
+			CFLAG:335 = 3
+		;それ以外（愛無し、順從Lv5未満）
+		ELSEIF CFLAG:335 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:335 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦肛門侍奉 CFLAG:338
+;-------------------------------------------------
+IF SELECTCOM == 37
+	;初めて
+	IF CFLAG:TARGET:338 == 0
+		;侍奉精神Lv3以上
+		IF ABL:TARGET:16 >= 3
+			PRINTFORMW 
+		;それ以外（侍奉精神Lv3未満）
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:338 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬＋侍奉精神Lv5
+		IF TALENT:TARGET:136 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:338 <= 5 || FLAG:7 == 2)
+				PRINTFORMW 
+			CFLAG:338 = 6
+		;淫亂＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:338 <= 4 || FLAG:7 == 2)
+				PRINTFORMW 
+			CFLAG:338 = 5
+		;愛＋侍奉精神Lv5
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:TARGET:16 >= 5 && (CFLAG:338 <= 3 || FLAG:7 == 2)
+				PRINTFORML 
+			CFLAG:338 = 4
+		;侍奉精神Lv3以上
+		ELSEIF ABL:TARGET:16 >= 3 && (CFLAG:338 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:338 = 3
+		;それ以外（侍奉精神Lv3未満）
+		ELSEIF CFLAG:338 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:338 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;獸姦眼罩 CFLAG:344　CFLAG:444
+;-------------------------------------------------
+;開始時
+IF SELECTCOM == 43 && TEQUIP:43
+	;初めて
+	IF CFLAG:TARGET:344 == 0
+		;牝犬
+		IF TALENT:136 == 1
+			PRINTFORMW 
+		;淫亂
+		ELSEIF TALENT:76 == 1
+			PRINTFORMW 
+		;愛慕
+		ELSEIF TALENT:85 == 1
+			PRINTFORMW 
+		;それ以外
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		CFLAG:TARGET:344 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		;牝犬
+		IF TALENT:TARGET:136 == 1 && (CFLAG:344 <= 9 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 10
+		;淫亂＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 5 && (CFLAG:344 <= 8 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 9
+		;淫亂＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:76 == 1 && ABL:21 >= 3 && (CFLAG:344 <= 7 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 8
+		;淫亂
+		ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:344 <= 6 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 7
+		;愛＋受虐狂っ気Lv5以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 5 && (CFLAG:344 <= 5 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 6
+		;愛＋受虐狂っ気Lv3以上
+		ELSEIF TALENT:TARGET:85 == 1 && ABL:21 >= 3 && (CFLAG:344 <= 4 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 5
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:344 <= 3 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 4
+		;受虐狂っ気Lv3以上
+		ELSEIF ABL:21 >= 3 && (CFLAG:344 <= 2 || FLAG:7 == 2)
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 3
+		;それ以外
+		ELSEIF CFLAG:344 <= 1 || FLAG:7 == 2
+			PRINTFORMW 
+			CFLAG:TARGET:344 = 2
+		ENDIF
+		RETURN 0
+	ENDIF
+;終了時
+ELSEIF SELECTCOM == 43 && TEQUIP:43 == 0
+	;牝犬
+	IF TALENT:TARGET:136 == 1 && (CFLAG:338 < 3 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:444 = 4
+	;淫亂
+	ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:338 < 3 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:444 = 3
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:338 < 2 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:444 = 2
+	;それ以外 
+	ELSEIF CFLAG:444 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:444 = 1
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;獸姦會話 CFLAG:357
+;いぬと會話は出來ないので自己紹介のみ
+;-------------------------------------------------
+IF SELECTCOM == 56
+	;初めて
+	IF CFLAG:357 == 0
+		IF TEQUIP:53
+			;ビデオ自己紹介
+			;牝犬
+			IF TALENT:TARGET:136 == 1
+				PRINTFORMW 「初次見面、我是前勇者%SAVESTR:TARGET%哦。很感謝大家今天的收看」
+				PRINTFORMW 「%SELF_CALL(TARGET)%現在正研究著超越種族的性愛呢」
+				PRINTFORMW 「與狗的交配実験、狗崽的妊娠……啊啊、想研究的東西堆積如山呢」
+				PRINTFORMW 「%SELF_CALL(TARGET)%的研究成果、請從現在開始好好看著吧」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊淫蕩地搖著腰……
+			;淫亂
+			ELSEIF TALENT:TARGET:76 == 1
+				PRINTFORMW 
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1
+				PRINTFORMW 
+			;それ以外
+			ELSE
+				PRINTFORMW 
+			ENDIF
+		ENDIF
+		CFLAG:357 = 1
+		RETURN 0
+	;二回目以降
+	ELSE
+		IF TEQUIP:53
+			;ビデオ自己紹介
+			;牝犬
+			IF TALENT:TARGET:136 == 1 && (CFLAG:357 <= 4 || FLAG:7 == 2)
+				PRINTFORMW 「又見面了呢？　我是母狗家畜%SAVESTR:TARGET%。一直以來多謝關照」
+				PRINTFORMW 「%SELF_CALL(TARGET)%的超越種族的性愛研究現在有了很大進展。內心也漸漸地變成和野獣一樣了哦」
+				PRINTFORMW 「與狗的交配実験、狗崽的妊娠……啊啊、還想更多的研究下去呢」
+				PRINTFORMW 「%SELF_CALL(TARGET)%的研究成果、請從現在開始好好看著吧」
+				PRINTFORMW %SAVESTR:TARGET%一邊這樣說著一邊淫蕩地搖著腰……
+				CFLAG:357 = 5
+			;淫亂
+			ELSEIF TALENT:TARGET:76 == 1 && (CFLAG:357 <= 3 || FLAG:7 == 2)
+				PRINTFORMW 
+				CFLAG:357 = 4
+			;愛慕
+			ELSEIF TALENT:TARGET:85 == 1 && (CFLAG:357 <= 2 || FLAG:7 == 2)
+				PRINTFORMW 
+				CFLAG:357 = 3
+			;それ以外
+			ELSEIF CFLAG:357 <= 1 || FLAG:7 == 2
+				PRINTFORMW 
+				CFLAG:357 = 2
+			ENDIF
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+RETURN 0
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係（12をキャラ番號に置換）
+;パラメータ変動をトリガーにした口上
+;パラメータ変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞著用時には口上をスキップする
+SIF TEQUIP:45
+	RETURN 0
+;失神時には口上をスキップする
+SIF TFLAG:899
+	RETURN 0
+
+;-------------------------------------------------
+;パラメータ変動時のセリフ CFLAG 221～260を使用
+;-------------------------------------------------
+;-------------------------------------------------
+;初めて潤滑がLV2超えた CFLAG:221
+;-------------------------------------------------
+P = PALAM:3 + UP:3
+IF P > PALAMLV:2 && CFLAG:TARGET:221 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		;潤滑液を使った場合
+		IF SELECTCOM == 50
+			PRINTFORMW 「用這樣的粘液……塗在%SELF_CALL(TARGET)%的身體上嗎」
+		ELSEIF TALENT:122
+			PRINTFORMW 「從%SELF_CALL(TARGET)%的陰莖里……分泌出了粘液！？」
+		;それ以外
+		ELSE
+			PRINTFORMW 「從%SELF_CALL(TARGET)%的陰道里……分泌出了粘液！？」
+		ENDIF
+	;それ以外
+	ELSE
+		;潤滑液を使った場合
+		IF SELECTCOM == 50
+			PRINTFORMW 「用這樣的粘液……塗在%SELF_CALL(TARGET)%的身體上嗎」
+		ELSEIF TALENT:122
+			PRINTFORMW 「從%SELF_CALL(TARGET)%的陰莖里……分泌出了粘液！？」
+		;それ以外
+		ELSE
+			PRINTFORMW 「從%SELF_CALL(TARGET)%的陰道里……分泌出了粘液！？」
+		ENDIF
+	ENDIF
+	CFLAG:TARGET:221 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて欲情がLV2超えた CFLAG:222
+;-------------------------------------------------
+P = PALAM:5 + UP:5
+IF P > PALAMLV:2 && CFLAG:222 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		;しあわせ草を使った場合
+		IF SELECTCOM == 51
+			PRINTFORMW 「竟用……這樣的薬物……%SELF_CALL(TARGET)%的思考亂成了一團」
+		;それ以外
+		ELSE
+			PRINTFORMW 「脳內的麻薬分泌嗎……沒法停止呢……」
+		ENDIF
+	;それ以外
+	ELSE
+		;しあわせ草を使った場合
+		IF SELECTCOM == 51
+			PRINTFORMW 「竟用……這樣的薬物……%SELF_CALL(TARGET)%的思考亂成了一團」
+		;それ以外
+		ELSE
+			PRINTFORMW 「脳內的麻薬分泌嗎……沒法停止呢……」
+		ENDIF
+	ENDIF
+	CFLAG:222 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恥情がLV2超えた CFLAG:223
+;-------------------------------------------------
+P = PALAM:8 + UP:8
+IF P > PALAMLV:2 && CFLAG:223 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		PRINTFORMW 「停手吧、這麼羞恥的事情……%SELF_CALL(TARGET)%、要變的奇怪了」
+	;それ以外
+	ELSE
+		PRINTFORMW 「停手吧、這麼羞恥的事情……%SELF_CALL(TARGET)%、要變的奇怪了」
+	ENDIF
+	CFLAG:223 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV2超えた CFLAG:224
+;-------------------------------------------------
+P = PALAM:10 + UP:10
+IF P > PALAMLV:2 && CFLAG:224 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		PRINTFORMW 「呀啊啊、快住手、好可怕」
+	;それ以外
+	ELSE
+		PRINTFORMW 「呀啊啊、快住手、好可怕」
+	ENDIF
+	CFLAG:224 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて陰蒂絕頂 CFLAG:225
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:225 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		PRINTFORMW 「啊啊～、不行了、%SELF_CALL(TARGET)%、要高潮了～！」
+	;それ以外
+	ELSE
+		PRINTFORMW 「啊啊～、不行了、%SELF_CALL(TARGET)%、要高潮了～！」
+	ENDIF
+	CFLAG:225 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて私處絕頂 CFLAG:226
+;-------------------------------------------------
+IF NOWEX:1 > 0 && CFLAG:226 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1
+		PRINTFORMW 「啊啊～、不行了、%SELF_CALL(TARGET)%的陰道、痙攣的停不下來啦～！」
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1
+		PRINTFORMW 「啊啊～、不行了、%SELF_CALL(TARGET)%的陰道、痙攣的停不下來啦～！」
+	;それ以外
+	ELSE
+		PRINTFORMW 「啊啊～、不行了、%SELF_CALL(TARGET)%的陰道、痙攣的停不下來啦～！」
+	ENDIF
+	CFLAG:TARGET:226 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて肛門絕頂 CFLAG:227
+;-------------------------------------------------
+IF NOWEX:2 > 0 && CFLAG:227 == 0
+	;淫亂
+	IF TALENT:TARGET:76 == 1
+		PRINTFORMW 「不行、不要啊啊～！　%SELF_CALL(TARGET)%的肛門要、肛門要、高潮了～！」
+	;愛慕
+	ELSEIF TALENT:TARGET:85 == 1
+		PRINTFORMW 「不行、不要啊啊～！　%SELF_CALL(TARGET)%的肛門要、肛門要、高潮了～！」
+	;それ以外
+	ELSE
+		PRINTFORMW 「不行、不要啊啊～！　%SELF_CALL(TARGET)%的肛門要、肛門要、高潮了～！」
+	ENDIF
+	CFLAG:227 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて乳房絕頂 CFLAG:228
+;-------------------------------------------------
+IF NOWEX:3 > 0 && CFLAG:228 == 0
+	;愛慕
+	IF TALENT:TARGET:85 == 1
+		PRINTFORMW 「這不可能、胸部、胸部也要高潮了啊～！」
+	;それ以外
+	ELSE
+		PRINTFORMW 「這不可能、胸部、胸部也要高潮了啊～！」
+	ENDIF
+	CFLAG:TARGET:228 = 1
+ENDIF
+
+;-------------------------------------------------
+;處女喪失(處女のみ) CFLAG:229
+;-------------------------------------------------
+A = UP:11 + UP:12
+IF TFLAG:3 == 1 && CFLAG:229 == 0
+	;主人による處女喪失
+	IF TFLAG:20 == 1
+		;淫亂かつ反抗刻印取得せず
+		IF TALENT:TARGET:76 == 1 && (A < 500 || TFLAG:150 == 1)
+			PRINTFORMW 「%SELF_CALL(TARGET)%、終於成為大人了呢……！」
+		;愛かつ反抗刻印取得せず
+		ELSEIF TALENT:TARGET:85 == 1 && (A < 500 || TFLAG:150 == 1)
+			PRINTFORMW 「盡情的、為懷上孩子而做愛吧……！」
+		;それ以外
+		ELSE
+			PRINTFORMW 「咿呀～、咿呀啊～」
+		ENDIF
+	;主人以外による處女喪失（再生處女含む）
+	ELSE
+		;淫亂
+		IF TALENT:TARGET:76 == 1
+			PRINTFORMW 「%SELF_CALL(TARGET)%、終於成為大人了呢……！」
+		;愛慕
+		ELSEIF TALENT:TARGET:85 == 1
+			PRINTFORMW 「討厭、才不想和你生孩子呢」
+		;それ以外
+		ELSE
+			PRINTFORMW 「咿呀～、咿呀啊～」
+		ENDIF
+	ENDIF
+	CFLAG:TARGET:229 = 1
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係（12をキャラ番號に置換）
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_12
+;助手が調教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞著用時には口上をスキップする（OFFだと口を塞いでるのに喋りまくる）
+SIF TEQUIP:45
+	RETURN 0
+;-------------------------------------------------
+;苦痛刻印Lv3取得 CFLAG:297
+;-------------------------------------------------
+IF TFLAG:22 == 3 && CFLAG:297 == 0
+	;愛慕
+	IF TALENT:85 == 1
+		PRINTFORMW 「啊嘎嘎、啊嘎啊～、痛～」
+	ELSE
+		PRINTFORMW 「啊嘎嘎、啊嘎啊～、痛～」
+	ENDIF
+	CFLAG:297 = 1
+ENDIF
+
+;-------------------------------------------------
+;快樂刻印Lv3取得 CFLAG:298
+;-------------------------------------------------
+IF TFLAG:23 == 3 && CFLAG:298 == 0
+	;愛慕
+	IF TALENT:85 == 1
+		PRINTFORMW 「不行、不行了、好、好有感覺啊～！」
+	ELSE
+		PRINTFORMW 「不行、不行了、好、好有感覺啊～！」
+	ENDIF
+	CFLAG:298 = 1
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3取得 CFLAG:299
+;-------------------------------------------------
+IF TFLAG:24 == 3 && CFLAG:299 == 0
+	;愛慕
+	IF TALENT:85 == 1
+		PRINTFORMW 「再、再也不會反抗你了……」
+	ELSE
+		PRINTFORMW 「再、再也不會反抗你了……」
+	ENDIF
+	CFLAG:299 = 1
+ENDIF
+
+;-------------------------------------------------
+;反抗刻印Lv3取得 CFLAG:300
+;-------------------------------------------------
+IF TFLAG:21 == 3 && CFLAG:300 == 0
+	;愛慕
+	IF TALENT:85 == 1
+		PRINTFORMW 「去死吧……」
+	ELSE
+		PRINTFORMW 「去死吧……」
+	ENDIF
+	CFLAG:300 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;イベント口上集（12、12をキャラ番號に置換する） CFLAG 261～296
+;-------------------------------------------------
+@SELF_KOJO_K12
+;-------------------------------------------------
+;調教後自慰 CFLAG:261
+;-------------------------------------------------
+IF TFLAG:13 == 1
+	;崩壞してしまった場合
+	IF TALENT:9 == 1
+		PRINTFORMW 「啊哈、啊哈哈、啊哈哈哈」
+	;愛がなくかつ助手とのレズセックス後なら百合氣質×20%で助手
+	ELSEIF Q == 1
+		PRINTFORMW 「%SELF_CALL(TARGET)%……一想到女孩子的裸體……就自慰起來了呢……」
+	;上に該當せずかつ愛がなくアイテムに野良犬があれば、獸姦中毒×20%で野良犬
+	ELSEIF Q == 2
+		PRINTFORMW 「%SELF_CALL(TARGET)%……果然對和異種交配……很有興趣呢」
+	;その他
+	ELSE
+		;淫亂
+		IF TALENT:76 && (CFLAG:261 < 4 || FLAG:7 == 2)
+			PRINTFORMW 「不行了、停不下來了～」
+			CFLAG:261 = 4
+		;愛慕
+		ELSEIF TALENT:85 && (CFLAG:261 < 3 || FLAG:7 == 2)
+			PRINTFORMW 「啊啊、停不下來了、變成猴子了～！」
+			CFLAG:261 = 3
+		;自慰中毒Lv3以上
+		ELSEIF ABL:31 >= 3 && (CFLAG:261 < 2 || FLAG:7 == 2)
+			PRINTFORMW 「這樣自慰下去的話……要變成白癡了……」
+			CFLAG:261 = 2
+		;それ以外
+		ELSEIF CFLAG:261 < 1 || FLAG:7 == 2
+			PRINTFORMW 「嗯、咕嗚……嗚嗯……」
+			CFLAG:261 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;レズプレイ CFLAG:262
+;-------------------------------------------------
+IF TFLAG:13 == 2
+	;淫亂
+	IF TALENT:76 && (CFLAG:262 < 5 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:262 = 5
+	;愛慕
+	ELSEIF TALENT:85 && (CFLAG:262 < 4 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:262 = 4
+	;百合中毒Lv3以上
+	ELSEIF ABL:33 >= 3 && (CFLAG:262 < 3 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:262 = 3
+	;百合氣質Lv3以上
+	ELSEIF ABL:22 >= 3 && (CFLAG:262 < 2 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:262 = 2
+	;それ以外
+	ELSEIF CFLAG:262 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:262 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;朝フェラ CFLAG:263
+;-------------------------------------------------
+IF TFLAG:13 == 3
+	;淫亂
+	IF TALENT:76 == 1 && (CFLAG:263 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「早上好。啊啊、生理現象……就交給%SELF_CALL(TARGET)%吧♪」
+		CFLAG:263 = 3
+	;愛慕
+	ELSEIF TALENT:85 && (CFLAG:263 < 3 || FLAG:7 == 2)
+		PRINTFORMW 「早上好。雖然早了點、開始研究吧。早上的話腦細胞會活性化呦」
+		CFLAG:263 = 3
+	;侍奉精神Lv5以上
+	ELSEIF ABL:16 >= 5 && (CFLAG:263 < 2 || FLAG:7 == 2)
+		PRINTFORMW 「嗯、%SELF_CALL(TARGET)%的好意。你就不用動了」
+		CFLAG:263 = 2
+	;それ以外
+	ELSEIF CFLAG:263 < 1 || FLAG:7 == 2
+		PRINTFORMW 「不要在意。只是我一時興起」
+		CFLAG:263 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;調教後セックス CFLAG:264
+;-------------------------------------------------
+IF TFLAG:13 == 4
+	;V感覚Lv4以上
+	IF ABL:2 >= 4 && (CFLAG:264 < 2 || FLAG:7 == 2)
+		PRINTFORMW 
+		CFLAG:264 = 2
+	;それ以外
+	ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+		PRINTFORMW 
+		CFLAG:264 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;夜這い CFLAG:265
+;-------------------------------------------------
+IF TFLAG:13 == 5
+	IF CFLAG:265 < 1 || FLAG:7 == 2
+		PRINTFORMW 「呵呵、能陪我加一下班嗎？　你和%SELF_CALL(TARGET)%的……淫亂的實驗♪」
+		CFLAG:265 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;売卻
+;-------------------------------------------------
+IF TFLAG:13 == 6
+	;愛慕+反抗刻印Lv3未満
+	IF TALENT:85 && MARK:3 < 3
+		PRINTFORMW 
+	;反抗刻印Lv3
+	ELSEIF MARK:3 == 3
+		PRINTFORMW 
+	;淫亂
+	ELSEIF TALENT:76
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	SIF TALENT:122 != 1
+		CALL SELL_MATURO_K0
+ENDIF
+
+;-------------------------------------------------
+;ガンダーロボ戦に參加
+;-------------------------------------------------
+IF TFLAG:13 == 9
+	DRAWLINE
+	PRINTFORMW 
+	DRAWLINE
+ENDIF
+
+;-------------------------------------------------
+;ガンダーロボ戦に參加して勝利
+;-------------------------------------------------
+IF TFLAG:13 == 10
+	DRAWLINE
+	PRINTFORMW 
+	DRAWLINE
+ENDIF
+
+;-------------------------------------------------
+;妊娠発覚 CFLAG:271
+;CFLAG:102→誰によって妊娠させられたか（マスター = 1, 助手 = 2, 奴隷 = 3, 客 = 4, 犬 = 5, 怪物・觸手 = 6, 狂王 = 7）
+;-------------------------------------------------
+IF TFLAG:13 == 11
+	SIF CFLAG:271 >= 1
+		RETURN 0
+	;崩壞してしまった場合
+	IF TALENT:9 == 1
+		PRINTFORMW 
+		PRINTFORMW 「不研究不研究的話……」
+	;父親が主人で母親が愛持ち
+	ELSEIF TALENT:85 && CFLAG:102 == 1
+		PRINTFORMW 「來摸一下肚子……這是和你的愛的結晶哦……♪」
+	;父親が犬で母親が牝犬持ち
+	ELSEIF TALENT:136 && CFLAG:102 == 5
+		PRINTFORMW 「終於……作為交尾的結果、懷上來狗的孩子了……♪」
+	;その他
+	ELSE
+		PRINTFORMW 「原來如此、懷上孩子了啊……」
+	ENDIF
+	CFLAG:271 = 1
+ENDIF
+
+;-------------------------------------------------
+;出産 CFLAG:272
+;CFLAG:102→誰によって妊娠させられたか（マスター = 1, 助手 = 2, 奴隷 = 3, 客 = 4, 犬 = 5, 怪物・觸手 = 6, 狂王 = 7）
+;-------------------------------------------------
+IF TFLAG:13 == 12
+	SIF CFLAG:272 >= 1
+		RETURN 0
+	;崩壞している場合
+	IF TALENT:9 == 1
+		PRINTFORMW 
+	;父親が主人で母親が愛持ち
+	ELSEIF TALENT:85 && CFLAG:102 == 1
+		PRINTFORMW 
+	;その他
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	CFLAG:272 = 1
+ENDIF
+
+;-------------------------------------------------
+;死亡
+;-------------------------------------------------
+IF TFLAG:13 == 999
+	;愛慕
+	IF TALENT:85
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;壽命による消滅
+;-------------------------------------------------
+IF TFLAG:13 == 998
+	;愛慕
+	IF TALENT:85
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+;--------------------------------------------------
+;フラグ初期化
+;--------------------------------------------------
+TFLAG:13 = 0
+
+RETURN 0
+
+;-------------------------------------------------
+;@単體エンディング関係(12、12をキャラ番號に置換する)
+;まだ未実裝です
+;-------------------------------------------------
+;@SINGLE_ENDING_K12
+;DRAWLINE
+;PRINTFORMW ―――単體エンド條件達成―――
+;PRINTFORMW …………
+;PRINTFORMW ………
+;PRINTFORMW ……
+;PRINTFORMW 
+
+
+;PRINTFORMW 
+;PRINTFORMW 　　　　　　　　―― Ending No.112 (○○エンド)
+
+;CALL GAME_CONTINUE
+;RETURN 0
+
+
+;------------------------------------------------------------------------------------------------------------------------------
+;ここからeramaou追加口上
+;------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+;-------------------------------------------------------
+@DUNGEON_RYOUZYOKU_K12
+;-------------------------------------------------------
+;ダンジョンで陵辱される前の一言
+
+
+IF TALENT:0 == 1
+	;處女
+	PRINTFORMW 「噫～、請你們、冷、冷靜一點……」
+	
+	IF TALENT:21 == 1 || TALENT:22 == 1
+	
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「救命啊……」
+		
+		RETURN 0
+	ELSEIF TALENT:17 ==1 || TALENT:31 == 1 || TALENT:36 == 1
+		
+		;低姿態・看輕貞操・不知羞恥なら身體を売って命乞いをする
+		PRINTFORMW 「你、你們、快看、我還是處女哦。所以、請至少饒我一命……」
+		
+		;A敏感もしくは肛門經驗有りならならアナルを使うことを提案する
+		SIF TALENT:106 == 1 || EXP:1 > 0
+			PRINTFORMW 「不、不管怎麼用我的肛門都可以哦……」
+		
+		;口交經驗有りならなら口での奉仕をアピールする
+		SIF EXP:22 > 0
+			PRINTFORMW 「口交的經驗我有、一定、一定能滿足你們的！」
+		
+	ELSEIF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:30 == 1 || TALENT:34 == 1
+		
+		;反抗心・剛強・高姿態・看重貞操・抵抗なら
+		;チ○ポになんか絶対負けない！系の精神的抵抗をする
+		PRINTFORMW 「怎、怎麼能認輸啊！　區區凌辱……%SELF_CALL(TARGET)%是絶対不會認輸的！」
+		
+	ELSEIF TALENT:10 == 1 || TALENT:26 == 1
+		
+		;膽怯・悲觀的なら自分の運命に絶望する
+		PRINTFORMW 「已、已經完蛋了……」
+		
+	ELSE
+		
+		;その他何か適當に性格によって
+		PRINTFORMW 「你、你們……能商量一下嗎。如果聽得懂的話……」
+		
+	ENDIF
+ELSE
+	;非處女
+	PRINTFORMW 「不、不好意思。能請你們、冷、冷靜一下嗎……」
+	
+	IF TALENT:21 == 1 || TALENT:22 == 1
+		
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「拜託了……」
+		
+		RETURN 0
+	ELSEIF TALENT:17 ==1 || TALENT:31 == 1 || TALENT:36 == 1
+		
+		;低姿態・看輕貞操・不知羞恥なら身體を売って命乞いをする
+		PRINTFORMW 「做、做愛的經驗我有哦。一定能滿足你們的。所以、請至少饒我一命……」
+		
+		;A敏感もしくは肛門經驗有りならならアナルを使うことを提案する
+		SIF TALENT:106 == 1 || EXP:1 > 0
+			PRINTFORMW 「肛、肛門的話隨便怎麼用都可以……所以……」
+		
+		;口交經驗有りならなら口での奉仕をアピールする
+		SIF EXP:22 > 0
+			PRINTFORMW 「口交的經驗我有、一定、一定能滿足你們的！」
+		
+	ELSEIF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:30 == 1 || TALENT:34 == 1
+		
+		;反抗心・剛強・高姿態・看重貞操・抵抗なら
+		;チ○ポになんか絶対負けない！系の精神的抵抗をする
+		PRINTFORMW 「怎、怎麼能認輸啊！　區區凌辱……%SELF_CALL(TARGET)%是絶対不會認輸的！」
+		
+	ELSEIF TALENT:10 == 1 || TALENT:26 == 1
+		
+		;膽怯・悲觀的なら自分の運命に絶望する
+		PRINTFORMW 「已、已經完蛋了……」
+		
+	ELSE
+		
+		;その他何か適當に性格によって
+		PRINTFORMW 「你、你們……能商量一下嗎。如果聽得懂的話……」
+		
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;-------------------------------------------------------
+@DUNGEON_RYOUZYOKU_AFTER_K12
+;-------------------------------------------------------
+;ダンジョンで陵辱された後の一言
+
+
+IF TALENT:0 == 1
+	;處女
+	PRINTFORMW （得救了……連貞潔也、守住了嗎……）
+	
+	IF TALENT:21 == 1 || TALENT:22 == 1
+		
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「……」
+		
+		RETURN 0
+	ENDIF
+	
+	;アナルを弄られすぎた感想
+	IF EXP:1 > 20
+		PRINTFORMW 「肛門……咿呀～」
+		PRINTFORMW 「已經破破爛爛的了……」
+	ENDIF
+	
+	;フェラしすぎた感想
+	SIF EXP:22 > 20
+		PRINTFORMW 「啊、下巴……」
+	
+	;精液の味
+	SIF EXP:20 > 20
+		PRINTFORMW 「嗚欸欸……這就是精液的味道嗎……」
+ELSE
+	;非處女
+	PRINTFORMW （只有小命還在、算是得救了嗎……）
+	
+	IF TALENT:21 == 1 || TALENT:22 == 1
+		
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「……」
+		
+		RETURN 0
+	ENDIF
+	
+	;膣を苛められすぎた感想
+	IF EXP:0 > 20
+		PRINTFORMW 「小穴……再也變不回去了」
+	ENDIF
+	
+	;アナルを弄られすぎた感想
+	IF EXP:1 > 20
+		PRINTFORMW 「肛門……咿呀～」
+		PRINTFORMW 「已經破破爛爛的了……」
+	ENDIF
+	
+	;フェラしすぎた感想
+	SIF EXP:22 > 20
+		PRINTFORMW 「啊、下巴……」
+	
+	;精液の味
+	SIF EXP:20 > 20
+		PRINTFORMW 「嗚欸欸……這就是精液的味道嗎……」
+ENDIF
+
+RETURN 0
+;-----------------------------------
+@BENKI_KOUJO_K12
+;-----------------------------------
+;肉便器口上。キャラはA
+;FLAG:62を使用。行動の詳細はBENKI.ERBで
+;FLAG:62 = 0 最下層モンスター奉仕
+;FLAG:62 = 1 レズ便器
+;FLAG:62 = 2 獣姦便器
+;FLAG:62 = 3 両穴便器
+;FLAG:62 = 4 膣便器
+;FLAG:62 = 5 アナル便器
+;FLAG:62 =  6 フェラ便器
+
+;FLAG:62 =  7 獣姦配信
+;FLAG:62 =  8 娼婦購入配信
+;FLAG:62 =  9 野外露出配信
+;FLAG:62 = 10 公衆便所配信
+;FLAG:62 = 11 アナル拡張配信
+;FLAG:62 = 12 自慰配信
+
+IF FLAG:62 == 0
+	;最下層居民凌辱
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「感謝前來協助%SELF_CALL(A)%的『研究』♪%SELF_CALL(A)%也會更努力的、可以繼續幫助%SELF_CALL(A)%做更多『実験』嗎？拜託咯…♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「你們的龜頭垢、一會兒能讓我進行回収嗎？　看起來能好好研究一下呢」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「喂喂、再堅持一下。再過一會兒就射精了」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「把精液全射出來吧……」
+	;それ以外
+	ELSE
+		PRINTFORMW 「嗚嗚……不潔啊……好汚」
+	ENDIF
+ELSEIF FLAG:62 == 1
+	;レズ便器
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「比起雄性的陰莖還是女孩子的身體更有趣啊…%SELF_CALL(A)%、可以進行這項『研究』真是太『幸福』啦♪」
+		PRINTFORMW 「剛聽說常識被改變了的時候還是有些牴觸的…可認真一想『女孩子之間做快樂的事是普通的』什麼的、那不是理所當然的嗎♪」
+		PRINTFORMW 「真是不知道該怎麼感謝、賜予了這麼『美妙』的催眠的魔王大人呢♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「哈啊哈啊……再抱緊一點……」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「真是好孩子……再把我抱緊一點……」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「讓我親親吧……」
+	;それ以外
+	ELSE
+		PRINTFORMW 「是女人嗎……」
+	ENDIF
+ELSEIF FLAG:62 == 2
+	;獸姦
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「…之前便開始作為牝犬家畜的肉便器、像這樣和野獸重複著『交配實驗』的『研究』…」
+		PRINTFORMW 「%SELF_CALL(A)%對於負責這項『研究』還是『十分滿足』的來著…難道有什麼疑慮嗎？」
+		PRINTFORMW 「常識改變？…真搞不懂到底在說什麼玩意…這可是『%SELF_CALL(A)%自願參與』的哦？」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「噗唏、噗唏！　噗唏～……哈啊哈啊」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「汪、汪！　汪～……哈啊哈啊」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「讓我蹭一蹭吧……」
+	;それ以外
+	ELSE
+		PRINTFORMW 「嗚嗚……動物的臭味……」
+	ENDIF
+ELSEIF  FLAG:62 == 3
+	;A+Vプレイ
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「多虧
+		CALL BENKI_PLAYER_NAME
+		PRINTFORMW 的幫助、使用肛門和性器的『交配實驗』得以進行咯♪」
+		PRINTFORMW 「雖然被魔王大人做了肉便器洗腦、但是拜託%SELF_CALL(A)%新的『研究』的魔王大人真是太溫柔了呢♪」
+		PRINTFORMW 「這副身體到底能給多少雄性做快活的事呢…每天都可以做『實驗』『實在是太爽了』啦♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「哈啊哈啊……裡面……被摩擦著呢……」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「哈啊哈啊……裡面……被摩擦著呢……」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「換我來吧……拜託了」
+	;それ以外
+	ELSE
+		PRINTFORMW 「嗚嗚……兩邊都被……」
+	ENDIF
+ELSEIF  FLAG:62 == 4
+	;Vプレイ
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「多虧
+		CALL BENKI_PLAYER_NAME
+		PRINTFORMW 的幫助、幾乎讓性器鬆弛的『交配實驗』得以進行咯♪」
+		PRINTFORMW 「雖然被魔王大人做了肉便器洗腦、但是拜託%SELF_CALL(A)%新的『研究』的魔王大人真是太溫柔了呢♪」
+		PRINTFORMW 「爲了瞭解性器到底能讓大家多舒服、於是直接向大家『發表』啦…每天都可以做『實驗』『實在是太爽了』啦♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「陰道……被擴張了……」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「陰道……被擴張了……」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「後面可不行哦、把前面給你弄吧……」
+	;それ以外
+	ELSE
+		PRINTFORMW 「嗚嗚、您的奉仕我就收下了……」
+	ENDIF
+ELSEIF  FLAG:62 == 5
+	;Aプレイ
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「多虧
+		CALL BENKI_PLAYER_NAME
+		PRINTFORMW 的幫助、幾乎讓肛門鬆弛的『交配實驗』得以進行咯♪」
+		PRINTFORMW 「雖然被魔王大人做了肉便器洗腦、但是拜託%SELF_CALL(A)%新的『研究』的魔王大人真是太溫柔了呢♪」
+		PRINTFORMW 「『用肛門做愛很正常』嘛『沒什麼好羞恥』的啊…每天都可以做『實驗』『實在是太爽了』啦♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 「肛門、濕漉漉的……」
+	;愛慕
+	ELSEIF TALENT:A:85
+		PRINTFORMW 「肛門、濕漉漉的……」
+	;侍奉精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 「您的肛交奉仕我就收下了……」
+	;それ以外
+	ELSE
+		PRINTFORMW 「嗚嗚……屁股被……」
+	ENDIF
+ELSEIF  FLAG:62 == 6
+	;フェラプレイ
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「多虧
+		CALL BENKI_PLAYER_NAME
+		PRINTFORMW 的陰莖的幫助、幾乎讓下巴脫臼的『實驗』得以進行咯♪」
+		PRINTFORMW 「雖然被魔王大人做了肉便器洗腦、但是拜託%SELF_CALL(A)%新的『研究』的魔王大人真是太溫柔了呢♪」
+		PRINTFORMW 「眼前的陰莖、傳來那股『非它不可的香味』啦…每天都可以做『實驗』『實在是太爽了』啦♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 
+	;愛
+	ELSEIF TALENT:A:85
+		PRINTFORMW 
+	;奉仕精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ELSEIF  FLAG:62 == 7
+	;獣姦配信
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「大家好、元
+		IF TALENT:A:122 == 0
+			PRINTFORM 勇者
+		ELSEIF TALENT:A:122
+			PRINTFORM 冒險者
+		ENDIF
+		PRINTFORM %SAVESTR:TARGET%喲♪」
+		PRINTFORMW 「%SELF_CALL(A)%敗給了偉大的魔王大人之後…毫無抵抗地被洗腦成牝犬家畜肉便器啦♪」
+		PRINTFORMW 「現在正作為對野獸陰莖感興趣的大變態、在魔王大人手下做『研究』呢♪」
+		PRINTFORMW 「這種『異種交配實驗』絕對會變成厲害的玩意的…所以想讓更多的人看到%SELF_CALL(A)%交尾著的樣子啊♪」
+	;牝犬
+	ELSEIF TALENT:A:牝犬
+		PRINTFORMW 
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 
+	;愛
+	ELSEIF TALENT:A:85
+		PRINTFORMW 
+	;奉仕精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ELSEIF  FLAG:62 == 9
+	;野外露出配信
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「大家好、元
+		IF TALENT:A:122 == 0
+			PRINTFORM 勇者
+		ELSEIF TALENT:A:122
+			PRINTFORM 冒險者
+		ENDIF
+		PRINTFORM %SAVESTR:TARGET%喲♪」
+		PRINTFORMW 「%SELF_CALL(A)%敗給了偉大的魔王大人之後…被徹頭徹尾地調教並洗腦咯♪」
+		PRINTFORMW 「現在作為喜歡在野外裸體的露出狂、在魔王大人手下做『研究』呢♪」
+		PRINTFORMW 「這種『野外研究』非常淺顯易懂…讓別人看見自己裸體的樣子真是件非常舒服的事啊♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 
+	;愛
+	ELSEIF TALENT:A:85
+		PRINTFORMW 
+	;奉仕精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ELSEIF  FLAG:62 == 12
+	;自慰配信
+	;常識改変
+	IF FLAG:63 == 1
+		PRINTFORMW 「大家好、元
+		IF TALENT:A:122 == 0
+			PRINTFORM 勇者
+		ELSEIF TALENT:A:122
+			PRINTFORM 冒險者
+		ENDIF
+		PRINTFORM %SAVESTR:TARGET%喲♪」
+		PRINTFORMW 「%SELF_CALL(A)%被偉大的魔王大人打敗了之後…毫無抵抗的被開發了身體的每個角落啦♪」
+		PRINTFORMW 「現在成了除了自慰什麼都不會思考的自慰狂、一直一個人做著『研究』哦♪」
+		PRINTFORMW 「啊啊、大家正在看著%SELF_CALL(A)%的『研究』啊…只是這麼想想就又要絕頂了的樣子啊♪」
+	;淫亂
+	ELSEIF TALENT:A:76 == 1
+		PRINTFORMW 
+	;愛
+	ELSEIF TALENT:A:85
+		PRINTFORMW 
+	;奉仕精神Lv5以上
+	ELSEIF ABL:A:16 >= 5
+		PRINTFORMW 
+	;それ以外
+	ELSE
+		PRINTFORMW 
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;-----------------------------------
+@DUNGEON_VICTORY_K12
+;-----------------------------------
+;戦闘勝利時
+
+;決め臺詞
+PRINTFORMW 「%SELF_CALL(TARGET)%的勝率達到了95％哦」
+	
+IF TALENT:21 == 1 || TALENT:22 == 1
+	
+	;冷漠・感情淡薄なら何か言って終了
+	PRINTFORMW 「這是毋庸置疑的」
+	
+	RETURN 0
+ELSEIF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:30 == 1 || TALENT:34 == 1
+	
+	;反抗心・剛強・高姿態・看重貞操・抵抗なら勝利宣言
+	IF RAND:3 == 0 
+		PRINTFORMW 「你們最好再多動動腦筋呢」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「%SELF_CALL(TARGET)%的計算是完美的」
+	ELSE
+		PRINTFORMW 「不管模擬幾次結果都是一樣的」
+	ENDIF
+	
+ELSEIF TALENT:10 == 1 || TALENT:26 == 1
+	
+	;膽怯・悲觀的なら命からがら的な弱気セリフで終了
+	PRINTFORMW 「應該、沒問題吧、沒問題……」
+	
+	RETURN 0
+ELSE
+	
+	;その他何か適當に性格によって
+	IF RAND:3 == 0 
+		PRINTFORMW 「%SELF_CALL(TARGET)%沒有輸的理由」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「下次模擬一下新戰術試試吧」
+	ELSE
+		PRINTFORMW 「%SELF_CALL(TARGET)%每次戦斗后都會有進步呢」
+	ENDIF
+	
+ENDIF
+
+IF (BASE:A:0 * 100 / MAXBASE:A:0 < 50) || (BASE:A:1 * 100 / MAXBASE:A:1 < 50)
+	;ピンチかも
+	PRINTFORMW 「……然而、這是預料外的攻撃……如果修正計算公式的話」
+ELSE
+	;餘裕餘裕
+	PRINTFORMW 「這種程度的攻撃、完全在預料的範囲內」
+ENDIF
+
+RETURN 0
+
+;-----------------------------------
+@DUNGEON_ATTACK_K12
+;-----------------------------------
+;攻撃時のセリフ
+
+;最初に一言
+IF CFLAG:1 == 2
+	;侵攻中
+	IF TALENT:21 == 1 || TALENT:22 == 1
+		
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「……我要上了」
+		
+		RETURN 0
+	ELSEIF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:30 == 1 || TALENT:34 == 1
+		
+		;反抗心・剛強・高姿態・看重貞操・抵抗なら威勢のいいセリフ
+		IF RAND:3 == 0 
+			PRINTFORMW 「雖然只是計算、這個攻撃應該是無法閃避的！」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「來吧、還要攻撃幾次才會死呢？」
+		ELSE
+			PRINTFORMW 「%SELF_CALL(TARGET)%是絶対不會輸的哦！　証明給你看！」
+		ENDIF
+	
+	ELSEIF TALENT:10 == 1 || TALENT:26 == 1
+		
+		;膽怯・悲觀的なら命からがら的な弱気セリフ
+		PRINTFORMW 「這種程度、也在預料範囲內哦！」
+		
+		RETURN 0
+	ELSE
+		
+		;その他何か適當に性格によって
+		IF RAND:3 == 0 
+			PRINTFORMW 「你的勝率連萬分之一也沒有哦！」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「躲躲看吧！　試著超越%SELF_CALL(TARGET)%的計算吧！」
+		ELSE
+			PRINTFORMW 「%SELF_CALL(TARGET)%是……絶対無法戰勝的！」
+		ENDIF
+		
+	ENDIF
+ELSE
+	;その他・迎撃中
+	IF TALENT:21 == 1 || TALENT:22 == 1
+		
+		;冷漠・感情淡薄なら何か言って終了
+		PRINTFORMW 「……我要上了」
+		
+		RETURN 0
+	ELSEIF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:30 == 1 || TALENT:34 == 1
+		
+		;反抗心・剛強・高姿態・看重貞操・抵抗なら威勢のいいセリフ
+		IF RAND:3 == 0 
+			PRINTFORMW 「要我來幫你算一算失敗的機率嗎？」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「好想教育一下無知的你呢、用這個美妙的世界！」
+		ELSE
+			PRINTFORMW 「你是絶対勝不了的……讓%SELF_CALL(TARGET)%來証明這一點吧！」
+		ENDIF
+		
+	ELSEIF TALENT:10 == 1 || TALENT:26 == 1
+		
+		;膽怯・悲觀的なら命からがら的な弱気セリフ
+		PRINTFORMW 「這種程度、也在預料範囲內哦！」
+		
+		RETURN 0
+	ELSE
+		
+		;その他何か適當に性格によって
+		IF RAND:3 == 0 
+			PRINTFORMW 「魔族的優秀之處……真想從你那學習一下呢」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「%SELF_CALL(TARGET)%的勝率超過9成了呢！」
+		ELSE
+			PRINTFORMW 「計算之中的行動……真無聊呢」
+		ENDIF
+		
+	ENDIF
+ENDIF
+	
+
+
+RETURN 0
+
+;-------------------------------------------------
+;@COLOSSEUM_KOJO関係（12をキャラ番號に置換）
+;死鬥場用口上を獨立させました
+;-------------------------------------------------
+@COLOSSEUM_KOJO_12
+;-------------------------------------------------
+;放置PLAY
+;-------------------------------------------------
+IF SELECTCOM == 55
+	;気力０以下
+	IF BASE:1 <= 0
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;交談
+;-------------------------------------------------
+IF SELECTCOM == 56
+	;気力０以下
+	IF BASE:1 <= 0
+		;助手が調教中の場合
+		IF ASSI > 0 && ASSIPLAY
+			PRINTFORMW 「已經不行了……要完了……」
+		ELSE
+			PRINTFORMW 「已經不行了……要完了……」
+		ENDIF
+	ELSE
+		;助手が調教中の場合
+		IF ASSI > 0 && ASSIPLAY
+			PRINTFORMW 「%SELF_CALL(TARGET)%是絶対……不會認輸的！」
+		ELSE
+			PRINTFORMW 「%SELF_CALL(TARGET)%是絶対……不會認輸的！」
+		ENDIF
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;口交
+;-------------------------------------------------
+IF SELECTCOM == 31
+	;助手が調教中の場合
+	IF ASSI > 0 && ASSIPLAY
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;胸愛撫
+;-------------------------------------------------
+IF SELECTCOM == 5
+	;助手が調教中の場合
+	IF ASSI > 0 && ASSIPLAY
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;背後位
+;-------------------------------------------------
+IF SELECTCOM == 21
+	;助手が調教中の場合
+	IF ASSI > 0 && ASSIPLAY
+		PRINTFORMW 
+	;巨魔
+	ELSEIF TFLAG:400 == 206
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;背後位アナル
+;-------------------------------------------------
+IF SELECTCOM == 27
+	;助手が調教中の場合
+	IF ASSI > 0 && ASSIPLAY
+		PRINTFORMW 
+	;巨魔
+	ELSEIF TFLAG:400 == 206
+		PRINTFORMW 
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;媚藥史萊姆（しあわせ草）
+;-------------------------------------------------
+IF SELECTCOM == 51
+	PRINTFORMW 
+	RETURN 0
+ENDIF
+
+
+RETURN 0
+
+
+;-----------------------------------
+@NTR_KOUJO_K12
+;プレイ內容はNTR.ERBを參照してください。
+;-----------------------------------
+;NTRフラグ
+SIF CFLAG:650 == 0
+	CFLAG:650 = 1
+
+;處女喪失
+IF P == 1
+	;陥落済
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「看到了嗎？　魔王大人……%SELF_CALL(TARGET)%、把處女獻出去了哦」
+	ELSE
+		PRINTFORMW 「好開心……%SELF_CALL(TARGET)%、把處女獻出去了」
+	ENDIF
+	CFLAG:651 = 1
+;處女アナルプレイ
+ELSEIF P == 2
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「看到了嗎？　魔王大人……%SELF_CALL(TARGET)%的肛門、因為狂王大人……而覚醒了哦」
+	ELSE
+		PRINTFORMW 「好開心……%SELF_CALL(TARGET)%的身體是狂王大人的東西了……」
+	ENDIF
+	CFLAG:652 = 1
+;獸姦ショー
+ELSEIF P == 3
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「魔王大人看到了嗎？　%SELF_CALL(TARGET)%、變成狂王大人的家畜了哦……」
+	ELSE
+		PRINTFORMW 「%SELF_CALL(TARGET)%是狂王大人的……家畜哦……」
+	ENDIF
+	CFLAG:653 = 1
+;Vプレイ
+ELSEIF P == 4
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「魔王大人快看吧、%SELF_CALL(TARGET)%被狂王大人授精的地方……」
+	ELSE
+		PRINTFORMW 「%SELF_CALL(TARGET)%、要懷上……狂王大人的孩子了！」
+	ENDIF
+	CFLAG:654 = 1
+;VA亂交プレイ
+ELSEIF P == 5
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「好厲害啊、狂王大人、好厲害啊！」
+	ELSE
+		PRINTFORMW 「好厲害啊、狂王大人、好厲害啊！」
+	ENDIF
+	CFLAG:655 = 1
+;公衆便女
+ELSEIF P == 6
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「好厲害啊、狂王大人、好厲害啊！」
+	ELSE
+		PRINTFORMW 「好厲害啊、狂王大人、好厲害啊！」
+	ENDIF
+	CFLAG:656 = 1
+;狂王性慾処理
+ELSEIF P == 7
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「讓我全心全意的奉仕您吧……」
+	ELSE
+		PRINTFORMW 「讓我全心全意的奉仕您吧……」
+	ENDIF
+	CFLAG:657 = 1
+;NTR公開出産
+ELSEIF P == 20
+	IF TALENT:76 || TALENT:85
+		PRINTFORMW 「魔王大人快看吧！　%SELF_CALL(TARGET)%生出狂王大人孩子的地方……」
+	ELSE
+		PRINTFORMW 「能生下狂王大人的孩子真是榮幸呢……」
+	ENDIF
+
+ENDIF
+
+RETURN 0
+
+;-----------------------------------
+@EXUCUTION_KOUJO_K12
+;処刑內容はEXUCUTION.ERBを參照してください。
+;-----------------------------------
+;肉便器刑
+IF TFLAG:16 == 4
+	PRINTFORMW 「不要啊、%SELF_CALL(TARGET)%、要變成白癡了……」
+;戦闘員化
+ELSEIF TFLAG:16 == 5
+	PRINTFORMW 「嗯……知道了」
+;曬し臺刑
+ELSEIF TFLAG:16 == 6
+	PRINTFORMW 「這樣子、好討厭！」
+;記憶を消して解放する
+ELSEIF TFLAG:16 == 7
+	PRINTFORMW 
+ENDIF
+
+;-----------------------------------
+@MUSEUM_KOUJO_K12
+;內容はMUSEUM.ERBを參照してください。
+;-----------------------------------
+;石化
+IF TFLAG:500 == 0
+	PRINTFORMW 「不要啊、變成石頭什麼的……」
+;剝製化
+ELSEIF TFLAG:500 == 1
+	PRINTFORMW 「救命！」
+;蝋人形化
+ELSEIF TFLAG:500 == 2
+	PRINTFORMW 「咕、咕欸欸……」
+;人形化(マネキン)
+ELSEIF TFLAG:500 == 3
+	PRINTFORMW 「真是被要求擺出了恥辱的姿勢呢…這樣就行了吧？」
+;人形化(球體間接)
+ELSEIF TFLAG:500 == 4
+	PRINTFORMW 「身、身體、結構被改變……的感覺、什麼的…真是稀奇的…體…驗」
+;金屬化
+ELSEIF TFLAG:500 == 5
+	PRINTFORMW 
+;氷像化
+ELSEIF TFLAG:500 == 6
+	PRINTFORMW 
+;寶石化
+ELSEIF TFLAG:500 == 7
+	PRINTFORMW 
+;傢俱化
+ELSEIF TFLAG:500 == 8
+	PRINTFORMW 
+;絵畫封印
+ELSEIF TFLAG:500 == 9
+	PRINTFORMW 
+ENDIF
+
+;-----------------------------------
+@BANISHMENT_KOUJO_K12
+;処刑內容はBANISHMENT.ERBを參照してください。
+;-----------------------------------
+;追放
+IF TFLAG:510 == 0
+	PRINTFORMW 「%SELF_CALL(TARGET)%的研究、就到此為止了嗎……」
+;男體化
+ELSEIF TFLAG:510 == 1
+	PRINTFORMW 
+;記憶消去
+ELSEIF TFLAG:510 == 2
+	PRINTFORMW 
+;小動物化
+ELSEIF TFLAG:510 == 3
+	PRINTFORMW 
+;元の生活に戻す
+ELSEIF TFLAG:510 == 4
+	PRINTFORMW 
+ENDIF
+
+;-----------------------------------
+@PUBLIC_EXUCUTION_KOUJO_K12
+;処刑內容はPUBLIC_EXUCUTION.ERBを參照してください。
+;-----------------------------------
+;陵辱処刑
+IF TFLAG:520 == 0
+	PRINTFORMW 「咿呀啊～！　救命啊～！」
+;絞首刑
+ELSEIF TFLAG:520 == 1
+	PRINTFORMW 「我不想死……誰來救救我……」
+;魂粉砕
+ELSEIF TFLAG:520 == 2
+	PRINTFORMW 
+ENDIF
+
+;-----------------------------------
+@GROTESQUE_KOUJO_K12
+;內容はGROTESQUE.ERBを參照してください。
+;-----------------------------------
+;四肢切斷刑
+IF TFLAG:530 == 0
+	PRINTFORMW 
+;內臓陵辱刑
+ELSEIF TFLAG:530 == 1
+	PRINTFORMW 
+;ギロチン刑
+ELSEIF TFLAG:530 == 2
+	PRINTFORMW 
+;火あぶりの刑
+ELSEIF TFLAG:530 == 3
+	PRINTFORMW 
+;食肉刑
+ELSEIF TFLAG:530 == 4
+	PRINTFORMW 
+;死霊化
+ELSEIF TFLAG:530 == 5
+	PRINTFORMW 
+;ゾンビ化
+ELSEIF TFLAG:530 == 6
+	PRINTFORMW 
+ENDIF
+
+;-----------------------------------
+@ENTERENEMY_KOUJO_K12
+;-----------------------------------
+;ダンジョン攻略開始時
+IF TALENT:A:21 == 1 || TALENT:A:22 == 1
+	;冷漠・感情淡薄なら何か言って終了
+	PRINTFORMW 「%SELF_CALL(A)%的計算是不會錯的」
+ELSEIF TALENT:A:11 == 1 || TALENT:A:12 == 1 || TALENT:A:15 == 1 || TALENT:A:30 == 1 || TALENT:A:34 == 1
+	;反抗心・剛強・高姿態・看重貞操・抵抗
+	PRINTFORMW 「%SELF_CALL(A)%的計算如果無誤的話、魔王的失敗已經確定下來了！」
+ELSEIF TALENT:A:10 == 1 || TALENT:A:26 == 1
+	;膽怯・悲觀的
+	PRINTFORMW 「如果能再稍微多做點研究就好了……」
+ELSE
+	;その他何か適當に性格によって
+	PRINTFORMW 「%SELF_CALL(A)%的勝率有98％哦」
+ENDIF
+
+;-----------------------------------
+@GOHOUBI_REQUEST_KOUJO_K12
+;-----------------------------------
+;迎撃時のご褒美要求
+IF CFLAG:A:504 == 0
+	;お金
+	PRINTFORMW %SAVESTR:A%想要錢的樣子
+	PRINTFORMW 「請給我研究資金！」
+ELSEIF CFLAG:A:504 == 1 || CFLAG:A:504 == 2 || CFLAG:A:504 == 3
+	;獸姦要求
+	PRINTFORM %SAVESTR:A%提出了與
+	IF CFLAG:A:504 == 1
+		PRINT 狗
+	ELSEIF CFLAG:A:504 == 2
+		PRINT 豬
+	ELSEIF CFLAG:A:504 == 3
+		PRINT 馬
+	ENDIF
+	PRINTFORMW 交尾的要求
+	PRINTFORMW 「想要繼續進行異種交配実験」
+ELSEIF CFLAG:A:504 == 4
+	;キス
+	PRINTFORMW %SAVESTR:A%想要歸來的吻
+	PRINTFORMW 「你的吻對研究很有幫助」
+ELSEIF CFLAG:A:504 == 5
+	;セックス
+	PRINTFORMW %SAVESTR:A%想要和你做愛
+	PRINTFORMW 「想要你的精液呢」
+ELSEIF CFLAG:A:504 == 6
+	;ザーメン
+	PRINTFORMW %SAVESTR:A%想要精液
+	PRINTFORMW 「一喝下你的精液、頭腦就格外清晰呢」
+ELSEIF CFLAG:A:504 == 7
+	;亂交
+	PRINTFORMW %SAVESTR:A%想要開亂交派對
+	PRINTFORMW 「偶爾也想開開派對試試呢」
+ELSEIF CFLAG:A:504 == 8
+	;小水
+	PRINTFORMW %SAVESTR:A%想要你的尿液作為報酬
+	PRINTFORMW 「只要是你的東西不管是什麼我都會很開心呢」
+ELSEIF CFLAG:A:504 == 9
+	;童貞狩り
+	PRINTFORMW %SAVESTR:A%想要處男作為報酬
+	PRINTFORMW 「對不懂性知識的傢伙進行教育是%SELF_CALL(A)%的義務呢」
+ENDIF
+
+;-----------------------------------
+@GOHOUBI_AFTER_KOUJO_K12
+;-----------------------------------
+;迎撃成功時
+;DUNGEON_AFTER.ERBを參照
+
+;放置PLAY
+IF TFLAG:18 == 0
+	PRINTFORMW 「誒誒、怎麼能這樣」
+	RETURN 0
+;勲章授與
+ELSEIF TFLAG:18 == 1
+	PRINTFORMW 「太棒了～！　下次%SELF_CALL(A)%也得拿出什麼研究成果呢！」
+	RETURN 0
+ELSEIF TFLAG:18 == 2
+	;お金を渡す
+	IF CFLAG:A:504 == 0
+		PRINTFORMW 「太棒了～！　這樣一來研究就能更進一步了」
+	;犬と獸姦
+	ELSEIF CFLAG:A:504 == 1
+		;處女
+		IF TALENT:A:0 == 1
+			PRINTFORMW 「把處女獻給狗什麼的、不錯的紀念日呢」
+		ELSE
+			PRINTFORMW 「太棒了～！　研究研究♪」
+		ENDIF
+	;豚と獸姦
+	ELSEIF CFLAG:A:504 == 2
+		;處女
+		IF TALENT:A:0 == 1
+			PRINTFORMW 「把處女獻給豬什麼的、不錯的紀念日呢」
+		ELSE
+			PRINTFORMW 「太棒了～！　早就想研究豬的生殖行為試試了♪」
+		ENDIF
+	;馬と獸姦
+	ELSEIF CFLAG:A:504 == 3
+		;處女
+		IF TALENT:A:0 == 1
+			PRINTFORMW 「把處女獻給馬什麼的、不錯的紀念日呢」
+		ELSE
+			PRINTFORMW 「太棒了～！　與馬做愛陰道能不能承受住、就讓我自己試試吧」
+		ENDIF
+	;キス
+	ELSEIF CFLAG:A:504 == 4
+		PRINTFORMW 「親臉蛋也行哦、啾的一下」
+	;セックス
+	ELSEIF CFLAG:A:504 == 5
+		;膣と陰莖
+		IF ABL:A:2 > ABL:A:3
+			PRINTFORMW 「絶対要受精哦！　好期待呢！」
+		;アナルと陰莖
+		ELSE
+			PRINTFORMW 「無論何時都想受精呢……這次也拜託了」
+		ENDIF
+	;ザーメン
+	ELSEIF CFLAG:A:504 == 6
+		PRINTFORMW 「這可以用來美容呢、在研究中。謝謝」
+	;亂交
+	ELSEIF CFLAG:A:504 == 7
+		;處女
+		IF TALENT:A:0 == 1
+			PRINTFORMW 「偶爾把研究忘掉、來做愛吧～！」
+		ELSE
+			PRINTFORMW 「偶爾把研究忘掉、來做愛吧～！」
+		ENDIF
+	;おしっこ
+	ELSEIF CFLAG:A:504 == 8
+		PRINTFORMW 「飲尿療法究竟效果如何、下次就研究看看吧」
+	;童貞狩り
+	ELSEIF CFLAG:A:504 == 9
+		;膣
+		IF ABL:A:2 > ABL:A:3
+			PRINTFORMW 「你、覺得怎樣？　這可是女人的陰部哦」
+		;アナル
+		ELSE
+			PRINTFORMW 「你、覺得怎樣？　這可是女人的肛門哦」
+		ENDIF
+	ELSE
+	ENDIF
+ENDIF
+;------------------------------
+@OSIOKI_KOUJO_K12
+;-----------------------------
+;迎撃失敗時のおしおき
+;DUNGEON_AFTER.ERBを參照
+
+;放置PLAY
+IF TFLAG:18 == 0
+	PRINTFORMW 「請你、不要嚇我……」
+;弱電気椅子刑
+ELSEIF TFLAG:18 == 1
+	;受虐狂っ気Lv3以上
+	IF ABL:A:21 >= 3
+		PRINTFORMW 「痛覚轉換成了快感……好有効啊啊啊啊♪」
+	ELSE
+		PRINTFORMW 「呀啊啊啊啊啊！」
+	ENDIF
+;路上自慰刑
+ELSEIF TFLAG:18 == 2
+	;露出癖Lv4以上
+	IF ABL:A:17 >= 4
+		PRINTFORMW 「沒有一點知性的母豬般的自慰……好好看著吧♪」
+	ELSE
+		PRINTFORMW 「嗚嗚～、這樣沒有一點知性的行為……」
+	ENDIF
+;路上脫糞刑
+ELSEIF TFLAG:18 == 3
+	;露出癖Lv6以上
+	IF ABL:A:17 >= 6
+		PRINTFORMW 「在路上排泄、%SELF_CALL(A)%、可真是個笨蛋啊～♪」
+	ELSE
+		PRINTFORMW 「嗚嗚～、這樣沒有一點知性的行為……」
+	ENDIF
+;鞭打ち刑
+ELSEIF TFLAG:18 == 4
+	;受虐狂っ気Lv3以上
+	IF ABL:A:21 >= 3
+		PRINTFORMW 「再更多的、更多的用力鞭笞我吧♪　啊嗚～♪」
+	ELSE
+		PRINTFORMW 「唔……天才、必須在痛苦中學習～」
+	ENDIF 
+;人間小便器刑
+ELSEIF TFLAG:18 == 5
+	;受虐狂or淫亂
+	IF TALENT:A:88 == 1 || TALENT:A:76 == 1
+		PRINTFORMW 「啊啊啊、這樣尿出來、要變成白癡了♪　%SELF_CALL(A)%、要變成白癡了啊♪」
+	ELSE
+		PRINTFORMW 「太不衛生了……%SELF_CALL(A)%好失敗呢」
+	ENDIF
+;トイレ掃除刑
+ELSEIF TFLAG:18 == 6
+	PRINT 「唉、掃廁所嗎……」
+;ご飯抜き刑
+ELSEIF TFLAG:18 == 7
+	PRINT 「明明對研究來說體力是必要的……」
+;媚藥放置刑
+ELSEIF TFLAG:18 == 8
+	PRINTFORMW 「薬物的影響……也當成一種研究的話……」
+;未定
+ELSEIF TFLAG:18 == 9
+	PRINTFORMW 
+ENDIF
+
+;------------------------------
+@GOBI_KOUJO_K12, ARG:0
+;-----------------------------
+
+IF ARG:0 == 1
+	;喜んで誇らしげに
+	PRINTFORM 的喲♪
+ELSEIF ARG:0 == 2
+	;怒って
+	PRINTFORM 的呢！
+ELSEIF ARG:0 == 3
+	;悲しんで
+	PRINTFORM 的喲……。
+ELSEIF ARG:0 == 4
+	;恥ずかしそうに
+	PRINTFORM 的樣子……呢。
+ELSEIF ARG:0 == 5
+	;情けなさそうに
+	PRINTFORM 的喲……。
+ELSE
+	;デフォルト
+	;ARG:0==0を含む
+	IF RAND:3 == 0
+		PRINTFORM 的喲。
+	ELSEIF RAND:2 == 0
+		PRINTFORM 的樣子哦。
+	ELSE
+		PRINTFORM 什麼的。
+	ENDIF
+ENDIF
+
+
+

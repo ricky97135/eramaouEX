@@ -1,0 +1,127 @@
+﻿;--------------------------------------------
+@NAEDOKO, ARG:0
+;--------------------------------------------
+;怪物を産む機械にする
+
+;苗床職についてると苗床領域へ
+SIF TALENT:(ARG:0):209 == 1
+	CFLAG:(ARG:0):1 = 7
+
+;苗床領域にいないと返腳
+SIF CFLAG:(ARG:0):1 != 7
+	RETURN 0
+
+;男の場合別の仕事
+IF TALENT:(ARG:0):男人
+	CALL NAEDOKO_MAN, ARG:0
+	RETURN 0
+ENDIF
+
+
+IF TALENT:(ARG:0):273
+	;貞操封印
+	CALL NAEDOKO_NOT_V, ARG:0
+	RETURN 0
+ELSEIF CFLAG:(ARG:0):42 == 79 && (CFLAG:(ARG:0):40 & 64) && FLAG:37
+	;貞操帯
+	CALL NAEDOKO_NOT_V, ARG:0
+	RETURN 0
+ENDIF
+
+
+DRAWLINE
+PRINTFORMW %SAVESTR:(ARG:0)%的肉壁，被帶孔的觸手填滿了
+PRINTFORMW 觸手不斷地把養分、媚藥及精液灌溉進去
+
+IF TALENT:(ARG:0):0 == 1
+	TALENT:(ARG:0):0 = 0
+	PRINTL 【處女喪失】
+	SIF CFLAG:(ARG:0):15 == 0
+		CFLAG:(ARG:0):15 = 102
+ENDIF
+
+LOCAL = CFLAG:0:9
+PRINTFORML 私處點數+{LOCAL*10}
+PRINTFORML 私處經驗+{LOCAL}
+JUEL:(ARG:0):1 += LOCAL*10
+EXP:(ARG:0):0 += LOCAL
+PRINTFORML 肛門點數+{LOCAL*10}
+PRINTFORML 肛門經驗+{LOCAL}
+JUEL:(ARG:0):2 += LOCAL*10
+EXP:(ARG:0):1 += LOCAL
+PRINTFORML 精液經驗+{LOCAL}
+PRINTFORML 絕頂經驗+{LOCAL}
+EXP:(ARG:0):20 += LOCAL
+EXP:(ARG:0):2 += LOCAL
+PRINTFORMW 經驗值+{LOCAL}
+EXP:(ARG:0):80 += LOCAL
+DRAWLINE
+
+TARGET = ARG:0
+CFLAG:(ARG:0):107 += RAND:40
+CALL IN_VAGINA_SYOKU_TO_T
+CALL CONCEPTION_CHECK_SYOKU_TO_T
+
+RETURN 0
+
+;--------------------------------------------
+@NAEDOKO_MAN, ARG:0
+;--------------------------------------------
+;種馬にする
+;男だって苗床にしたい！というときは
+;A感覚で分岐するとか改造できるかもしれない（任せた）
+;ARG:0 = キャラ
+
+DRAWLINE
+PRINTFORMW %SAVESTR:(ARG:0)%被成群的夢魔包圍，榨取著精液。
+PRINTFORMW 夢魔們面帶調笑，排著隊翹起屁股，
+PRINTFORMW 直到讓全員懷孕為止，使用精力增強的魔法讓他一直勃起著。
+
+IF TALENT:(ARG:0):童貞 == 1
+	TALENT:(ARG:0):童貞 = 0
+	PRINTL 【童貞喪失】
+ENDIF
+
+LOCAL = CFLAG:0:9
+PRINTFORML 陰核點數+{LOCAL*10}
+JUEL:(ARG:0):0 += LOCAL*10
+
+PRINTFORML 射精經驗+{LOCAL}
+EXP:(ARG:0):3 += LOCAL
+
+PRINTFORML 絕頂經驗+{LOCAL}
+EXP:(ARG:0):2 += LOCAL
+PRINTFORMW 經驗值+{LOCAL}
+EXP:(ARG:0):80 += LOCAL
+DRAWLINE
+
+
+RETURN 0
+
+;--------------------------------------------
+@NAEDOKO_NOT_V, ARG:0
+;--------------------------------------------
+;性器が使えない場合
+;A経験と経験値に特化
+;ARG:0 = キャラ
+
+DRAWLINE
+PRINTFORMW %SAVESTR:(ARG:0)%被魔獸在菊穴內產了卵。
+PRINTFORMW 卵在腸內茁壯成長，伴隨著激烈的快感被排出來了…………
+
+LOCAL = CFLAG:0:9
+PRINTFORML 肛門點數+{LOCAL*10}
+JUEL:(ARG:0):2 += LOCAL*10
+
+PRINTFORML  %EXPNAME:1%+{LOCAL}
+EXP:(ARG:0):1 += LOCAL
+
+PRINTFORML 絕頂經驗+1
+EXP:(ARG:0):2 += 1
+PRINTFORMW 經驗值+{LOCAL * 5}
+EXP:(ARG:0):80 += LOCAL * 5
+DRAWLINE
+
+
+RETURN 0
+

@@ -1,0 +1,108 @@
+﻿@DATA_FIX
+FOR A,0,CHARANUM
+;為魔王新增一個高貴標識
+;--------------170205------------------
+SIF A == MASTER
+	EX_TALENT:A:200 = 1
+;臨時來歷修復補丁 2016/12/12
+;--------------161212------------------
+IF TALENT:A:315 > 999
+	TALENT:A:315 %= 1000
+	TALENT:A:315 += 90
+ENDIF
+;--------------161212------------------
+;臨時理由修復補丁 2016/12/12
+;--------------161212------------------
+IF TALENT:A:316 > 999
+	TALENT:A:316 %= 1000
+	TALENT:A:316 += 90
+ENDIF
+;--------------161213------------------
+;060EX存檔菲婭修正補丁 2016/12/13
+;070EX菲婭淫亂線劇情節點錯誤補丁 2017/01/19
+;--------------161213------------------
+IF NO:A == 35
+	TALENT:A:174 = 0
+	TALENT:A:179 = 1
+ENDIF
+SIF FLAG:2807 == 1400
+	FLAG:2807 = 140
+;--------------170205------------------	
+;正太魔王被榨乾之後的修正 2017/02/05
+;--------------170205------------------	
+;最大體力は600まで下がる（それ以下にはならない）
+SIF MAXBASE:A:0 < 600
+	MAXBASE:A:0 = 600
+;最大気力は100まで下がる（それ以下にはならない）
+SIF MAXBASE:A:1 < 100
+	MAXBASE:A:1 = 100
+;--------------161212------------------
+NEXT
+;--------------161212------------------
+;060EX存檔聲望初始化補丁 2016/12/13
+SIF FLAG:99 <= 0 && EX_FLAG:99 <= 0
+	EX_FLAG:99 = 70
+;===============2017===================
+;---------------0130-------------------
+;-------------素質轉移-----------------
+;轉移所有EX口上素質
+FOR A,0,CHARANUM
+	IF NO:A == 31
+		TALENT:A:175 = 0
+		EX_TALENT:A:101 = 1
+	ENDIF
+	IF NO:A == 32
+		TALENT:A:176 = 0
+		EX_TALENT:A:102 = 1
+	ENDIF
+	IF NO:A == 33
+		TALENT:A:177 = 0
+		EX_TALENT:A:103 = 1
+	ENDIF
+	IF NO:A == 35
+		TALENT:A:179 = 0
+		EX_TALENT:A:104 = 1
+	ENDIF
+NEXT
+;轉移所有EX技能
+FOR A,0,CHARANUM
+	IF TALENT:A:265
+		TALENT:A:265 = 0
+		EX_TALENT:A:801 = 1
+	ENDIF
+	FOR COUNT,266,270
+		IF TALENT:A:COUNT
+			TALENT:A:COUNT = 0
+			LOCAL = COUNT - 265 + 900
+			EX_TALENT:A:LOCAL = 1
+		ENDIF
+	NEXT
+NEXT
+;轉移近衛和後代素質
+FOR A,0,CHARANUM
+	FOR COUNT, 221, 223
+		IF TALENT:A:COUNT
+			TALENT:A:COUNT = 0
+			LOCAL = COUNT - 220
+			EX_TALENT:A:LOCAL = 1
+		ENDIF
+	NEXT
+NEXT
+;-------------CFLAG轉移-----------------
+FOR A,0,CHARANUM
+		IF CFLAG:A:800
+			EX_CFLAG:A:99 = CFLAG:A:800
+			CFLAG:A:800 = 0
+		ENDIF
+NEXT
+;--------------FLAG轉移-----------------
+
+IF EX_FLAG:99 <= 0 && FLAG:99 > 0
+	EX_FLAG:99 = FLAG:99
+	FLAG:99 = 0
+ENDIF
+FOR COUNT,1000, 10000
+	SIF EX_FLAG:COUNT == 0
+		EX_FLAG:COUNT = FLAG:COUNT
+	FLAG:COUNT = 0
+NEXT

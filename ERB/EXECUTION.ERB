@@ -1,0 +1,448 @@
+﻿;------------------------------------------
+@EXECUTION
+#DIM LV
+#DIM LAST_MEMBER
+#DIM NO_CHECK
+#DIM FAMILY,3
+;ZはTARGETを儲存してるため使用禁止
+;------------------------------------------
+;処刑コマンド
+;LAST_MEMBER = 殘り処刑待ち人數
+;NO_CHECK    = お気に入りされてない処刑待ち
+
+;FLAG:83  肉便器の數
+
+$EXCUTION_MAIN
+
+CUSTOMDRAWLINE =
+PRINT 請選擇處刑對像
+IF FLAG:84 < 20 && DAY < 60
+	PRINTFORML <{60 - DAY}天以內再展出{20 - FLAG:84}名勇者到博物館將解鎖實績！>
+ELSE
+	PRINTL
+ENDIF
+
+DRAWLINE
+
+LAST_MEMBER = 0
+NO_CHECK = 0
+
+REPEAT CHARANUM
+	IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && COUNT != 0 && (!EX_TALENT:COUNT:1 || (EX_TALENT:COUNT:2 && GETBIT(EX_FLAG:9000,1)))
+		PRINTFORM [{LAST_MEMBER,2}] %SAVESTR:COUNT,12,LEFT% %GET_JOB_NAME(COUNT),6,LEFT% LV{CFLAG:COUNT:9,3,RIGHT} 
+		LAST_MEMBER += 1
+		IF CFLAG:COUNT:700
+			PRINT [☆]
+		ELSE
+			NO_CHECK += 1
+		ENDIF
+		SIF CFLAG:COUNT:0 > 0 && COUNT != 0
+			PRINT [可賣掉] 
+		PRINTL 
+	ENDIF
+REND
+
+
+SIF LAST_MEMBER == 0
+	RETURN 0
+
+DRAWLINE
+PRINTL [100] 返回
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= LAST_MEMBER && RESULT != 100
+	GOTO INPUT_LOOP
+ENDIF
+
+SIF RESULT == 100
+	RETURN 0
+
+X = RESULT
+A = 0
+REPEAT CHARANUM
+	IF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && COUNT != 0 && (!EX_TALENT:COUNT:1 || (EX_TALENT:COUNT:2 && GETBIT(EX_FLAG:9000,1))) && A == X
+		A = COUNT
+		BREAK
+	ENDIF
+	SIF (CFLAG:COUNT:1 == 0 || CFLAG:COUNT:1 == 7) && COUNT != 0 && (!EX_TALENT:COUNT:1 || (EX_TALENT:COUNT:2 && GETBIT(EX_FLAG:9000,1)))
+		A += 1
+REND
+
+$INPUT_LOOP_1
+SIF CFLAG:A:700
+	SETCOLOR (GETDEFCOLOR() - 0x444444)
+
+PRINTL [0] 流放出地下城
+PRINTL [1] 公開處刑
+PRINTL [2] 博物館展品
+PRINTL [3] 施行獵奇向處刑
+PRINTL [4] 做成肉便器
+SIF CFLAG:A:700
+		RESETCOLOR
+PRINTL [5] 士兵化
+PRINTL [6] 固定示眾
+PRINTL [7] 消除記憶后釋放
+PRINTL  
+PRINT [100] 停止		
+SETCOLOR GETBIT(EX_FLAG:9000,2) ?  0xffffff # 0x646464
+PRINTL [101] 水晶球記錄
+RESETCOLOR
+$INPUT_LOOP_2
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP_2
+ELSEIF RESULT >= 8 && RESULT != 100 && RESULT != 101
+	GOTO INPUT_LOOP_2
+ENDIF
+
+SELECTCASE RESULT
+	CASE 0, 1, 2, 3, 4
+		IF CFLAG:A:700
+			PRINTFORMW %SAVESTR:A%在收藏列表之中，不能被處刑。
+			GOTO INPUT_LOOP_2
+		ENDIF
+	CASE 5
+        IF INRANGE(NO:A,17,40)
+	    PRINTFORMW %SAVESTR:A%擁有【不受洗腦】，無法進行士兵化洗腦。
+		GOTO INPUT_LOOP_2
+		ENDIF
+ENDSELECT
+
+IF RESULT == 100
+	TARGET = FLAG:1
+	RETURN 0
+ELSEIF RESULT == 101
+	INVERTBIT EX_FLAG:9000,2
+	GOTO INPUT_LOOP_1
+ENDIF
+
+TARGET = A
+TFLAG:16 = RESULT
+
+CALL EXUCUTION_KOUJO
+
+
+
+IF TFLAG:16 == 0
+	PRINTFORML %NAME:MASTER%把%SAVESTR:A%從地下城裡永久驅逐了。
+	JUMP BANISHMENT
+
+ELSEIF TFLAG:16 == 1
+	PRINTFORML %NAME:MASTER%把%SAVESTR:A%公開處刑了。
+	JUMP PUBLIC_EXECUTION
+
+ELSEIF TFLAG:16 == 2
+	PRINTFORMW %SAVESTR:A%被帶到了工作室……
+	JUMP MUSEUM
+
+ELSEIF TFLAG:16 == 3
+	PRINTFORML %NAME:MASTER%決定讓%SAVESTR:A%品嚐真正的痛苦…
+	PRINTW 　　　　　　　　　　< ※ 注 意 ！ ※ >
+	PRINTW （之後將發生非常黃暴的事！！）
+	JUMP GROTESQUE
+
+
+ELSEIF TFLAG:16 == 4
+	FLAG:83 += 1
+	IF TALENT:A:220 != 1 && EX_TALENT:A:1 != 1 
+	EX_FLAG:99 += 2
+	PRINTFORML 威望值增加
+	ELSE
+	EX_FLAG:99 -= 10
+	PRINTFORML 威望值減少
+	ENDIF
+	FAMILY = CFLAG:A:605
+	FAMILY:1 = FAMILY % 10
+	CALL SEARCH_FAMILY, A
+	FAMILY:2 = RESULT
+	M = FAMILY:2
+	SIF TALENT:A:85
+		PRINTFORM 深愛著你的%SAVESTR:A%不知道自己為什麼要被做成肉便器，不停地高叫著你的名字，請求饒恕。
+	PRINTFORML 但%SAVESTR:PLAYER%依然給%SAVESTR:A%烙上了封鎖所有力量的封印，
+	PRINTL 被吸收了全部力量的她，身體變成淫靡的肉塊了。
+	PRINTL 作為地下城裡怪物的慰問品被使用著，
+	PRINTW 今後別說重新當勇者，就連看一眼陽光也不可能了吧。
+	;エルフ
+	SIF TALENT:A:原種族 == 1
+		PRINTFORMW 精靈族的%SAVESTR:A%在醜陋的獸人中廣受好評。
+	;精液中毒
+	SIF ABL:A:32 > 0 || TALENT:A:擅用舌頭
+		PRINTFORMW %SAVESTR:A%作為精液便器，每天都心懷歡喜地把精液喝光了。
+	;百合中毒・百合氣質
+	SIF ABL:A:33 > 0 | ABL:A:22 > 2
+		PRINTFORMW 作為女子便器的%SAVESTR:A%獲得了很高的評價。陰部、肛門有污垢也毫不在意，老老實實地把她們舔高潮了。
+	;抖M氣質
+	SIF ABL:A:21 > 0
+		PRINTFORMW 沐浴在罵聲中的%SAVESTR:A%腿間開始濕潤，臉上浮現起恍惚的笑容。
+	;露出癖
+	SIF ABL:A:17 > 0
+		PRINTFORMW %SAVESTR:A%在地下城的大街上展露癡態。不管是不是怪物，對所有路過的客人，均熱情獻媚。
+	;侍奉精神
+	SIF ABL:A:16 > 0
+		PRINTFORMW 完全崩壞了的%SAVESTR:A%連自我都失去了，只有在侍奉肉棒時能感覺到喜悅。
+	;V感覚
+	SIF ABL:A:2 > 3
+		PRINTFORMW 被數之不盡的陰莖抽插，%SAVESTR:A%的私處完全擴張，失去彈性了。最近的對象，全是巨魔和馬這樣有巨根的。
+	;A感覚
+	SIF ABL:A:3 > 3
+		PRINTFORMW 已經算不上是性器官，%SAVESTR:A%的肛門，被極限擴張，關都關不上了。可是哪怕這樣，只要有肉棒在直腸射精，她還是興奮得快瘋了似得。
+	;愛慕
+	SIF TALENT:A:85
+		PRINTFORMW %SAVESTR:A%把所有的陰莖都幻想成深愛的你的陰莖的模樣。
+	;V敏感・淫壺
+	SIF TALENT:A:104 || TALENT:A:232
+		PRINTFORMW %SAVESTR:A%對被什麼東西插入並不在意，用卑微的話語哀求著打種。
+	;A敏感・淫肛
+	SIF TALENT:A:106 || TALENT:A:233
+		PRINTFORMW %SAVESTR:A%的肛門特別有感覺，惡魔們特意把她的肛門改造成能懷孕的樣子。
+	;C敏感・淫核
+	SIF TALENT:A:102 || TALENT:A:230
+		PRINTFORMW %SAVESTR:A%的陰蒂又大又腫，一鞭子下去，她就愛液四射，口水橫流地絕頂了。
+	;B敏感・淫乳
+	SIF TALENT:A:108 || TALENT:A:231
+		PRINTFORMW %SAVESTR:A%的乳頭被惡魔們改造過，現在可以插入乳頭裡性交了。
+	;魔術・咒術
+	SIF TALENT:A:241 || TALENT:A:250
+		PRINTFORMW 有魔力的%SAVESTR:A%，頭部完全被頭罩包裹，強制地被削弱了魔力。
+	;法術
+	SIF TALENT:A:242
+		PRINTFORMW 有神聖之力的%SAVESTR:A%，被惡魔們強制肛交了無數次，完全墮落為惡魔的力量了。
+	
+	;扶她＆二人以上の肉便器
+	IF TALENT:A:121 && FLAG:83 >= 2
+		IF TALENT:A:318 == 1
+			;巨根
+			PRINTFORML 扶她巨根的%SAVESTR:A%被改造成更大的陰莖，
+			PRINTFORMW 奉命去侵犯其它的肉便器了。
+		ELSEIF TALENT:A:318 == 2
+			;短小包莖
+			PRINTFORML 扶她短小包莖的%SAVESTR:A%爲了發泄性慾壓在其它肉便器身上。
+			PRINTFORMW 但即使激烈地擺動腰身，也無法令對方滿足。
+		ELSEIF TALENT:A:318 == 3
+			;包莖
+			PRINTFORML 扶她包莖的%SAVESTR:A%哪怕洗澡，也不剝開包皮清洗裡面的污垢。
+			PRINTFORMW 而是讓其它肉便器用口服侍清潔。
+		ELSE
+			;普通
+			PRINTFORML 扶她的%SAVESTR:A%積極地侵犯著其它肉便器，
+			PRINTFORMW 巨大的陰囊生產了大量的精液，射到周圍都是。
+		ENDIF
+	ENDIF
+	
+	;魅力點・美乳
+	SIF TALENT:A:312 == 12
+		PRINTFORMW 作為魅力點的美乳，現在變成一堆醜陋膨脹的肉塊了。
+	;魅力點・ヒップライン
+	SIF TALENT:A:312 == 14
+		PRINTFORMW 作為魅力點的臀部曲線，現在變成一團下流膨脹的肉塊了。
+	;魅力點・性器
+	SIF TALENT:A:312 == 21
+		PRINTFORMW 作為魅力點的性器，現在正變成奇怪的肉塊。
+	;魅力點・髪の光沢
+	SIF TALENT:A:312 == 22
+		PRINTFORMW 作為魅力點的光澤的頭髮，現在完全褪色了。
+	;魅力點・大きな尻
+	SIF TALENT:A:312 == 23
+		PRINTFORMW 作為魅力點的大屁股，現在變成了充滿下流氣息的成熟桃子。
+	
+	;故郷の戀人・憧れの人が好き
+	SIF TALENT:A:317 == 4 || TALENT:317 == 11
+		PRINTFORMW %SAVESTR:A%雙眼空虛，在重複著誰的名字。也許正在妄想和愛人擁抱吧。
+	PRINTFORMW 現在的肉便器數量：{FLAG:83}
+
+	SIF FAMILY:2 >= 0
+		CSTR:(FAMILY:2):5 = 肉便器%SAVESTR:A%
+	TSTR:30 = 肉便器%SAVESTR:A%
+	CALL VIDEO_MATURO
+	
+ELSEIF TFLAG:16 == 5
+
+	TALENT:A:254 = 1
+	PRINTFORML 在%SAVESTR:A%的身體上刻上了服從的刻印，
+	PRINTW 只殘留一點點的意識和記憶，
+	PRINTW 命令其現在就去把勇者殺光。
+	CFLAG:A:13 /= 2
+	CFLAG:A:14 /= 2
+	PRINTW *法術的副作用導致其戰鬥力下降了*
+	CSTR:30 = 魔王傀儡%SAVESTR:A%
+	TSTR:30 = 魔王傀儡%SAVESTR:A%
+	CALL VIDEO_MATURO2
+	GOTO LABEL_EXIT
+
+ELSEIF TFLAG:16 == 6
+	CFLAG:A:1 = 8
+	PRINTFORML 把%SAVESTR:A%的屁股抬高，扣在固定的枷鎖上，
+	PRINTW 任由怪物們發泄性慾，
+	IF TALENT:A:9 == 1
+		PRINTW 被玩壞了的奴隸，什麼都意識不到，在癡笑著。
+	ELSEIF  TALENT:A:76 == 1
+		PRINTW 淫亂的奴隸，不如說，正在享受現在的樣子。
+	ELSE
+		PRINTW 悲哀的奴隸，對今後將發生的制裁害怕極了。
+	ENDIF
+	CSTR:30 = 魔族公廁%SAVESTR:A%
+	TSTR:30 = 魔族公廁%SAVESTR:A%
+	CALL VIDEO_MATURO2
+	GOTO LABEL_EXIT
+	
+ELSEIF TFLAG:16 == 7
+	
+	PRINTFORMW %SAVESTR:A%被清除了關於地下城的所有記憶，被丟到地下城外了。
+	PRINTFORMW %SAVESTR:A%再次開始了冒險……
+	
+	;侵入階層・侵攻度・侵攻中・再起點設定
+	CFLAG:A:501 = 1
+	CFLAG:A:502 = 0
+	CFLAG:A:1 = 2
+	CFLAG:A:508 = 3
+	;善惡值がいくらか回復
+	SIF CFLAG:A:151 < -50
+		CFLAG:A:151 = -50
+	;好感度も低く
+	CFLAG:A:2 = 20
+	
+	GOTO LABEL_EXIT
+ENDIF
+
+
+A = TARGET
+
+;武器解除
+W:0 = CFLAG:A:550
+CALL EQUIP_GET
+CFLAG:A:550 = -1
+;指輪解除
+W:0 = CFLAG:A:551
+CALL EQUIP_GET
+CFLAG:A:551 = -1
+;指輪解除
+W:0 = CFLAG:A:552
+CALL EQUIP_GET
+CFLAG:A:552 = -1
+
+LV = CFLAG:A:9
+
+X = NO:A + 199
+FLAG:X = 1
+
+;前回の助手・調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手・調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, A
+
+DELCHARA A
+
+CALL NAME_RESET
+
+
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+PRINTFORMW 《封印吸收了力量，使你獲得了{LV}的經驗值！》
+
+NO_CHECK -= 1
+
+;処刑殘りがいる場合、最初に戻る
+SIF NO_CHECK > 0
+	GOTO EXCUTION_MAIN
+
+;調教對像復位
+$LABEL_EXIT
+TARGET = FLAG:1
+ASSI = FLAG:2
+RETURN 0
+
+;------------------------------------------
+@EXECUTION_MINI(ARGS = "")
+#DIM LV
+;------------------------------------------
+;簡易処刑コマンド。TARGETがキャラNo
+
+;武器解除
+W:0 = CFLAG:550
+CALL EQUIP_GET
+CFLAG:550 = -1
+;指輪解除
+W:0 = CFLAG:551
+CALL EQUIP_GET
+CFLAG:551 = -1
+;指輪解除
+W:0 = CFLAG:552
+CALL EQUIP_GET
+CFLAG:552 = -1
+
+LV = CFLAG:9
+
+DRAWLINE
+IF ARGS == ""
+	PRINTFORML 給%SAVESTR:TARGET%刻下了封印所有力量的烙印。
+	PRINTW 繼續處刑
+ENDIF
+X = NO:TARGET + 199
+FLAG:X = 1
+
+;前回の助手・調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手・調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, TARGET
+
+DELCHARA TARGET
+IF ARGS == ""
+	IF TALENT:A:220 != 1 && EX_TALENT:A:1 != 1 
+		EX_FLAG:99 += 2
+		PRINTFORML 威望值增加
+	ELSE
+		EX_FLAG:99 -= 10
+		PRINTFORML 威望值減少
+	ENDIF
+ENDIF
+
+DELCHARA A
+	
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+PRINTL  
+PRINTL 得到了用勇者力量形成的勳章
+PRINTL 勳章經驗+1
+EXP:0:81 += 1
+PRINTFORMW 《封印把勇者的力量吸收了，你獲得了{LV}的經驗值！》
+
+DRAWLINE
+
+RETURN 0
+

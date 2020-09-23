@@ -1,0 +1,386 @@
+﻿;------------------------------------------
+@INFRASTRUCTURE
+;------------------------------------------
+;設施・設備の様子を見る
+;処刑コマンド內に各調度品(人形とか寶石像とか)の様子を見るコマンドを追加しようと思ったけど
+;結構數あるし視覚的に宜しくないかなと思い別コマンドに
+;ついでに肉便器もこっちに統一
+
+;FLAG:83  肉便器の數
+;FLAG:84  調度品の合計數
+
+;FLAG:600 = 石像の個數
+;FLAG:601 = 剝製の個數
+;FLAG:602 = 蝋人形の個數
+;FLAG:603 = 人形(マネキン)の個數
+;FLAG:604 = 人形(球體間接)の個數
+;FLAG:605 = 金屬像の個數
+;FLAG:606 = 氷像の個數
+;FLAG:607 = 金屬像の個數
+;FLAG:608 = 傢俱の個數
+;FLAG:609 = 絵畫の個數
+
+;FLAG:611 = 噴水像(石)の個數
+;FLAG:612 = 噴水像(金屬)の個數
+#DIM NO_PAGE = 0
+#DIM NUM_PAGE = 29
+#DIM L_LCOUNT
+#DIM T_LCOUNT
+#DIM MAX_PAGE
+
+IF A == 0
+	PRINTW 沒有待機中的奴隸，沒有人能保護你，並擋住可能出現的勇者。
+	RETURN 0
+ENDIF
+B = A
+
+PRINTL 去哪個設施呢？
+DRAWLINE
+SETFONT "ARIEL BLACK"
+FONTBOLD
+PRINTL 
+PRINTL [==人=類=牧=場==]
+PRINTL
+FONTREGULAR
+SETFONT
+PRINTL [51] 看看肉便器的樣子
+SETFONT "ARIEL BLACK"
+FONTBOLD
+PRINTL ＿＿＿＿＿＿
+PRINTL ＼ 博 物 館 ／
+PRINTL   ￣￣￣￣￣ 
+FONTREGULAR
+SETFONT
+PRINTL [50] 看看全部展品的樣子
+PRINTL 
+PRINTL [ 0] 看看石像的狀態
+PRINTL [ 1] 看看標本的狀態
+PRINTL [ 2] 看看蠟像的狀態
+PRINTL [ 3] 看看人體模型人偶的狀態
+PRINTL [ 4] 看看球型關節人偶的狀態
+PRINTL [ 5] 看看金屬雕像的狀態
+PRINTL [ 6] 看看冰雕的狀態
+PRINTL [ 7] 看看寶石像的狀態
+PRINTL [ 8] 看看屋內傢俱的狀態
+PRINTL [ 9] 看看畫像的狀態
+PRINTL 
+PRINTL [11] 看看石製噴水像的狀態
+PRINTL [12] 看看金屬噴水像的狀態
+PRINTL 
+PRINTL [99] 看看已拍的影像水晶球
+DRAWLINE
+PRINTL [100] 返回
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 0
+	IF FLAG:600 == 0
+		PRINTFORMW 還沒製作過石像。
+	ELSEIF FLAG:600 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:600}個石像。
+		PRINTW 被石化了的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 苦悶、驚愕、恍惚、悲壯，石像上浮現著各種各樣的表情，好像在對欣賞的人訴說著什麼。
+		PRINTW 那些話語和傳說，已經不會被傳達到了吧……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 1
+	IF FLAG:601 == 0
+		PRINTFORMW 還沒製作過標本。
+	ELSEIF FLAG:601 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:601}個標本。
+		PRINTW 被製成標本的是原勇者的美麗肢體，空洞的眼神注視著對面墻壁上的裝飾。
+		PRINTW 苦悶、恍惚、悲壯、達觀，標本上浮現著各種各樣的表情，好像在對欣賞的人訴說著什麼。
+		PRINTW 不過她們被凍結的心，已經不會再產生任何感情了吧……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 2
+	IF FLAG:602 == 0
+		PRINTFORMW 還沒製作過蠟像。
+	ELSEIF FLAG:602 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:602}個蠟像。
+		PRINTW 被製成蠟像的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 苦悶、驚愕、恍惚、悲壯，蠟像上浮現著各種各樣的表情，看上去好像馬上就能活動。
+		PRINTW 不過她們現在的身體，已經不會再做出什麼動作了吧…
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 3
+	IF FLAG:603 == 0
+		PRINTFORMW 還沒製作過人體模型人偶。
+	ELSEIF FLAG:603 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:603}個人體模型人偶。
+		PRINTW 被製成人體模型人偶的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 她們的四肢和頭部、上下半身，都可以自由地拆卸，完全沒有保留作為人的部分了。
+		PRINTW 拆下來的零件，亂七八糟地散落一地，經常找不到哪個對應哪個，最後只有使用暴力硬裝上去。
+		PRINTW 在她們身上穿戴著不同儀式用的新服裝作為展覽，隨著信仰墮落神的信徒越來越多，這種展覽也變得熱鬧了。
+		PRINTW 穿著不知廉恥的暴露乳房及其它身體區域性的服裝，在大眾面前展示身段的她們，神色不動，靜靜佇立……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 4
+	IF FLAG:604 == 0
+		PRINTFORMW 還沒製作過球型關節人偶。
+	ELSEIF FLAG:604 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:604}個球型關節人偶。
+		PRINTW 被製成球型關節人偶的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 她們的四肢和頭部、半身都可以自由活動，能做出許多活人做不出的匪夷所思的動作。
+		PRINTW 雖然不能和她們做愛，但爲了看她們誘惑的姿勢慕名而來的遊客，也是大有人在。
+		PRINTW 無論是弄成什麼樣的猥瑣動作，她們都不為所動，被隨意擺佈著……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 5
+	IF FLAG:605 == 0
+		PRINTFORMW 還沒製作過金屬雕像。
+	ELSEIF FLAG:605 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:605}個金屬雕像。
+		PRINTW 被製成金屬雕像的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 每天，全部的金屬雕像都在規定的時間裡進行全身打磨，確保她們能發出美麗的光澤展示於人前。
+		PRINTW 過分的美麗使得經常都忍不住要玩弄她們的全身，一不小心被玩壞了的，也有這麼一部分。
+		PRINTW 曾經美麗的殘缺肢體，無論再怎麼過分地玩弄，也不會引起反感，她們只是這麼靜靜佇立著……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 6
+	IF FLAG:606 == 0
+		PRINTFORMW 還沒製作過冰雕。
+	ELSEIF FLAG:606 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:606}個冰雕。
+		PRINTW 被製成冰雕的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 爲了保持她們作為冰雕的身形，這裡比其它區域的氣溫低了不少。
+		PRINTW 冷得大家尿意都出來了，忍不住把尿撒到冰雕上的人相當不少，不過隔日，這些就會成為冰雕上的新的冰柱，迎賓一樣地對著客人。
+		PRINTW 無論對她們做出多麼過分的事，都不會破壞她們的表情，繼續把曾經美麗的肢體暴露在大眾的眼前……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 7
+	IF FLAG:607 == 0
+		PRINTFORMW 還沒製作過寶石像。
+	ELSEIF FLAG:607 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:607}個寶石像。
+		PRINTW 被製成寶石像的是原勇者的美麗肢體，一個個都有獨一無二的姿勢和裝飾。
+		PRINTW 每天，全部的金屬雕像都在規定的時間裡進行全身打磨，確保她們能發出耀眼的光輝展示於人前。
+		PRINTW 經常有大量的精液沾在寶石像的身上，不過從來沒有肇事者特意會回來擦掉。
+		PRINTW 寶石像帶著如泣如訴的生動表情，大概是被這份美麗所感動了吧……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 8
+	IF FLAG:608 == 0
+		PRINTFORMW 還沒製作過傢俱。
+	ELSEIF FLAG:608 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:608}個傢俱。
+		PRINTW 原本是活生生的勇者們，現在被再造成無機的傢俱展出。
+		PRINTW 燭臺里點亮著藍色火焰的蠟燭，花瓶中插著魔界特有的花朵。
+		PRINTW 各式各樣的工具和雜物都被放在櫃子里，還有一些有用的小玩意。
+		PRINTW 在這種場合，在桌子和椅子上休息的人也絡繹不絕。
+		PRINTW 以打倒魔王為己任的勇者們，現在作為傢俱在侍奉著魔界的魔物，可喜可賀，可喜可賀……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 9
+	IF FLAG:609 == 0
+		PRINTFORMW 還沒製作過畫像。
+	ELSEIF FLAG:609 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:609}幅畫像。
+		PRINTW 原本是活生生的勇者們，現在被弄成一幅畫在展出著。
+		PRINTW 通過畫布前設定的水晶球，遊客們能看到畫裡面的活動。
+		PRINTW 在畫的世界裡，人們能欣賞到她們永遠被持續凌辱著的樣子。
+		PRINTW 她們不斷地求助著，不過這是無法傳達到給看客的。於是凌辱天天持續著……
+	ENDIF
+	RETURN 0
+
+ELSEIF RESULT == 11
+	IF FLAG:611 == 0
+		PRINTFORMW 還沒製作過石製噴水像。
+	ELSEIF FLAG:611 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:611}個石製噴水像。
+		PRINTW 被石化了的是原勇者的美麗肢體，一個個都有獨一無二的羞恥姿勢和裝飾。
+		PRINTW 乳房、性器、尿道等地方被換成噴水裝置的她們，正從各自的位置噴出有氣勢的漂亮涌泉。
+		PRINTW 她們已經沒有人類的基本羞恥了，今後也會保持著下流的動作，毫不扭捏地持續噴水吧……
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 12
+	IF FLAG:612 == 0
+		PRINTFORMW 還沒製作過金屬噴水像。
+	ELSEIF FLAG:612 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:612}個金屬噴水像。
+		PRINTW 被金屬化了的是原勇者的美麗肢體，一個個都有獨一無二的羞恥姿勢和裝飾。
+		PRINTW 乳房、性器、尿道等地方被換成噴水裝置的她們，正從各自的位置噴出有氣勢的漂亮涌泉。
+		PRINTW 噴出來的水，把金屬像的區域性鏽蝕了。
+		PRINTW 但她們毫不在意，保持著下流的動作，持續地噴著水……
+	ENDIF
+	RETURN 0
+	
+ELSEIF RESULT == 50
+	IF FLAG:84 == 0
+		PRINTFORMW 還沒製作過展品。
+	ELSEIF FLAG:84 >= 1
+		PRINTFORML 博物館內現在有 {FLAG:84}個展品。
+		PRINTL 原勇者的美麗肢體，現在被殘忍地做成各種各樣的標本及雕像。
+		PRINTL 苦悶的表情、震驚的表情、絕望的表情……各種神情一覽無遺。
+		PRINTW 現在，任何人都沒有辦法改變她們這種凍結的神態了。
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 51
+	IF FLAG:83 == 0
+		PRINTFORMW 還沒放置過肉便器。
+	ELSEIF FLAG:83 >= 1
+
+	PRINTFORML 地下城內現在有 {FLAG:83}臺肉便器。
+		PRINTL 肉便器們，不分晝夜地被
+		PRINTW 
+		IF FLAG:613 == 1
+			PRINT 俘虜的中年
+		ELSEIF FLAG:613 == 2
+			PRINT 俘虜的少年
+		ELSEIF FLAG:613 == 3
+			PRINT 扶她淫魔
+		ELSE
+			PRINT 怪物
+		ENDIF
+		
+		PRINTL 們使用著。
+		PRINTL 無論是瘋了、暈了還是懷孕了，都不能阻止這種狂暴的侵犯。
+		
+		IF FLAG:613 == 1
+			PRINTL 俘虜的中年的黏稠腥臭的精液讓肉便器的改造子宮一瞬懷孕、產生了魔物的孩子……
+		ELSEIF FLAG:613 == 2
+			PRINTL 俘虜的少年年輕的濃稠精液讓肉便器的改造子宮一瞬懷孕、產生了魔物的孩子……
+		ELSEIF FLAG:613 == 3
+			PRINTL 扶她淫魔的媚藥精液讓肉便器的改造子宮一瞬懷孕、產生了魔物的孩子……
+		ENDIF
+		
+		$INPUT_LOOP_FARM
+		
+		PRINTW 地下城的便所里，散發著酸臭。充斥著崩壞的呻吟和悲鳴……
+		
+		PRINTL 各種設定
+		PRINT [0] 播種者　　　　　　現在：
+		IF FLAG:613 == 1
+			PRINT 俘虜的中年  
+		ELSEIF FLAG:613 == 2
+			PRINT 俘虜的少年  
+		ELSEIF FLAG:613 == 3
+			PRINT 扶她淫魔  
+		ELSE
+			PRINT 怪物
+		ENDIF
+		PRINTL  
+		PRINTFORML [1] 人類牧場記錄　　  現在：\@ GETBIT(FLAG:614,0) ? 不顯示 # 顯示 \@
+		PRINTFORML [2] 賣掉產出的孩子　  現在：\@ GETBIT(FLAG:614,1) ? 出售 # 不出售 \@
+		
+		PRINTFORML [999]返回
+		
+		INPUT
+		
+		IF RESULT == 999
+			RETURN 0
+		ELSEIF RESULT == 0
+			PRINTL 請選擇播種者
+			PRINTL [0] 怪物  
+			PRINT [1] 俘虜的中年  
+			PRINT [2] 俘虜的少年  
+			PRINT [3] 扶她淫魔  
+			PRINTL  
+			
+			INPUT
+			
+			IF RESULT == 1
+				PRINTW 播種者設為俘虜的中年了
+			ELSEIF RESULT == 2
+				PRINTW 播種者設為俘虜的少年了
+			ELSEIF RESULT == 3
+				PRINTW 播種者設為扶她淫魔了
+			ELSE
+				PRINTW 播種者設為怪物了
+				RESULT = 0
+			ENDIF
+			FLAG:613 = RESULT
+		ELSEIF RESULT >= 1 && RESULT <= 2
+			LOCAL = RESULT - 1
+			INVERTBIT FLAG:614,LOCAL
+		ELSE
+			GOTO INPUT_LOOP_FARM
+		ENDIF
+		
+		GOTO INPUT_LOOP_FARM
+		
+		
+		
+	ENDIF
+	RETURN 0
+ELSEIF RESULT == 99
+	CALL VIDEO_CHECK
+	C = RESULT
+	IF RESULT == 0
+		PRINTFORMW 還沒拍攝過任何影像。
+		RETURN 0
+	ENDIF
+LIST_POS = 0
+PREV_PAGE = 0
+PREV_LIST_POS = 0
+LOCAL = RESULT
+IF RESULT % 3 == 0
+	RESULT /= 3
+ELSE
+	RESULT /= 3
+	RESULT++
+ENDIF
+IF (RESULT % NUM_PAGE) > 0
+	MAX_PAGE = ( RESULT / NUM_PAGE ) + 1
+ELSE
+	MAX_PAGE = RESULT / NUM_PAGE
+ENDIF
+MAX_PAGE--
+	$INPUT_LOOP_VIDEO_MENU
+;-------------------------------------------------
+;快取、重置列表資訊
+IF NO_PAGE == 0
+	LIST_POS = 0
+	PREV_PAGE = 0
+	PREV_LIST_POS = 0
+ELSEIF NO_PAGE < PREV_PAGE
+	SWAP LIST_POS, PREV_LIST_POS
+ELSEIF NO_PAGE == PREV_PAGE
+	LIST_POS = PREV_LIST_POS
+ELSE
+	PREV_LIST_POS = LIST_POS
+ENDIF
+;-------------------------------------------------
+	L_LCOUNT = LINECOUNT
+	T_LCOUNT = NO_PAGE * NUM_PAGE + 1
+	CALL VIDEO_CHECK
+		CUSTOMDRAWLINE =
+		PRINTFORML 總共拍攝了{RESULT}部水晶球。
+		DRAWLINE
+		CALL VIDEO_SHELF(NO_PAGE,NUM_PAGE,LIST_POS)
+	L_LCOUNT = LINECOUNT - L_LCOUNT
+	IF L_LCOUNT < (NUM_PAGE + 1)
+		REPEAT (NUM_PAGE - L_LCOUNT)
+			PRINTL
+		REND
+	ENDIF
+	DRAWLINE	
+	PRINTLC [1000] - 上一頁
+	PRINTLC [999] - 離  開
+	PRINTLC [1001] - 下一頁
+	
+	INPUT
+	SIF RESULT == 999
+		RETURN 0	
+	IF RESULT == 1000		;上一頁
+		IF NO_PAGE > 0
+			NO_PAGE --
+			CLEARLINE LINECOUNT-L_LCOUNT
+		ENDIF
+		GOTO INPUT_LOOP_VIDEO_MENU
+	ELSEIF RESULT == 1001		;下一頁
+		IF NO_PAGE < MAX_PAGE
+			NO_PAGE ++
+			CLEARLINE LINECOUNT-L_LCOUNT
+		ENDIF
+		GOTO INPUT_LOOP_VIDEO_MENU
+	ENDIF
+ELSEIF RESULT >= A && RESULT != 100
+	GOTO INPUT_LOOP
+ENDIF
+
+SIF RESULT == 100
+	RETURN 0

@@ -1,0 +1,2182 @@
+﻿;地の文関連、切り分けられるところだけここに
+
+;未記入箇所は[SKIPSTART]～[SKIPEND]でくくってコメントアウトしているので
+;記入したら外して下さい
+
+
+;売春直前の文章（まだヤってない、正否や回數は不明）
+@LOG_TRY_BITCH(ARG, PLACE)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+;描寫分岐はF関數化して使い回しができるようにした（ついでにバリエーション追加）
+;しかし使い途無いかも
+PRINTFORM %FS_BITCH("LOOKS", ARG)%
+
+IF PLACE == "DUNGEON"
+	;侵入中
+	IF CFLAG:ARG:1 == 2
+		;賣淫中毒か淫亂
+		IF ABL:ARG:37 >= 1 || TALENT:ARG:76
+			PRINTFORM 無法壓抑自己的性慾，
+		ELSEIF (CFLAG:ARG:580 + CFLAG:ARG:581 + CFLAG:ARG:582) < -5000
+			PRINTFORM 對於借款只減少了一點點感到不滿，
+		ELSE
+			PRINTFORM 在空閑的時間，
+		ENDIF
+	ELSEIF CFLAG:ARG:1 == 3 && CFLAG:(ARG:0):533 > 1
+		PRINTFORM 瞞著同伴偷偷的
+	ELSEIF CFLAG:ARG:500 == 1
+		SIF TALENT:ARG:85 && !(TALENT:ARG:180 || TALENT:ARG:181)
+			PRINTFORM 被強迫
+		PRINTFORM 遵照命令，
+	ELSE
+		PRINTFORM 無法壓抑自己的性慾，
+	ENDIF
+ELSE
+	;賣淫中毒か淫亂
+	IF ABL:ARG:37 >= 1 || TALENT:ARG:76
+		PRINTFORM 無法壓抑自己的性慾，
+	;借金金額を微改変
+	ELSEIF (CFLAG:ARG:580 + CFLAG:ARG:581 + CFLAG:ARG:582) < -5000
+		PRINTFORM 借了高利貸，
+	ELSE
+		PRINTFORM 冒險資金花光了，
+	ENDIF
+ENDIF
+PRINTFORMW 考慮著出賣肉體的事。
+
+
+;売春用各種文字列取得関數
+@FS_BITCH(TYPE, ARG)
+#FUNCTIONS
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS TYPE
+#DIM DICE
+SELECTCASE TYPE
+;數値→プレイ內容変換
+;関數の利用に
+CASE "PLAY"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = HAND
+	CASE 2
+		LOCALS = ORAL
+	CASE 3
+		LOCALS = LES
+	CASE 4
+		LOCALS = ANAL
+	CASE 5
+		LOCALS = SEX
+	;ダンジョン內では売春扱いではない
+	CASE 6
+		LOCALS = ANIMAL
+	;売春では使わない
+	CASE 7
+		LOCALS = SELF
+	CASEELSE
+		$ERROR_ARG
+		THROW 未知參數{ARG}
+	ENDSELECT
+;表示用
+CASE "PLAYNAME"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = 手淫奉侍
+	CASE 2
+		LOCALS = 口交奉侍
+	CASE 3
+		LOCALS = 百合奉侍
+	CASE 4
+		LOCALS = 肛交奉侍
+	CASE 5
+		LOCALS = 性交奉侍
+	CASE 6
+		LOCALS = 獸交奉侍
+	CASEELSE
+		GOTO ERROR_ARG
+	ENDSELECT
+CASE "TOWN_MAN"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = 村民
+	CASE 2
+		LOCALS = 冒險者
+	CASE 3
+		LOCALS = 村裡少年
+	CASE 4
+		LOCALS = 街邊暴發戶
+	CASE 5
+		LOCALS = 奸商
+	CASEELSE
+		GOTO ERROR_ARG
+	ENDSELECT
+CASE "TOWN_GIRL"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = 主婦
+	CASE 2
+		LOCALS = 女冒險者
+	CASE 3
+		LOCALS = 女乞丐
+	CASE 4
+		LOCALS = 隱藏身份的貴婦
+	CASE 5
+		LOCALS = 藝伎
+	CASEELSE
+		GOTO ERROR_ARG
+	ENDSELECT
+CASE "DUNGEON_MAN"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = 獸人
+	CASE 2
+		LOCALS = 魔族男人
+	CASE 3
+		LOCALS = 魔族少年
+	CASE 4
+		LOCALS = 魔族暴發戶
+	CASE 5
+		LOCALS = 妖精商人
+	CASEELSE
+		GOTO ERROR_ARG
+	ENDSELECT
+CASE "DUNGEON_GIRL"
+	SELECTCASE ARG
+	CASE 1
+		LOCALS = 淫魔
+	CASE 2
+		LOCALS = 魔族女人
+	CASE 3
+		LOCALS = 妖精的女乞丐
+	CASE 4
+		LOCALS = 魔族的貴婦人
+	CASE 5
+		LOCALS = 魔族的女祭司
+	CASEELSE
+		GOTO ERROR_ARG
+	ENDSELECT
+;本人の描寫
+;ABLカンスト系に再現性が無いので注意
+CASE "LOOKS"
+	;ランダムで上書きさせることで
+	;重複した素質が入れ替わりで出現するように
+	
+	;本當はDICEの數を増やして確率を公平にしたいけど
+	;美しくないのでこの形に
+	
+	DICE = 2
+	;一回も上書きされない場合髪色が出る
+	LOCALS = %GET_LOOK_INFO(ARG, "髪の色")%の
+
+	SIF TALENT:ARG:253 && RAND:DICE == 0
+		LOCALS = 小麥色的
+	SIF TALENT:ARG:255 && RAND:DICE == 0
+		LOCALS = 白皙的
+	SIF TALENT:ARG:244 && RAND:DICE == 0
+		LOCALS = 青色的
+		
+	SIF TALENT:ARG:陰毛狀態 == 1 && RAND:DICE == 0
+		LOCALS = 白虎的
+	SIF TALENT:ARG:陰毛狀態 > 150 && RAND:DICE == 0
+		LOCALS = 陰毛濃密的
+	
+	SIF TALENT:ARG:癖 == 7 && RAND:DICE == 0
+		LOCALS = 毛躁的
+	SIF TALENT:ARG:癖 == 9 && RAND:DICE == 0
+		LOCALS = 翻白眼
+	SIF TALENT:ARG:癖 == 10 && RAND:DICE == 0
+		LOCALS = 歪頭
+	SIF TALENT:ARG:癖 == 11 && RAND:DICE == 0
+		LOCALS = 憂鬱的樣子
+	SIF TALENT:ARG:癖 == 14 && RAND:DICE == 0
+		LOCALS = 鼓腮的
+	SIF TALENT:ARG:癖 == 18 && RAND:DICE == 0
+		LOCALS = 慵懶的
+	SIF TALENT:ARG:癖 == 19 && RAND:DICE == 0
+		LOCALS = 不高興的
+		
+	SIF TALENT:ARG:目 == 7 && RAND:DICE == 0
+		LOCALS = 嚴厲的眼神
+	
+	SIF TALENT:ARG:魅力點 == 10 && RAND:DICE == 0
+		LOCALS = 手指漂亮的
+	SIF TALENT:ARG:魅力點 == 13 && RAND:DICE == 0
+		LOCALS = 腰身纖細的
+	SIF TALENT:ARG:魅力點 == 14 && RAND:DICE == 0
+		LOCALS = 臀部美形的
+	SIF TALENT:ARG:魅力點 == 15 && RAND:DICE == 0
+		LOCALS = 雙腿修長的
+	SIF TALENT:ARG:魅力點 == 22 && RAND:DICE == 0
+		LOCALS = 艷麗頭髮的
+	SIF TALENT:ARG:魅力點 == 23 && RAND:DICE == 0
+		LOCALS = 臀部豐滿的
+	SIF TALENT:ARG:魅力點 == 25 && RAND:DICE == 0
+		LOCALS = 虎牙可愛的
+	
+	SIF TALENT:ARG:成為勇者前的生活 == 8 && RAND:DICE == 0
+		LOCALS = 元貴族
+	SIF TALENT:ARG:成為勇者前的生活 == 12 && RAND:DICE == 0
+		LOCALS = 元聖女
+	SIF TALENT:ARG:204 && RAND:DICE == 0
+		LOCALS = 肉便器
+	SIF TALENT:ARG:99 && RAND:DICE == 0
+		LOCALS = 高大的
+	SIF TALENT:ARG:100 && RAND:DICE == 0
+		LOCALS = 矮小的
+	SIF TALENT:ARG:256 && RAND:DICE == 0
+		LOCALS = 臉色不好的
+	SIF (TALENT:ARG:21 || TALENT:ARG:22) && RAND:DICE == 0
+		LOCALS = 假正經的
+	SIF TALENT:ARG:35 && RAND:DICE == 0
+		LOCALS = 害羞的
+	SIF (TALENT:ARG:15 || TALENT:ARG:16) && RAND:DICE == 0
+		LOCALS = 任性的
+	SIF TALENT:ARG:17 && RAND:DICE == 0
+		LOCALS = 笑容卑屈的
+	SIF TALENT:ARG:12 && RAND:DICE == 0
+		LOCALS = 笑容燦爛的
+	SIF (TALENT:ARG:10 || TALENT:ARG:26) && RAND:DICE == 0
+		LOCALS = 要哭了似的
+	SIF (TALENT:ARG:23 || TALENT:ARG:25) && RAND:DICE == 0
+		LOCALS = 開朗的
+	SIF TALENT:ARG:73 && RAND:DICE == 0
+		LOCALS = 水性楊花的
+		
+	SIF CFLAG:ARG:509 == 1 && RAND:DICE == 0
+		LOCALS = 迷路的
+	SIF INRANGE(ABL:ARG:37, 1, 3) && RAND:DICE == 0
+		LOCALS = 賣身尋歡的
+	;ABL系は共存しうるため変化を出すためにとりあえず確率で
+	SIF ABL:ARG:30 == 10 && RAND:DICE == 0
+		LOCALS = 無法想像沒有肉棒的生活的
+	SIF ABL:ARG:31 == 10 && RAND:DICE == 0
+		LOCALS = 一有空就不自覺地自慰的
+	SIF ABL:ARG:32 == 10 && RAND:DICE == 0
+		LOCALS = 變得非常喜歡腥臭精液的
+	SIF ABL:ARG:33 == 10 && RAND:DICE == 0
+		LOCALS = 渴望侵犯女性的
+	SIF ABL:ARG:37 == 10 && RAND:DICE == 0
+		LOCALS = 隨時隨地的渴望著Sexy，變成了慾望的俘虜
+		
+	;陥落済みである
+	IF TALENT:ARG:76
+		LOCALS += "好色的"
+	ELSEIF TALENT:ARG:85
+		LOCALS += "背叛的"
+	ENDIF
+	LOCALS += @"%GET_LOOK_INFO(ARG, "種族")%的%SAVESTR:ARG%"
+CASEELSE
+	THROW 未知的TYPE%TYPE%
+ENDSELECT
+RETURNF LOCALS
+
+
+
+;売春ログ表示文字列関數
+;プレイ回數や客の合計を出力
+@FS_LOG_BITCH(TYPE, ARG:1, ARG:2, ARG:3, ARG:4, ARG:5)
+#FUNCTIONS
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS TYPE
+#DIM LCOUNT
+VARSET LOCALS
+SELECTCASE TYPE
+CASE "DUNGEON_MAN", "DUNGEON_GIRL", "TOWN_MAN", "TOWN_GIRL"
+	FOR LCOUNT, 1, 6
+		SIF !ARG:LCOUNT
+			CONTINUE
+		SIF STRLENS(LOCALS)
+			LOCALS += "、"
+		LOCALS += @"{ARG:LCOUNT}人的%FS_BITCH(TYPE, LCOUNT)%"
+	NEXT
+CASE "PLAYNAME"
+	FOR LCOUNT, 1, 6
+		SIF !ARG:LCOUNT
+			CONTINUE
+		SIF STRLENS(LOCALS)
+			LOCALS += "、"
+		LOCALS += @"{ARG:LCOUNT}次的%FS_BITCH("PLAYNAME", LCOUNT)%"
+	NEXT
+CASEELSE
+	THROW 未知的TYPE%TYPE%
+ENDSELECT
+RETURNF LOCALS
+
+
+
+;売春描寫関數呼び出し関數
+;売春が全て終わって（成功して）から呼ぶ
+;BIT利用で売春の內容を記録した引數CHECKを元に描寫分岐を行う
+;0 　　　=TOWN/DUNGEON
+;1～6　　プレイ內容（1=HAND, 2=ORAL, 3=LES, 4=ANAL, 5=SEX, 6=ANIMAL）
+;11～15　男性客の種類
+;21～25　女性客の種類
+;ARG＝キャラ登録番號はこの関數では使用しないが描寫関數側で必要となるためそのまま渡す
+@LOG_AFTER_BITCH(ARG, CHECK)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIM CHECK
+#DIM KYAKU
+#DIM PLAY
+;けも
+IF GETBIT(CHECK, 6)
+	PLAY = 6
+;れず
+ELSEIF GETBIT(CHECK, 3) && RAND:10 < 5
+	DO
+		KYAKU = RAND(1, 6)
+		SIF GETBIT(CHECK, (KYAKU + 20))
+			BREAK
+	LOOP 1
+	PLAY = 3
+;ふつう
+ELSE
+	;デバッグ加筆
+	;恐らくレズ設定でRAND判定から外れてこっちに來た時に
+	;女性客を取りたいのに男性客から判定しているため
+	;無限ループが発生していると解釈して
+	;処置を行いました
+	IF GETBIT(CHECK, 3)
+		DO
+			KYAKU = RAND(1, 6)
+			SIF GETBIT(CHECK, (KYAKU + 20))
+				BREAK
+		LOOP 1
+		PLAY = 3
+	ELSE
+		DO
+			KYAKU = RAND(1, 6)
+			SIF GETBIT(CHECK, (KYAKU + 10))
+				BREAK
+		LOOP 1
+		DO
+			PLAY = RAND(1, 6)
+			SIF PLAY == 3
+				CONTINUE
+			SIF GETBIT(CHECK, PLAY)
+				BREAK
+		LOOP 1
+	ENDIF
+	
+ENDIF
+
+LOCALS = %FS_BITCH("PLAY", PLAY)%
+IF GETBIT(CHECK, 0)
+	CALLFORM LOG_BITCH_%LOCALS%(ARG, "DUNGEON", KYAKU)
+ELSE
+	CALLFORM LOG_BITCH_%LOCALS%(ARG, "TOWN", KYAKU)
+ENDIF
+WAIT
+
+
+;ここから売春描寫関數群
+;ただし以下は例外なので注意
+;・DUNGEONでのANIMALは無報酬、自主的なプレイの一環
+;・SELFは売春ではない（DUNGEON, TOWN問わず）
+
+@LOG_BITCH_HAND(ARG, PLACE, KYAKU)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+
+PRINTFORM %SAVESTR:ARG%
+SELECTCASE ABL:ARG:13
+CASE 0
+	PRINTFORM 公式般地揉搓著肉棒，一臉厭惡地
+CASE 1
+	PRINTFORM 面對眼前的肉棒，垂下了雙眼害羞地
+CASE 2
+	PRINTFORM 看著客人的肉棒，一臉不開心的
+CASE 3, 4
+	PRINTFORM 一邊看著客人的反應，一邊
+CASE 5, 6
+	PRINTFORM 看著客人勃起時的反應，很高興的
+CASE 7, 8
+	PRINTFORM 不時微笑著
+CASE 9, 10
+	PRINTFORM 嫻熟的說著隱晦的淫詞
+ENDSELECT
+PRINTFORMW 進行著手交賣春...
+
+SELECTCASE PLACE
+CASE "DUNGEON"
+	LOCALS = %FS_BITCH("DUNGEON_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;獸人
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「哇哦……射了　出來了　抱歉啊」
+			DATAFORM 獸人肚子上的贅肉搖晃著，似乎十分滿意……
+			DATAFORM 「三發了，停不下來」
+		ENDDATA
+	;魔族男人
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「手上活不錯嘛……很有性奴隸的才能嘛」
+			DATAFORM 「對誰都會做這種事么？」
+			DATAFORM 魔族男人雙交叉，不可一世的向下看著……
+		ENDDATA
+	;魔族少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「嗚哇……太色情了……」
+			DATAFORM 「大姐姐的手，好爽啊……」
+			DATAFORM 魔族少年似乎想要馬上射出來的樣子……
+		ENDDATA
+	;魔族暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「呵呵……真是下賤的女人」
+			DATAFORM 「這個浪貨……」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「還能做的更熟練的吧」
+			DATAFORM 「要對得起我出的價讓我爽一爽啊」
+		ENDDATA
+	;妖精商人
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「這是一雙溫婉的手……」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「表情不錯啊」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「握得用力點啊」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「小姐你很熟練嘛」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「表情好恐怖哦」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「要仔細聞哦…」 
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「睪丸也要弄哦」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+CASE "TOWN"
+	LOCALS = %FS_BITCH("TOWN_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;村民
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「呵呵……謝啦……」
+			DATAFORM 男村民笑著調戲%SAVESTR:ARG%。
+		ENDDATA
+	;冒險者
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「完全成了婊子了啊」
+			DATAFORM 男冒險者把錢塞進了%SAVESTR:ARG%的內衣里。
+		ENDDATA
+	;村裡少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「好棒哦，真是個，淫亂的大姐姐……」
+			DATAFORM 雙手握住了之後，少年的腰輕輕地顫動著。
+		ENDDATA
+	;街邊暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「臭婊子！」
+			DATAFORM 「母豬！」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「射了以後要用頭髮給我擦乾淨哦」
+			DATAFORM 「嘛，手活做得挺不錯的嘛」
+		ENDDATA
+	;奸商
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「嘿嘿……好溫柔啊」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「握緊點啊」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「那眼神啥意思啊」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「一副大小姐模樣……還挺行的嘛」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「還會牴觸嘛」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「好好看著肉棒啊」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「不錯不錯」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+ENDSELECT
+PRINTFORMW %SAVESTR:ARG%跪在地上一邊套動著陰莖一邊看向客人的臉，時不時伸出舌頭舔向馬眼，笑嘻嘻的看著客人在快感中顫抖的樣子。在一陣無可忍耐的射精之後，%SAVESTR:ARG%一邊舔著被弄髒的手一邊不屑的看著氣喘吁吁的客人，隨後媚笑著開始下一次服務。
+
+
+@LOG_BITCH_ORAL(ARG, PLACE, KYAKU)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+PRINTFORM %SAVESTR:ARG%
+SELECTCASE ABL:ARG:32
+CASE 0
+	PRINTFORM 看著頂到鼻尖的肉棒，臉色發青的
+CASE 1, 2
+	PRINTFORM 艱難的適應著肉棒的氣味和味道
+CASE 3, 4
+	PRINTFORM 發出「呷浦呷浦」的下流聲音
+CASE 5, 6
+	PRINTFORM 愉悅的享受著肉棒的味道
+CASE 7, 8
+	PRINTFORM 帶著輕鬆愉快的表情
+CASE 9, 10
+	PRINTFORM 用積極又不太過冒犯的態度
+ENDSELECT
+PRINTFORMW 進行著收費口交...
+PRINTFORMW %SAVESTR:ARG%跪在地上將客人的陽具吞入口中，用舌頭仔細地舔舐著。
+
+SELECTCASE PLACE
+CASE "DUNGEON"
+	LOCALS = %FS_BITCH("DUNGEON_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;獸人
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「哇哈哈……給我好好舔」
+			DATAFORM 「嗚哇，舌頭舔著好爽啊」
+		ENDDATA
+	;魔族男人
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「後面的屁眼也要替我舔哦」
+			DATAFORM 「沒錯，喉嚨也要用上！」
+		ENDDATA
+	;魔族少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「出來了……有什麼要出來了」
+			DATAFORM 「大姐姐好色情啊！」
+		ENDDATA
+	;魔族暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「怎麼樣，味道不錯吧？」
+			DATAFORM 「味道如何啊？」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「說好吃看看啊，婊子！」
+			DATAFORM 「真變態啊……」
+		ENDDATA
+	;妖精商人
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「舌頭用得真溫柔啊……嘿嘿」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「好好看這邊啊」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「不敢直視的樣子也很可愛呢」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「真是一張，可以回味一輩子的臉呢」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「眼神不錯呢」
+			ENDDATA
+		;悪女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「別用上牙來咬啊」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「哦哦……感覺不錯呢」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+CASE "TOWN"
+	LOCALS = %FS_BITCH("TOWN_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;村民
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「哈哈……挺熟練的嘛……」
+			DATAFORM 「真拿你沒辦法，就讓你舔吧～」
+		ENDDATA
+	;冒險者
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「最近都沒有洗啊……好好弄乾凈啊」
+			DATAFORM 「就那麼缺錢嗎？」
+		ENDDATA
+	;村裡少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「啊啊～……好棒～……」
+			DATAFORM 少年在她嘴裡一泄如注，似乎不到乾涸不會停下來。
+		ENDDATA
+	;街邊暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「就用這下等的嘴巴爽爽好了」
+			DATAFORM 「真是符合母豬的工作呢」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「不用謝～」
+			DATAFORM 「認真地舔啊！」
+		ENDDATA
+	;奸商
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「眼神看起來很溫柔嘛」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「吸得很帶勁啊……」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「別這麼害怕嘛」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「這麼棒的女人做這種事什麼的……」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「還擺著一副冰冷的模樣呢」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「哦吼，好怕怕哦」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「這不是很熟練么」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+ENDSELECT
+PRINTFORMW 頭突然被用手緊緊的按住，隨後腥臭的精液在口中爆發了
+PRINTFORMW 還沒等其緩過神來，客人就將陽具繼續插入喉嚨，按著%SAVESTR:ARG%的頭前後搖晃著套弄起來
+PRINTFORMW 在粗重的喘息聲中，%SAVESTR:TARGET%的臉和乳房都沾滿了白濁腥臭的精液，更多的精液沿著%SAVESTR:TARGET%的嘴角垂流而下
+
+
+@LOG_BITCH_LES(ARG, PLACE, KYAKU)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+PRINTFORM %SAVESTR:ARG%
+SELECTCASE ABL:ARG:33
+CASE 0
+	PRINTFORM 「明明知道不會插進來的」這樣喃喃自語著
+CASE 1, 2
+	PRINTFORM 一點點興奮了起來
+CASE 3, 4
+	PRINTFORM 用發出黏著水聲的小穴
+CASE 5, 6
+	PRINTFORM 毫不掩飾自己的興奮
+CASE 7, 8
+	PRINTFORM 呼喊著不成體統的話語
+CASE 9, 10
+	PRINTFORM 忘記了時間，一次又一次的和客人纏綿著
+ENDSELECT
+PRINTFORMW 進行著百合賣春...
+PRINTFORMW %SAVESTR:ARG%跪在地上，用舌頭仔細地舔舐著魔女的陰蒂，頭突然被用手緊緊的按住，魔女按著她的頭前後搖晃著摩擦起來，在高潮的尖叫中潮吹，愛液濺在%SAVESTR:ARG%的唇舌和臉上…
+PRINTFORMW 在沉重的喘息聲中，魔女將%SAVESTR:ARG%摟在懷裡，雌性發情的陰戶互相摩刺激擦著，除了肉體的激烈碰撞聲，隨之而來的還有魔女和%SAVESTR:ARG%的高潮絕叫…
+
+SELECTCASE PLACE
+CASE "DUNGEON"
+	LOCALS = %FS_BITCH("DUNGEON_GIRL", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;淫魔
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「你的精氣，我不客氣啦♪」
+			DATAFORM 「你看起來很可口嘛～」
+			DATAFORM 「胸部也要吸哦」
+			DATAFORM 「謝謝款待♪」
+			DATAFORM 「拿大小姐來當我的晚餐，我真幸福呢～」
+			DATAFORM 「光是接吻就高潮了？」
+			DATAFORM 「滿滿的精氣～吸走了哦」
+			DATAFORM 「我就不客氣啦♪」
+		ENDDATA
+	;魔族女人
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「小奴隸，把尿接著啊」
+			DATAFORM 「小姐你真可愛」
+			DATAFORM 「來，趕快開始，已經習慣了吧？」
+			DATAFORM 「可悲的母豬就是要挨鞭子！小奴隸……」
+			DATAFORM 「就這樣一直抱著……」
+			DATAFORM 「好多愛液溢出來了哦」
+			DATAFORM 「就一晚，當我的戀人吧……」
+			DATAFORM 「小姐，你平常都是怎麼自慰的？」
+		ENDDATA
+	;妖精的女乞丐
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「錢，帶來了……」
+			DATAFORM 「感覺軟軟的，軟軟的……」
+			DATAFORM 「蹂躪我吧、什麼都不要考慮……」
+			DATAFORM 「果然不是抱著女人，就做不來啊！」
+			DATAFORM 「偶爾奢侈一下，不行嗎？」
+			DATAFORM 「賣尻穴來掙錢，然後又可以買女人回來……」
+			DATAFORM 「想把你買下來，然後讓你跟別的男人口交來賺錢」
+			DATAFORM 「那麼髒的我，被你的愛液洗乾淨了……」
+		ENDDATA
+	;魔族的貴婦人
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「能滿足我的性慾么？」
+			DATAFORM 「就那麼想要錢么？」
+			DATAFORM 「呵呵，真是一隻好色的小貓咪」
+			DATAFORM 「錢有的是，你看……」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「那裡，在用力點！」
+			DATAFORM 「啊，再多舔幾下」
+			DATAFORM 「喂，屁股也要舔哦……」
+			DATAFORM 「吻我，快點」
+			DATAFORM 「我的鞭子，就是用調教你這樣下賤的母豬」
+			DATAFORM 「吶，自慰給我看」
+			DATAFORM 「要從陰蒂舔到菊花啊」
+			DATAFORM 「愛撫一下我的小穴吧」
+			DATAFORM 「把你的腿打開，一起磨豆腐吧」
+		ENDDATA
+	;魔族的女祭司
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「一起相愛吧」
+				DATAFORM 「來接吻吧，請溫柔的」
+				DATAFORM 「好想像這樣一直抱著……」
+				DATAFORM 「快樂就是我們的教義呢」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「再來！再來！越粗暴越好！」
+				DATAFORM 「啊，乳頭……再用力地捏……」
+				DATAFORM 「再打我的屁股……打得通紅也可以」
+				DATAFORM 「墮落就是我們的教義吶」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「更認真地舔吧……」
+				DATAFORM 「要好好舔，一直舔到屁股啊」
+				DATAFORM 「啊！表情不錯，再呻吟得更大聲吧……」
+				DATAFORM 「獻媚就是我們的教義哦」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「結束了之後，一起去茶會吧」
+				DATAFORM 「請在這張床上入眠吧」
+				DATAFORM 「啊，請把尿喝光……」
+				DATAFORM 「淫蕩是我們的教義呢」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「若無其事的神色，真漂亮」
+				DATAFORM 「比起揮劍，你還是賣淫比較有才能呢」
+				DATAFORM 「啊～腋下～是弱點啦～」
+				DATAFORM 「暴力是我們的教義」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「這次不來我們的神殿嗎？」
+				DATAFORM 「肌膚真不錯……」
+				DATAFORM 「這屁股真漂亮呢」
+				DATAFORM 「放浪就是我們的教義啦」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「一起互相纏繞著身體吧」
+				DATAFORM 「下次也要來我們的神殿哦」
+				DATAFORM 「唔呼呼~還要再指名哦」
+				DATAFORM 「快樂就是我們的教義」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+CASE "TOWN"
+	LOCALS = %FS_BITCH("TOWN_GIRL", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;主婦
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「真好啊，這柔嫩的面板」
+			DATAFORM 「挺年輕的嘛……做這種事」
+		ENDDATA
+	;女冒險者
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「一起抱著睡吧……」
+			DATAFORM 「呵呵，別這麼害怕嘛」
+		ENDDATA
+	;女乞丐
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「這是今天掙到的錢……」
+			DATAFORM 女乞丐拚命地扭動著腰直至絕頂。
+		ENDDATA
+	;隱藏身份的貴婦
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「真是個壞孩子呢～」
+			DATAFORM 「挺漂亮嘛」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「喝酒么？」
+			DATAFORM 「先去洗澡嗎？」
+		ENDDATA
+	;藝伎
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「真是溫柔的手法呢」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「就喜歡帥氣的人」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「我來引領你吧」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「很大小姐的感覺嘛～」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「挺頑固的嘛～」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「請罵我吧！」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「可以喜歡我嗎？」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+ENDSELECT
+
+@LOG_BITCH_ANAL(ARG, PLACE, KYAKU)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+PRINTFORM %SAVESTR:ARG%
+SELECTCASE ABL:ARG:3
+CASE 0
+	PRINTFORM 拚命忍耐著痛苦
+CASE 1
+	PRINTFORM 用經驗不多的腸道
+CASE 2
+	PRINTFORM 因為快樂露出了破綻，依然
+CASE 3, 4
+	PRINTFORM 用充分開發后的尻穴
+CASE 5, 6
+	PRINTFORM 緊鎖著不知道用了多少次，已經變成了不遜於小穴的性器
+CASE 7, 8
+	PRINTFORM 不停地擺動著屁股
+CASE 9, 10
+	PRINTFORM 完完全全地沉溺在了H的快感之中
+ENDSELECT
+PRINTFORMW 進行著肛交賣春...
+PRINTFORMW %SAVESTR:ARG%跪伏在床上，像母狗一樣搖動著屁股…
+
+
+
+SELECTCASE PLACE
+CASE "DUNGEON"
+	LOCALS = %FS_BITCH("DUNGEON_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;獸人
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「菊穴啊……湊合用吧」
+			DATAFORM 「這完全是性器了嘛」
+			DATAFORM 「又濕又軟」
+			DATAFORM 「你是賣肛門的？」
+			DATAFORM 「好啊，屁股翹起來」
+			DATAFORM 「這麼淫亂的尻穴」
+			DATAFORM 「就這麼喜歡賣菊花嗎？」
+			DATAFORM 「唔……你的直腸很舒服」
+			DATAFORM 「這肛門夾得真緊」
+			DATAFORM 「屁股的形狀也很漂亮呢」
+			DATAFORM 「你的後面，敏感度如何？」
+			DATAFORM 「屁股，都露外面了哦」
+			DATAFORM 「這不已經習慣用後面了嘛」
+			DATAFORM 「多少人用過這裡了？」
+			DATAFORM 「真是個好尻穴……」
+		ENDDATA
+	;魔族男人
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「菊花被幹也有感覺的變態！」
+			DATAFORM 「這菊花能幹幾次呢？再來一次吧！」
+			DATAFORM 「完完全全的吸住了呢……」
+			DATAFORM 「這個人，肛門完全被調教過了……」
+			DATAFORM 「菊花一開一合在引誘著我……」
+			DATAFORM 「這個變態肛穴奴隸！」
+			DATAFORM 「用肛門掙錢，感覺舒服嗎？」
+			DATAFORM 「肛門越來越緊了，真是天生的尻穴狂呢！」
+		ENDDATA
+	;魔族少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「姐姐的屁股，真棒」
+			DATAFORM 「哎？是用後面……？」
+			DATAFORM 「肛門好舒服啊」
+			DATAFORM 「沒錢了，只能干後面么」
+			DATAFORM 「好厲害……完全被尻穴吸住了……」
+			DATAFORM 「尻穴……要出來了！」
+			DATAFORM 「這麼緊湊的，也只有菊花能做到了吧。」
+			DATAFORM 「大姐姐的肛門，非常地舒服啊……」
+		ENDDATA
+	;魔族暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「我知道……想要錢是吧？」
+			DATAFORM 「我拿著錢哦！你想要的話……」
+			DATAFORM 「還沒滿足吧，這淫亂的女人！」
+			DATAFORM 「有錢怎麼幹都行么？」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「屁股也要舔，一直舔到肛門」
+			DATAFORM 「腰動起來！多扭幾下。」
+			DATAFORM 「跪下來說你想要錢！」
+			DATAFORM 「說：請給我這母豬賞點錢」
+			DATAFORM 「爲了錢，什麼話都能說出來的婊子」
+			DATAFORM 「陰垢也漂亮地清潔了呢」
+			DATAFORM 「跪下來說請給我陰莖」
+			DATAFORM 「跪下來像狗一樣地搖屁股」
+			DATAFORM 「在這裡像狗一樣地尿尿」
+			DATAFORM 「雞雞和錢，願意爲了哪個被賞耳光？」
+			DATAFORM 「說自己是最喜歡雞雞的淫亂性奴隸！」
+			DATAFORM 「在這裡用後庭自慰！」
+			DATAFORM 「說自己是爲了錢而賣菊的賤婊子」
+			DATAFORM 「跪下來說我想要雞雞」
+			DATAFORM 「再笑給我看看，要更下流的更H的」
+		ENDDATA
+	;妖精商人
+	CASE 5
+		;娼婦のドレス
+		SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+			PRINTFORML 「這麼H的衣服~」
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「喜歡用肛門表達愛意？」
+				DATAFORM 「把整個肛塞都吞入了」
+				DATAFORM 「什麼都可以放進肛門去是吧？」
+				DATAFORM 「用這種地方表達愛意嗎？」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「肛塞對你來說太弱了吧。」
+				DATAFORM 「看！又放進一個了哦！」
+				DATAFORM 「越是看起來強悍的人，肛門越弱。原來是真的啊！」
+				DATAFORM 「像要把手指吸進去一樣！」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「肛門裡放入振動寶石……再用力拔出來」
+				DATAFORM 「嘴巴上說著不要，菊花卻自己把它吸進去了」
+				DATAFORM 「肛門也一樣舒服呢」
+				DATAFORM 「把屁股再抬高一點……全部都看見了哦！」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「哪怕是高貴的大小姐，菊花也是一樣的臟啊」
+				DATAFORM 「被爆菊感到羞恥了么……記住這份屈辱吧！」
+				DATAFORM 「肛門張開了～」
+				DATAFORM 「連振動杖都能塞入了……真是了不起的菊穴啊」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「即使是肛交也感不到羞恥么」
+				DATAFORM 「菊穴真的這麼好么……？你看」
+				DATAFORM 「看來肛門很喜歡振動寶石嘛」
+				DATAFORM 「哈哈，肛門變得黏黏糊糊的了」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「性格那麼差的女人菊花也是一樣的臟呢」
+				DATAFORM 「勇者大人，菊花被幹得舒服嗎？」
+				DATAFORM 「屁股翹起來，把後庭扒開！」
+				DATAFORM 「即使性格那麼差，身體還是很誠實的嘛」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「這個賣菊女！」
+				DATAFORM 「墮落為賣菊的妓女了么？」
+				DATAFORM 「在幹嘛啊，快點把屁股露出來。」
+				DATAFORM 「後庭在一開一合地喘息著……！」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+CASE "TOWN"
+	LOCALS = %FS_BITCH("TOWN_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;村民
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「菊花挺柔軟的嘛」
+			DATAFORM 「前面那不行嗎？」
+		ENDDATA
+	;冒險者
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「可以灌腸么？」
+			DATAFORM 「唔……在裡面射了」
+		ENDDATA
+	;村裡少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「菊花就讓我受不了了……」
+			DATAFORM 「原來用屁股也可以做啊……」
+		ENDDATA
+	;街邊暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「連菊花也賣……」
+			DATAFORM 「菊花啊……」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「真是個賤婦……」
+			DATAFORM 「不會覺得不幸嗎？」
+		ENDDATA
+	;奸商
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「我就來施捨一下你吧！」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「這樣的傢伙，菊花反而是弱點啊！」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「再把屁股抬高點啊！」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「大小姐還是會用菊花的嘛……」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「那種眼神……是菊花很弱的眼神啊」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「隨便你怎麼哭喊也可以哦！」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「哈哈，多多關照！」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+ENDSELECT
+PRINTFORMW 無法忍耐的客人從背將%SAVESTR:ARG%抱住像狗一樣聳動著，肛門在陽具的劇烈抽送中流出了白色的漿汁…
+PRINTFORMW 四肢著地趴著的%SAVESTR:ARG%的臀瓣每次與客人的腰肢發生撞擊，都會提高的發出愉悅的呻吟聲…
+PRINTFORMW 呼吸逐漸變得粗重而凌亂，客人將%SAVESTR:ARG%的臀部像揉麵一般地揉撫著，瘋狂忘我地聳動著腰部…
+PRINTFORMW 隨後客人躺在地上，讓%SAVESTR:ARG%坐上來自己動，%SAVESTR:ARG%跨坐在客人的腰上扭動著自己的身體感受著火熱陽具的刺激，乳首也被肆意揉搓著…
+
+@LOG_BITCH_SEX(ARG, PLACE, KYAKU)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+
+PRINTFORM %SAVESTR:ARG%
+SELECTCASE ABL:ARG:2
+CASE 0
+	PRINTFORM 拚命忍耐著痛苦
+CASE 1
+	PRINTFORM 用經驗不多的陰道
+CASE 2
+	PRINTFORM 沉浸在快樂之中
+CASE 3, 4
+	PRINTFORM 用已經完完全全的開發了小穴
+CASE 5, 6
+	PRINTFORM 用飽經疼愛經驗豐富的小穴
+CASE 7, 8
+	IF RAND:2 == 1 && ABL:ARG:14 >= 3
+		PRINTFORM 上下襬動著那迷人的腰
+	ELSE
+		PRINTFORM 不知道是第幾次高潮了
+	ENDIF
+CASE 9, 10
+	IF RAND:2 == 1 && ABL:ARG:14 >= 5
+		PRINTFORM 用像要扭斷一樣的氣勢揮動著腰
+	ELSE
+		PRINTFORM 比起客人那邊更瘋狂的高潮著
+	ENDIF
+ENDSELECT
+PRINTFORMW 進行著性交賣春
+
+SELECTCASE PLACE
+CASE "DUNGEON"
+	LOCALS = %FS_BITCH("DUNGEON_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;オーク
+	CASE 1
+		;娼婦のドレス
+		SIF (CFLAG:ARG:40 & 28) && CFLAG:ARG:41 == 203
+			PRINTFORML 「穿著這麼下流的衣服來誘惑人……」
+		PRINTDATAL
+			DATAFORM 「居然能抱著魔王大人的奴隸……」
+			DATAFORM 「哦！哦！好舒服的小穴！」
+			DATAFORM 「就這麼喜歡精液嗎？」
+			DATAFORM 「無論是誰你都能這樣打開雙腿吧。」
+			DATAFORM 「用手把小穴扒開」
+			DATAFORM 「做Ｖ字手！Ｖ字手！」
+			DATAFORM 「覺得雞雞舒服嗎？」
+			DATAFORM 「啊！雞雞要融化了！」
+			DATAFORM 「真是下賤的母豬！」
+			DATAFORM 「抬起屁股，好好地發情吧」
+			DATAFORM 「真是下流的模樣呢，嘿嘿」
+			DATAFORM 「平時也是這樣分開雙腿侍奉魔王軍吧？」
+			DATAFORM 「習慣吮吸小雞雞了嗎？」
+			DATAFORM 「你和精液很相稱呢！」
+			DATAFORM 「射得你頭髮上都是！」
+		ENDDATA
+	;魔族男人
+	CASE 2
+		;娼婦のドレス
+		SIF (CFLAG:ARG:40 & 28) && CFLAG:ARG:41 == 203
+			PRINTFORML 「這一身……完全帶動色情的氣氛了啊！」
+		PRINTDATAL
+			DATAFORM 「穿成這樣在這裡四處轉悠……真是變態啊」
+			DATAFORM 「你很適合精液的氣味嘛～」
+			DATAFORM 「這是邀請我進去嗎？把腰扭起來啊」
+			DATAFORM 「正好慾求不滿的說」
+			DATAFORM 「這也是你的工作？」
+			DATAFORM 「豆豆漲起來了，還開始流出愛液……嘿嘿……」
+			DATAFORM 「勇者也這麼墮落，這麼淫亂」
+			DATAFORM 「手扶著墻，屁股轉過來對著我」
+			DATAFORM 「一定要狠狠地欺負一下你才行……」
+			DATAFORM 「母乳吸不出來么？」
+			DATAFORM 「完全順從了嘛」
+			DATAFORM 「一開始先來含一下吧？」
+			DATAFORM 「把腿分開，打開那裡讓我看看」
+			DATAFORM 「即使不當勇者了，也變得這麼可愛了嘛」
+			DATAFORM 「已經離不開我了么」
+		ENDDATA
+	;魔族少年
+	CASE 3
+		;娼婦のドレス
+		SIF (CFLAG:ARG:40 & 28) && CFLAG:ARG:41 == 203
+			PRINTFORML 「大姐姐的衣服，好色……」
+		PRINTDATAL
+			DATAFORM 「姐……姐姐……我帶錢來了」
+			DATAFORM 「我……還是處男……」
+			DATAFORM 「大姐姐，真好色啊」
+			DATAFORM 「這就是……女人……」
+			DATAFORM 「這就是姐姐的工作嗎？」
+			DATAFORM 「哇……厲害」
+			DATAFORM 「唔……我想要尿尿了！！」
+			DATAFORM 「大姐姐，摸起來軟軟的……」
+			DATAFORM 「噗呲噗呲的」
+			DATAFORM 「我能揉你的胸嗎？」
+			DATAFORM 「用力吸乳頭的話，會有奶出來嗎？」
+			DATAFORM 「好厲害……嗚哇～」
+			DATAFORM 「大姐姐，再教我更多……」
+			DATAFORM 「呵呵，姐姐你真可愛」
+			DATAFORM 「小雞雞，快爆炸了！！」
+		ENDDATA
+	;魔族暴發戶
+	CASE 4
+		;娼婦のドレス
+		SIF (CFLAG:ARG:40 & 28) && CFLAG:ARG:41 == 203
+			PRINTFORML 「真是婊子的打扮啊。」
+		PRINTDATAL
+			DATAFORM 「我知道……想要錢是吧？」
+			DATAFORM 「我拿著錢哦！你想要的話……知道要怎麼做吧」
+			DATAFORM 「還沒滿足吧，你這淫亂的女人！」
+			DATAFORM 「只要有錢就怎麼幹都行吧？」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「屁股也要舔，一直舔到肛門」
+			DATAFORM 「讓腰動起來！多扭幾下。」
+			DATAFORM 「跪下來說你想要錢！」
+			DATAFORM 「說：請給我這母豬賞點錢」
+			DATAFORM 「爲了錢，真是什麼話都能說出來的婊子呢。」
+			DATAFORM 「陰垢也漂亮地清潔了呢」
+			DATAFORM 「跪下來說請給我陰莖」
+			DATAFORM 「跪下來像狗一樣地搖屁股」
+			DATAFORM 「在這裡像狗一樣地尿尿」
+			DATAFORM 「雞雞和錢，願意爲了哪個被賞耳光？」
+			DATAFORM 「說自己是最喜歡雞雞的淫亂奴隸！」
+			DATAFORM 「就在這裡自慰」
+			DATAFORM 「說自己是爲了錢而賣淫的賤婊子」
+			DATAFORM 「跪下來說我想要雞雞」
+			DATAFORM 「再笑給我看看，更H的，更下流的」
+		ENDDATA
+	;妖精商人
+	CASE 5
+		;娼婦のドレス
+		SIF (CFLAG:ARG:40 & 28) && CFLAG:ARG:41 == 203
+			PRINTFORML 「這麼H的衣服~」
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「快來愛我啊~」
+				DATAFORM 「愛意滿滿地來侍奉吧」
+				DATAFORM 「讓我好好地來侍奉大人您的陰莖吧！」
+				DATAFORM 「這樣下賤的我……也能得到愛嗎？」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「勇者大人，變得這麼溫順」
+				DATAFORM 「對自己的性技有自信嗎？」
+				DATAFORM 「對這種事很擅長吧！」
+				DATAFORM 「淫亂地更徹底吧。」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「過來，好好吸它！」
+				DATAFORM 「把腿打開！快點」
+				DATAFORM 「在做什麼呢！給我吞進去！」
+				DATAFORM 「笨手笨腳的……把屁股抬起來就行啦！」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「習慣肉棒的味道了嗎？」
+				DATAFORM 「好好地侍奉吧！」
+				DATAFORM 「這麼溫柔的手法……雞雞快爆炸了」
+				DATAFORM 「居然還有這麼淫亂的大小姐。」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「不錯呢，這冰冷的眼神！」
+				DATAFORM 「這也是工作吧？」
+				DATAFORM 「這麼冰冷的表情可賺不到錢哦！」
+				DATAFORM 「完全不會笑的么？YEAH～YEAH！這樣」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「終於在肉棒前變得溫順了嗎？」
+				DATAFORM 「那個性格惡劣的勇者大人已經成為肉棒的俘虜了？」
+				DATAFORM 「不要說話了，快點把屁股打開啊！」
+				DATAFORM 「什麼嘛這眼神……可惡……」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「這個賣肉女！」
+				DATAFORM 「墮落為出賣春女了么？」
+				DATAFORM 「在幹嘛啊，快把屁股露出來。」
+				DATAFORM 「給我『啊啊』地叫出來啊……！」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+CASE "TOWN"
+	LOCALS = %FS_BITCH("TOWN_MAN", KYAKU)%
+	PRINTFORML 客：%LOCALS%
+	SELECTCASE KYAKU
+	;村民
+	CASE 1
+		PRINTDATAL
+			DATAFORM 「這是名器啊！」
+			DATAFORM 「勇者大人也是會賣身的啊……」
+		ENDDATA
+	;冒險者
+	CASE 2
+		PRINTDATAL
+			DATAFORM 「居然是勇者大人啊……」
+			DATAFORM 「哦，你……很懂嘛」
+		ENDDATA
+	;村裡少年
+	CASE 3
+		PRINTDATAL
+			DATAFORM 「我這還是第一次……」
+			DATAFORM 「我，是處男啊……」
+		ENDDATA
+	;街邊暴發戶
+	CASE 4
+		PRINTDATAL
+			DATAFORM 「賣淫女的穴也是可以用的啦」
+			DATAFORM 「錢的話隨便給」
+		ENDDATA
+		PRINTDATAL
+			DATAFORM 「好好謝謝我」
+			DATAFORM 「好好把錢拿著啊」
+		ENDDATA
+	;奸商
+	CASE 5
+		;慈愛
+		IF TALENT:ARG:160
+			PRINTDATAL
+				DATAFORM 「真漂亮啊……」
+			ENDDATA
+		;自信家
+		ELSEIF TALENT:ARG:161
+			PRINTDATAL
+				DATAFORM 「屁股抬高點啊！」
+			ENDDATA
+		;懦弱
+		ELSEIF TALENT:ARG:162
+			PRINTDATAL
+				DATAFORM 「喘息像在悲鳴似的」
+			ENDDATA
+		;高貴
+		ELSEIF TALENT:ARG:163
+			PRINTDATAL
+				DATAFORM 「好好接受下賤的種子吧！」
+			ENDDATA
+		;冷靜
+		ELSEIF TALENT:ARG:164
+			PRINTDATAL
+				DATAFORM 「再纏得緊密點啊……」
+			ENDDATA
+		;惡女
+		ELSEIF TALENT:ARG:166
+			PRINTDATAL
+				DATAFORM 「真是難以抗拒你的誘惑啊～」
+			ENDDATA
+		ELSE
+			PRINTDATAL
+				DATAFORM 「掙了多少錢啊？　嗯？」
+			ENDDATA
+		ENDIF
+	ENDSELECT
+ENDSELECT
+PRINTFORMW %SAVESTR:ARG%仰臥著用雙腿用力的夾住趴在自己身上的客人的腰發出呻吟…
+PRINTFORMW 隨即被翻過身來，一邊被玩弄肛門一邊主動用屁股套弄著巨大的陰莖…
+PRINTFORMW 隨後%SAVESTR:ARG%被客人抱了起來，雙腿被架在肩上，像洋娃娃一樣被猛烈插入，乳房像麵團一樣被跳動著變成各種淫靡的形狀…
+
+
+;いろいろ扱いが特殊なので注意
+;・DUNGEONでは金銭の授受は無く自主的に行うプレイ
+;・TOWNでのARG:1は無意味（公衆プレイで客に種別が無い）
+;自分の性癖からは外れるため地の文は書けません
+;どなたか拡充おねがいします
+@LOG_BITCH_ANIMAL(ARG, PLACE, ARG:1)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM KYAKU
+SELECTCASE PLACE
+CASE "DUNGEON"
+CASE "TOWN"
+	PRINTFORM %SAVESTR:ARG%
+	[SKIPSTART]
+	SELECTCASE ABL:ARG:2
+	ENDSELECT
+	[SKIPEND]
+	PRINTFORMW 在大家的眼前不知羞恥的進行著獸交表演...
+	PRINTFORMW %SAVESTR:ARG%進入了獸欄，在眾人熾熱的注目下像母狗一樣趴在地上，扭動著身軀引誘著發情的獵犬。在野獸舌頭的舔舐潤滑后，令人興奮的喘息和嗚咽伴隨著野獸的咆哮和肉體的撞擊聲繚繞在獸欄內，%SAVESTR:ARG%比真正的雌獸還要賣力的搖晃著屁股，逢迎著非人的巨大陽具的刺激。
+	PRINTFORMW 隨後一條獵犬躺在地上，%SAVESTR:ARG%主動跨坐在野獸的陰莖上扭動著自己的身體，乳首也被旁邊的野獸輕輕撕咬拉扯著。肛門的粗暴插入使%SAVESTR:ARG%趴在身下的野獸毛皮上陷入了恍惚，口水不由自主的流淌出來，其後插入口腔的獸莖令%SAVESTR:ARG%窒息，無與倫比的快感讓%SAVESTR:ARG%成爲了一具供野獸發泄性慾的肉娃娃。
+	PRINTFORMW 圍觀的觀眾們一邊看著這場獸姦秀一邊興奮的手淫，時不時有人衝上前去向%SAVESTR:ARG%的身上拋灑精液，而%SAVESTR:ARG%也媚眼朦朧的感受著精液的溫暖。
+	
+	[SKIPSTART]
+	;てきとーなアイデアだけ書いておく
+	;・普通に様子を描寫
+	;・司會者や観衆からの野次
+	;・金を貸してる人が見ての一言
+	;・スタッフ（主催者やら出演者やら）との楽屋裏でのやりとり「ゴム使うなんてダメだよ！」って叱られたり
+	PRINTDATAL
+		DATAFORM 
+	ENDDATA
+	[SKIPEND]
+	
+ENDSELECT
+
+
+;一応は置いておくが口上向きな気もする
+;呼び出し側で分岐描寫が入っているため優先度は低めでいい
+@LOG_BITCH_SELF(ARG, PLACE, PLAY)
+#LOCALSIZE 1
+#LOCALSSIZE 1
+#DIMS PLACE
+#DIM PLAY
+SELECTCASE PLACE
+CASE "DUNGEON"
+	SELECTCASE PLAY
+	;レズ妄想
+	CASE 1
+	;獣姦妄想
+	CASE 2
+	;あなたを妄想
+	CASE 3
+	;夢中で
+	CASE 4
+	;控えめに
+	CASE 5
+	ENDSELECT
+CASE "TOWN"
+	SELECTCASE PLAY
+	;レズ妄想
+	CASE 1
+	;獣姦妄想
+	CASE 2
+	;あなたを妄想
+	CASE 3
+	;夢中で
+	CASE 4
+	;控えめに
+	CASE 5
+	ENDSELECT
+ENDSELECT
+
+
+
+
+;とりあえず関數名変えたから競合は無いはず
+;[SKIPSTART]
+;売春時に表示するメッセージ
+;基本的にARG:0=客の番號
+;売春奴隷はTARGET
+
+;とりあえずセリフだけ表示
+;そのうち地の文を強化したい
+
+;------------------------------
+@DUNGEON_SEX_LOG, ARG:0
+;------------------------------
+;ARG:0
+;0 = 獸人
+;1 = 魔族男人
+;2 = 魔族少年
+;3 = 魔族暴發戶
+;ELSE = 狗頭人商人
+
+
+IF ARG:0 == 0
+	;獸人
+	;娼婦のドレス
+	SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+		PRINTFORML 「穿著這麼下流的衣服來誘惑人……」
+	IF RAND:15 == 0
+		PRINTFORML 「居然能抱著魔王大人的奴隸……」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「哦！哦！舒服的穴！」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「就這麼喜歡精液嗎？」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「隨便就分開雙腿的婊子！」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「用手把尻扒開」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「做Ｖ字手！Ｖ字手！」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「覺得雞雞舒服嗎？」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「啊！雞雞要融化了！」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「真是最賤的母豬！」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「抬起屁股，好好地發情吧」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「真是下流的模樣呢，嘿嘿」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「分開雙腿侍奉魔王軍了嗎？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「習慣吸啜小雞雞了嗎？」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「你和精液很相稱呢！」
+	ELSE
+		PRINTFORML 「射到你頭髮上都是！」
+	ENDIF
+ELSEIF ARG:0 == 1
+	;魔族男人
+	;娼婦のドレス
+	SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+		PRINTFORML 「這一身……完全帶動色情的氣氛了啊！」
+	IF RAND:15 == 0
+		PRINTFORML 「穿成這樣四處轉悠……真是變態啊」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「你很適合精液的氣味嘛～」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「這是邀請嗎？把腰扭起來啊」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「正好慾求不滿的說」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「這也是你的工作？」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「陰蒂漲起來了，還開始流出愛液……嘿嘿……」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「勇者也這麼墮落，這麼淫亂」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「手扶著墻，屁股轉過來」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「一定要狠狠地欺負一下你才行……」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「母乳不出來么？」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「完全順從了嘛」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「一開始先來含一下吧？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「腿分開，打開那裡讓我看看」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「不當勇者了，也變得可愛了嘛」
+	ELSE
+		PRINTFORML 「已經是我們的同伴了嘛」
+	ENDIF
+ELSEIF ARG:0 == 2
+	;魔族少年
+	;娼婦のドレス
+	SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+		PRINTFORML 「大姐姐的衣服，好色……」
+	IF RAND:15 == 0
+		PRINTFORML 「姐……姐姐……我帶錢來了」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「我……還是處男……」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「大姐姐，真好色啊」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「這就是……女人……」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「這就是姐姐的工作嗎？」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「哇……厲害」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「唔……要出來了！！」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「大姐姐，軟軟的……」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「噗呲噗呲的」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「能揉你的胸嗎？」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「用力吸乳頭的話，會有奶嗎？」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「好厲害……嗚哇～」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「大姐姐，再教我更多……」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「呵呵，姐姐你真可愛」
+	ELSE
+		PRINTFORML 「小雞雞，快爆炸了！！」
+	ENDIF
+ELSEIF ARG:0 == 3
+	;魔族暴發戶
+	;娼婦のドレス
+	SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+		PRINTFORML 「真是婊子的打扮啊。」
+	IF RAND:4 == 0
+		PRINTFORML 「我知道……想要錢是吧？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「我拿著錢哦！你想要的話……」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「還沒滿足吧，這淫亂的女人！」
+	ELSE
+		PRINTFORML 「有錢就怎麼都行？」
+	ENDIF
+	
+	IF RAND:15 == 0
+		PRINTFORML 「屁股也要舔，一直舔到肛門」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「腰動起來！多扭幾下。」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「跪下來說你想要錢！」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「說：請給我這母豬賞點錢」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「爲了錢，什麼話都能說出來的婊子」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「陰垢也漂亮地清潔了呢」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「跪下來說請給我陰莖」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「跪下來像狗一樣地搖屁股」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「在這裡像狗一樣地尿尿」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「雞雞和錢，願意爲了哪個被賞耳光？」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「說自己是最喜歡雞雞的淫亂奴隸！」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「就在這裡自慰」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「說自己是爲了錢而賣淫的賤婊子」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「跪下來說我想要雞雞」
+	ELSE
+		PRINTFORML 「再來點媚笑看看，要更淫邪的」
+	ENDIF
+	
+ELSE
+	;狗頭人商人
+	;娼婦のドレス
+	SIF (CFLAG:40 & 28) && CFLAG:41 == 203
+		PRINTFORML 「黃暴的衣服！」
+	IF TALENT:160
+		;慈愛
+		IF RAND:4 == 0
+			PRINTFORML 「也來愛我啊～」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「愛意滿滿地來侍奉吧」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「好好地來侍奉陰莖吧！」
+		ELSE
+			PRINTFORML 「這樣的我……也能得到愛嗎？」
+		ENDIF
+	ELSEIF TALENT:161
+		;自信家
+		IF RAND:4 == 0
+			PRINTFORML 「勇者大人，變得這麼溫順」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「對自己的性技有自信嗎？」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「對這種事很擅長吧！」
+		ELSE
+			PRINTFORML 「淫亂地如此徹底。」
+		ENDIF
+	ELSEIF TALENT:162
+		;懦弱
+		IF RAND:4 == 0
+			PRINTFORML 「來，吸！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「來，腿分開！」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「在幹嘛，繼續舔啊！」
+		ELSE
+			PRINTFORML 「笨手笨腳的……把屁股抬起來就行啦！」
+		ENDIF
+	ELSEIF TALENT:163
+		;高貴
+		IF RAND:4 == 0
+			PRINTFORML 「習慣肉棒的味道了嗎？」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「好好地侍奉吧！」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「溫柔的手法……雞雞快爆炸了」
+		ELSE
+			PRINTFORML 「居然還有這麼淫亂的大小姐。」
+		ENDIF
+	ELSEIF TALENT:164
+		;冷靜
+		IF RAND:4 == 0
+			PRINTFORML 「好啊！這冰冷的眼神！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「這也是工作吧？」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「喂，擺出一張更舒服的臉吧！」
+		ELSE
+			PRINTFORML 「你不懂笑的嗎？YEAH～YEAH！這樣」
+		ENDIF
+	ELSEIF TALENT:166
+		;惡女
+		IF RAND:4 == 0
+			PRINTFORML 「終於在肉棒前變得溫順了嗎？」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「那個性格惡劣的勇者大人已經成為肉棒的俘虜了？」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「無需多言！腿打開！」
+		ELSE
+			PRINTFORML 「什麼嘛這眼神……可惡……」
+		ENDIF
+	ELSE
+		IF RAND:4 == 0
+			PRINTFORML 「這賣春女啊！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「墮落為妓女了嗎」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「在幹嘛？趕緊把腿分開啊！」
+		ELSE
+			PRINTFORML 「呃呃地喘息……！」
+		ENDIF
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;------------------------------
+@DUNGEON_ANAL_LOG, ARG:0
+;------------------------------
+;ARG:0
+;0 = 獸人
+;1 = 魔族男人
+;2 = 魔族少年
+;3 = 魔族暴發戶
+;ELSE = 狗頭人商人
+
+
+IF ARG:0 == 0
+	;獸人
+	IF RAND:15 == 0
+		PRINTFORML 「菊穴啊……湊合用吧」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「這完全是性器了嘛」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「又濕又軟」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「你是賣肛門的？」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「好啊，屁股翹起來」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「這麼淫亂的尻穴」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「就這麼喜歡賣菊花嗎？」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「唔……你的直腸很舒服」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「這肛門夾得真緊」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「漂亮的後庭」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「你的後面，敏感度如何？」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「屁股，都露外面了哦」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「這不已經習慣用後面了嘛」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「多少人用過這裡了？」
+	ELSE
+		PRINTFORML 「真是個好尻穴……」
+	ENDIF
+ELSEIF ARG:0 == 1
+	;魔族男人
+	IF RAND:8 == 0
+		PRINTFORML 「尻穴有感覺的變態！」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「這尻穴能用幾次？再來一次吧！」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「收縮得真厲害啊……」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「這個人，肛門被調教過了……」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「菊花一開一合在引誘著我……」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「這個變態尻穴奴隸！」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「用尻穴掙錢，感覺舒服嗎？」
+	ELSE
+		PRINTFORML 「肛門的感覺真好，你真有天賦！」
+	ENDIF
+ELSEIF ARG:0 == 2
+	;魔族少年
+	IF RAND:8 == 0
+		PRINTFORML 「姐姐的屁股，真棒」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「哎？是用後面……？」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「肛門好舒服啊」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「沒錢了，屁股……」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「好厲害……完全被尻穴吸住了……」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「尻穴……要出來了！」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「這麼緊湊的，也只有菊花能做到了吧。」
+	ELSE
+		PRINTFORML 「大姐姐的肛門，非常地舒服啊……」
+	ENDIF
+ELSEIF ARG:0 == 3
+	;魔族暴發戶
+	IF RAND:4 == 0
+		PRINTFORML 「我知道……想要錢是吧？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「我拿著錢哦！你想要的話……」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「還沒滿足吧，這淫亂的女人！」
+	ELSE
+		PRINTFORML 「有錢就怎麼都行？」
+	ENDIF
+	
+	IF RAND:15 == 0
+		PRINTFORML 「屁股也要舔，一直舔到肛門」
+	ELSEIF RAND:14 == 0
+		PRINTFORML 「腰動起來！多扭幾下。」
+	ELSEIF RAND:13 == 0
+		PRINTFORML 「跪下來說你想要錢！」
+	ELSEIF RAND:12 == 0
+		PRINTFORML 「說：請給我這母豬賞點錢」
+	ELSEIF RAND:11 == 0
+		PRINTFORML 「爲了錢，什麼話都能說出來的婊子」
+	ELSEIF RAND:10 == 0
+		PRINTFORML 「陰垢也漂亮地清潔了呢」
+	ELSEIF RAND:9 == 0
+		PRINTFORML 「跪下來說請給我陰莖」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「跪下來像狗一樣地搖屁股」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「在這裡像狗一樣地尿尿」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「雞雞和錢，願意爲了哪個被賞耳光？」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「說自己是最喜歡雞雞的淫亂尻穴奴隸！」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「在這裡用後庭自慰！」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「說自己是爲了錢而賣菊的賤婊子」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「跪下來說我想要雞雞」
+	ELSE
+		PRINTFORML 「再來點媚笑看看，要更淫邪的」
+	ENDIF
+	
+ELSE
+	;狗頭人商人
+	IF TALENT:160
+		;慈愛
+		IF RAND:4 == 0
+			PRINTFORML 「喜歡用肛門表達愛意？」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「把整個肛塞都吞入了」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「什麼都可以放進肛門去是吧？」
+		ELSE
+			PRINTFORML 「用這種地方表達愛意嗎？」
+		ENDIF
+	ELSEIF TALENT:161
+		;自信家
+		IF RAND:4 == 0
+			PRINTFORML 「肛塞對你來說太弱了吧。」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「看！又放進一個了哦！」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「越是看起來強悍的人，肛門越弱。原來是真的啊！」
+		ELSE
+			PRINTFORML 「像要把手指吸進去一樣！」
+		ENDIF
+	ELSEIF TALENT:162
+		;懦弱
+		IF RAND:4 == 0
+			PRINTFORML 「肛門裡放入振動寶石……再用力拔出來」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「真是口嫌肛正直呢！」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「菊穴，真舒暢……」
+		ELSE
+			PRINTFORML 「把屁股再抬高一點……全部都看見了哦！」
+		ENDIF
+	ELSEIF TALENT:163
+		;高貴
+		IF RAND:4 == 0
+			PRINTFORML 「哪怕是大小姐，骯髒的地方也還是臟啊」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「被爆菊感到羞恥了么……記住這份屈辱吧！」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「肛門張開了～」
+		ELSE
+			PRINTFORML 「振動杖都吞入了……真是了不起的菊穴啊」
+		ENDIF
+	ELSEIF TALENT:164
+		;冷靜
+		IF RAND:4 == 0
+			PRINTFORML 「賣菊啊，不介意么？」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「菊穴真的這麼好么……？你看」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「看來肛門很喜歡振動寶石嘛」
+		ELSE
+			PRINTFORML 「哈哈，肛門變得黏黏糊糊的」
+		ENDIF
+	ELSEIF TALENT:166
+		;惡女
+		IF RAND:4 == 0
+			PRINTFORML 「骯髒的女人肛門也臟！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「勇者大人，菊花舒服嗎？」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「屁股翹起來，把後庭扒開！」
+		ELSE
+			PRINTFORML 「尻穴還挺老實的」
+		ENDIF
+	ELSE
+		IF RAND:4 == 0
+			PRINTFORML 「這個賣菊女！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「墮落為賣菊的妓女了么？」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「在幹嘛啊，快把屁股露出來。」
+		ELSE
+			PRINTFORML 「後庭在呃呃地喘息著……！」
+		ENDIF
+	ENDIF
+ENDIF
+
+RETURN 0
+
+;------------------------------
+@DUNGEON_LES_LOG, ARG:0
+;------------------------------
+;ARG:0
+;0 = 淫魔
+;1 = 魔族女人
+;2 = 妖精的女乞丐
+;3 = 魔族的貴婦人
+;ELSE = 魔族的女祭司
+
+
+IF ARG:0 == 0
+	;淫魔
+	IF RAND:8 == 0
+		PRINTFORML 「你的精氣，我不客氣啦♪」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「你看起來很可口嘛～」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「胸部也要舔哦」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「謝謝款待♪」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「拿大小姐一樣的來當晚餐，我真幸福呢～」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「光是接吻就高潮了？」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「滿滿的精氣～吸走了哦」
+	ELSE
+		PRINTFORML 「我開食啦♪」
+	ENDIF
+ELSEIF ARG:0 == 1
+	;魔族女人
+	IF RAND:8 == 0
+		PRINTFORML 「小奴隸，把尿接著啊」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「小姐你真可愛」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「來，趕快開始，已經習慣了吧？」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「可悲的母豬就是要挨鞭子！小奴隸……」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「就這樣一直抱著……」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「好多愛液溢出來了哦」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「就一晚，我們來做戀人吧……」
+	ELSE
+		PRINTFORML 「小姐，你平常都是怎麼自慰的？」
+	ENDIF
+ELSEIF ARG:0 == 2
+	;妖精的女乞丐
+	IF RAND:8 == 0
+		PRINTFORML 「錢，帶來了……」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「軟軟的……」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「弄壞我，什麼都不用考慮……」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「果然不是抱著女人，就做不來啊！」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「偶爾奢侈一下，不行嗎？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「賣尻穴來掙錢，然後又可以買女人回來……」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「想把你買下來，然後租出去給別人喝精液」
+	ELSE
+		PRINTFORML 「這麼髒的我，被你的愛液洗乾淨了……」
+	ENDIF
+ELSEIF ARG:0 == 3
+	;魔族的貴婦人
+	IF RAND:4 == 0
+		PRINTFORML 「能滿足我的性慾么？」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「看，想要錢吧？」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「呵呵，真是一隻好色的小貓咪」
+	ELSE
+		PRINTFORML 「錢有的是，你看……」
+	ENDIF
+	
+	IF RAND:9 == 0
+		PRINTFORML 「那裡，在用力來！」
+	ELSEIF RAND:8 == 0
+		PRINTFORML 「啊，再多舔幾下」
+	ELSEIF RAND:7 == 0
+		PRINTFORML 「喂，屁股也要舔……」
+	ELSEIF RAND:6 == 0
+		PRINTFORML 「再來接吻吧」
+	ELSEIF RAND:5 == 0
+		PRINTFORML 「我的鞭子，專治母豬……」
+	ELSEIF RAND:4 == 0
+		PRINTFORML 「喂，自慰給我看」
+	ELSEIF RAND:3 == 0
+		PRINTFORML 「要從陰蒂舔到菊花啊」
+	ELSEIF RAND:2 == 0
+		PRINTFORML 「愛撫一下我的那裡吧」
+	ELSE
+		PRINTFORML 「來磨一下吧？打開你的腿……」
+	ENDIF
+	
+ELSE
+	;魔族的女祭司
+	IF TALENT:160
+		;慈愛
+		IF RAND:4 == 0
+			PRINTFORML 「一起相愛吧」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「來接吻吧，奴隸」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「想這樣一直抱著……」
+		ELSE
+			PRINTFORML 「快樂是我們的教義」
+		ENDIF
+	ELSEIF TALENT:161
+		;自信家
+		IF RAND:4 == 0
+			PRINTFORML 「再來！再來！越粗暴越好！」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「啊，乳頭……再用力地捏……」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「再打我的屁股……打得通紅也無妨」
+		ELSE
+			PRINTFORML 「墮落是我們的教義」
+		ENDIF
+	ELSEIF TALENT:162
+		;懦弱
+		IF RAND:4 == 0
+			PRINTFORML 「更認真地舔吧……」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「要好好舔，一直舔到屁股啊」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「啊！表情不錯，再來點更好的聲音吧……」
+		ELSE
+			PRINTFORML 「獻媚是我們的教義」
+		ENDIF
+	ELSEIF TALENT:163
+		;高貴
+		IF RAND:4 == 0
+			PRINTFORML 「結束了之後一起去喝茶吧」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「就在這床睡吧」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「啊，請把尿喝光……」
+		ELSE
+			PRINTFORML 「淫蕩是我們的教義」
+		ENDIF
+	ELSEIF TALENT:164
+		;冷靜
+		IF RAND:4 == 0
+			PRINTFORML 「若無其事的神色，真漂亮」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「比起揮劍，你還是賣淫比較有才能呢」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「啊～腋下～是弱點啦～」
+		ELSE
+			PRINTFORML 「暴力是我們的教義」
+		ENDIF
+	ELSEIF TALENT:166
+		;惡女
+		IF RAND:4 == 0
+			PRINTFORML 「這次不來我們的神殿嗎？」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「面板真不錯……」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「好屁股～」
+		ELSE
+			PRINTFORML 「脫線是我們的教義」
+		ENDIF
+	ELSE
+		IF RAND:4 == 0
+			PRINTFORML 「就這樣相互交纏著吧」
+		ELSEIF RAND:3 == 0
+			PRINTFORML 「下次也要來我們的神殿哦」
+		ELSEIF RAND:2 == 0
+			PRINTFORML 「呵呵～又指名你了」
+		ELSE
+			PRINTFORML 「快樂是我們的教義」
+		ENDIF
+	ENDIF
+ENDIF
+
+RETURN 0
+;[SKIPEND]
+
+
+
+
+
+
+
+
