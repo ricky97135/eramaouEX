@@ -128,7 +128,7 @@ IF PAGE == 0
 PRINTFORML [0] 勇者投降后的凌辱　　　　　現在：\@ GETBIT(FLAG:5,0) ? 許可 # 禁止 \@
 PRINTFORML [1] 勇者強化　　　　　　　　　現在：\@ GETBIT(FLAG:5,1) ? 新的勇者會隨遊戲天數按比例增強 # 勇者等級維持 \@
 PRINTFORML [2] 懷孕分娩機能　　　　　　　現在：\@ GETBIT(FLAG:5,2) ? ON # OFF \@
-PRINTFORML [3] 勇者自動處刑機能　　　　　現在：\@ GETBIT(FLAG:5,3) ? ON # OFF \@
+PRINTFORML [3] 勇者自動處刑機能(排除屈服lv3)　現在：\@ GETBIT(FLAG:5,3) ? ON # OFF \@
 PRINTFORML [4] 禁止怪物迎擊　　　　　　　現在：\@ GETBIT(FLAG:5,4) ? ON (+怪物會和迎擊的奴隸進行訓練) # OFF \@
 PRINTFORML [5] 顯示戰鬥記錄　　　　　　　現在：\@ GETBIT(FLAG:5,5) ? ON # OFF \@
 PRINTFORML [6] 自動補充陷阱　　　　　　　現在：\@ GETBIT(FLAG:5,6) ? ON # OFF \@
@@ -160,6 +160,9 @@ PRINTFORML [25] 勇者的任務揭示板  　　　 現在：\@ GETBIT(FLAG:8,3)
 [ENDIF]
 PRINTFORM [26]　MOD開關　　　　　 　　　現在：
 CALL CONFIG_MODLIST
+PRINTFORML [27] 自動補充裝飾戒指         現在：\@ GETBIT(FLAG:5,16) ? ON # OFF \@
+PRINTFORML [28] 戒指說明
+PRINTFORML [29] 陷阱說明
 PRINTL
 PRINTL
 ENDIF
@@ -216,8 +219,64 @@ ELSEIF LOCAL >= 22 && LOCAL <= 25
 [ENDIF]
 ELSEIF LOCAL == 26
 	CALL MODLIST
+ELSEIF LOCAL == 27
+	INVERTBIT FLAG:5,16
+ELSEIF LOCAL == 28
+	PRINTFORMW 看不懂r這些日文 自己參考吧
+	DRAWLINE
+	PRINTL 破壞戒指 - ダメージ増加
+	PRINTL 守護戒指 - 裝備リセット時強化
+	PRINTL 加速戒指 - 戰鬥時先攻
+	PRINTL 再生戒指 - HP回復
+	PRINTL 意志戒指 - 氣力回復
+	PRINTL 慾望戒指 - 容易陷落付與
+	PRINTL 怪力戒指 - 增加攻擊力
+	PRINTL 強韌戒指 - 增加防禦力
+	PRINTL 支配戒指 - 怪物を仲間に
+	PRINTL 成長戒指 - 經驗值増加
+	PRINTL 虛弱戒指 - 裝備リセット時ペナルティ
+	PRINTL 鈍重戒指 - 後手になりやすく
+	PRINTL 死之戒指 - 體力と気力の回復量減衰
+	PRINTL 衰弱戒指 - 基本攻撃値?基本防禦値減少
+	PRINTL 洗腦戒指 - 即陥落＆順從増加
+	PRINTL 陷阱迴避戒指 - 陷阱を高確率で避ける
+	PRINTL 侵攻戒指 - 侵攻速度が上昇する
+	PRINTL 結界戒指 - 必ずキャンプする
+	PRINTL 試煉戒指 - 侵攻減速＆キャンプ禁止（結界より上位）
+	PRINTL 不幸戒指 - 陷阱回數増加＆陷阱避け無効化
+	DRAWLINE
+	PRINTFORMW 按下任何鍵繼續
+ELSEIF LOCAL == 29
+	PRINTFORMW 都只是大概而已 可能有其他沒注意到的附加效果
+	DRAWLINE
+	PRINTL 落穴 - 造成大量傷害(非常些微減少氣力)
+	PRINTL 射箭 - 造成大量傷害
+	PRINTL 傳送 - 減少氣力
+	PRINTL 催淫 - 減少氣力 增加小量慾情
+	PRINTL 觸手地板 - 減少些微氣力 增加慾情 觸手經驗+
+	PRINTL 媚藥泥沼 - 減少些微氣力及HP 增加大量慾情 藥物經驗+
+	PRINTL 自衛催眠 - 自衛經驗+ 有機率獲得反抗刻印 攻防下降
+	PRINTL 擬態房間 - 增加大量慾情、屈服、恥情 攻防下降 絕頂可能+
+	PRINTL 召喚 - 直接發生戰鬥 減少HP可能
+	PRINTL 夢魘 - 增加大量慾情、屈服、恥情 攻防下降 絕頂可能+ 百合經驗+
+	PRINTL 史萊姆房間 - 攻防下降 反抗刻印LV3可能 氣力減少
+	PRINTL 蜘蛛網 - 減少少量氣力&HP
+	PRINTL 奸商 - 賺錢用
+	PRINTL 黑暗 - 減少HP及攻擊力 減少少量氣力可能
+	PRINTL 彈射 - 看不到他的作用 似乎會將人亂彈到別層
+	PRINTL 魔力擴散 - 減少大量氣力
+	PRINTL 油壺 - 減少氣力
+	PRINTL 火箭發射 - 造成大量傷害
+	PRINTL 肛門腺蟲 - 減少氣力
+	PRINTL 淫蟲 - 造成傷害 反抗刻印lv3可能
+	PRINTL 寶石 - 增加屈服
+	PRINTL 攻擊效果 - 弱化防禦
+	PRINTL 防禦效果 - 降低傷害
+	PRINTL 魔法傷害 - 受到的魔法傷害增加
+	PRINTL 鬼手 - 防禦 傷害皆弱化
+	DRAWLINE
+	PRINTFORMW 按下任何鍵繼續
 ENDIF
-
 REDRAW 0
 CLEARLINE LINECOUNT - LOCAL:99
 RESTART

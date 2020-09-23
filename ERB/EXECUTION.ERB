@@ -377,6 +377,71 @@ RETURN 0
 ;------------------------------------------
 ;簡易処刑コマンド。TARGETがキャラNo
 
+A = TARGET
+
+;武器解除
+W:0 = CFLAG:A:550
+CALL EQUIP_GET
+CFLAG:A:550 = -1
+;指輪解除
+W:0 = CFLAG:A:551
+CALL EQUIP_GET
+CFLAG:A:551 = -1
+;指輪解除
+W:0 = CFLAG:A:552
+CALL EQUIP_GET
+CFLAG:A:552 = -1
+PRINTFORML 《自動處刑》
+PRINTFORML 《給%SAVESTR:A%刻下了封印所有力量的烙印。》
+
+LV = CFLAG:A:9
+
+X = NO:A + 199
+FLAG:X = 1
+
+;前回の助手・調教対象だった場合はフラグを空に
+SIF FLAG:1 == TARGET
+	FLAG:1 = -1
+SIF FLAG:2 == TARGET
+	FLAG:2 = -1
+
+;前回の助手・調教対象より前だった場合はフラグを減算
+SIF FLAG:1 > TARGET
+	FLAG:1 -= 1
+SIF FLAG:2 > TARGET
+	FLAG:2 -= 1
+
+TARGET = FLAG:1
+ASSI = FLAG:2
+
+CALL PARTY_CHAR_DEL, A
+
+DELCHARA A
+
+CALL NAME_RESET
+
+
+FLAG:80 += 1
+
+LV += 1
+LV *= 50
+
+EXP:0:80 += LV
+EXP:0:81 += 1
+PRINTFORMW 《封印吸收了力量，使你獲得了{LV}的經驗值！》
+
+;調教對像復位
+$LABEL_EXIT
+TARGET = FLAG:1
+ASSI = FLAG:2
+RETURN 0
+
+
+
+
+
+
+
 ;武器解除
 W:0 = CFLAG:550
 CALL EQUIP_GET
@@ -412,23 +477,23 @@ SIF FLAG:1 > TARGET
 SIF FLAG:2 > TARGET
 	FLAG:2 -= 1
 
-TARGET = FLAG:1
-ASSI = FLAG:2
+;TARGET = FLAG:1
+;ASSI = FLAG:2
 
 CALL PARTY_CHAR_DEL, TARGET
 
 DELCHARA TARGET
-IF ARGS == ""
-	IF TALENT:A:220 != 1 && EX_TALENT:A:1 != 1 
-		EX_FLAG:99 += 2
-		PRINTFORML 威望值增加
-	ELSE
-		EX_FLAG:99 -= 10
-		PRINTFORML 威望值減少
-	ENDIF
-ENDIF
+;IF ARGS == ""
+;	IF TALENT:A:220 != 1 && EX_TALENT:A:1 != 1 
+;		EX_FLAG:99 += 2
+;		PRINTFORML 威望值增加
+;	ELSE
+;		EX_FLAG:99 -= 10
+;		PRINTFORML 威望值減少
+;	ENDIF
+;ENDIF
 
-DELCHARA A
+;DELCHARA A
 	
 FLAG:80 += 1
 
@@ -445,4 +510,3 @@ PRINTFORMW 《封印把勇者的力量吸收了，你獲得了{LV}的經驗值�
 DRAWLINE
 
 RETURN 0
-
