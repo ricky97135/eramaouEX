@@ -22,11 +22,11 @@
 @MODLIST
 ;--------------------------------------------------
 SETCOLOR GETBIT(EX_FLAG:9000,0) ?  0xffffff # 0x646464
-PRINTFORML [0]魔界銀行	　　 現在：\@ GETBIT(EX_FLAG:9000,0) ? ON # OFF \@
+PRINTFORML [0]魔界銀行 (銀行在主頁面通訊內)	　　 現在：\@ GETBIT(EX_FLAG:9000,0) ? ON # OFF \@
 SETCOLOR GETBIT(EX_FLAG:9000,1) ?  0xffffff # 0x646464
 PRINTFORML [1]鐵石心腸（後代可處刑、可迎擊）現在：\@ GETBIT(EX_FLAG:9000,1) ? ON # OFF \@
 SETCOLOR GETBIT(EX_FLAG:9000,2) ?  0xffffff # 0x646464
-PRINTFORML [2]打工系統	　　 現在：\@ GETBIT(EX_FLAG:9000,2) ? ON # OFF \@
+PRINTFORML [2]打工系統 (處刑時水晶錄影可開)　　 現在：\@ GETBIT(EX_FLAG:9000,2) ? ON # OFF \@
 ;SETCOLOR GETBIT(EX_FLAG:9000,4) ?  0xffffff # 0x646464
 ;PRINTFORML [3]	　　	　　 現在：\@ GETBIT(EX_FLAG:9000,3) ? ON # OFF \@
 ;SETCOLOR GETBIT(EX_FLAG:9000,5) ?  0xffffff # 0x646464
