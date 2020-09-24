@@ -5,7 +5,14 @@
 ;ARG:0 = キャラNo 知り合い・家族確定エントリー
 
 ;LOCAL = RAND:10 + 20
-LOCAL = 10
+IF GETBIT(FLAG:700,3)
+	LOCAL = 10
+ELSE
+	LOCAL = RAND:15 + 15
+
+	SIF DAY:2 < LOCAL
+		RETURN 0
+ENDIF
 
 ;FLAG:60 = 勇者基礎レベル補正
 ;SIF DAY:2 > LOCAL && ARG:0 == 0 && FLAG:60 < 300
