@@ -164,7 +164,7 @@ PRINTFORML [27] 自動補充裝飾戒指         現在：\@ GETBIT(FLAG:700,0) 
 PRINTFORML [28] 戒指說明
 PRINTFORML [29] 陷阱說明
 PRINTFORML [30] 魔王等級簡易升級         現在：\@ GETBIT(FLAG:700,1) ? ON # OFF \@
-PRINTFORML [31] 魔王的每日津貼(10萬)     現在：\@ GETBIT(FLAG:700,2) ? ON # OFF \@
+PRINTFORML [31] 魔王的每日津貼           現在：{FLAG:701}
 PRINTFORML [32] 勇者頻繁進攻             現在：\@ GETBIT(FLAG:700,3) ? ON # OFF \@
 PRINTL
 PRINTL
@@ -282,7 +282,48 @@ ELSEIF LOCAL == 29
 ELSEIF LOCAL == 30
 	INVERTBIT FLAG:700,1
 ELSEIF LOCAL == 31
-	INVERTBIT FLAG:700,2
+	IF FLAG:703 == 1
+		PRINTFORMW 《 銀行卡鎖定中 》
+		RETURN 0
+	ENDIF
+
+	PRINTFORML 欲更改魔王每日津貼,請先輸入魔王銀行帳戶密碼(輸入次數錯誤三次會上鎖三天) :
+	PRINTFORML [0] 離開
+	$INPUT_LOOP
+	INPUT
+
+	SIF RESULT == 0
+		RETURN 0
+
+	IF RESULT == 951753
+		FLAG:702 = 0
+		PRINTFORML  《 密碼輸入正確 》
+		DRAWLINE
+		PRINTFORML 想更改魔王每日津貼至多少呢 ?
+		PRINTFORML [0] - [200] - [1000] - [10000] - [50000] - [100000] - [500000] - [1000000] - [5000000]
+		INPUT
+
+		IF RESULT > 5000000
+			PRINTFORMW 印鈔場上限為500萬,超過500萬自動變更為500萬
+			FLAG:701 = 5000000
+			PRINTFORMW 每日津貼已更新為: {FLAG:701}
+		ELSE
+			FLAG:701 = RESULT
+			PRINTFORMW 每日津貼已更新為: {FLAG:701}
+		ENDIF
+	ELSE
+		PRINTL 《 密碼輸入錯誤 》
+		PRINTL 《 提示:若是輸入錯誤超過三次需等三天後才能次輸入,採累進制不限天數 》
+		FLAG:702 += 1
+		IF FLAG:702 == 3
+			FLAG:703 = 1
+			PRINTL 《 密碼輸入錯誤已達上限,將鎖定三天 》
+			RETURN 0
+		ELSE
+			PRINTFORML 《 密碼錯誤次數: {FLAG:702} 》
+		ENDIF
+		GOTO INPUT_LOOP
+	ENDIF
 ELSEIF LOCAL == 32
 	INVERTBIT FLAG:700,3
 ENDIF
