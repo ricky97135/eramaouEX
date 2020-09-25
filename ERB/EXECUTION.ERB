@@ -379,6 +379,11 @@ RETURN 0
 
 A = TARGET
 
+IF A == GETCHARA(24)
+	PRINTFORML 《特殊人物無法自動處刑》
+	RETURN 0
+ENDIF
+
 ;武器解除
 W:0 = CFLAG:A:550
 CALL EQUIP_GET
@@ -434,79 +439,4 @@ PRINTFORMW 《封印吸收了力量，使你獲得了{LV}的經驗值！》
 $LABEL_EXIT
 TARGET = FLAG:1
 ASSI = FLAG:2
-RETURN 0
-
-
-
-
-
-
-
-;武器解除
-W:0 = CFLAG:550
-CALL EQUIP_GET
-CFLAG:550 = -1
-;指輪解除
-W:0 = CFLAG:551
-CALL EQUIP_GET
-CFLAG:551 = -1
-;指輪解除
-W:0 = CFLAG:552
-CALL EQUIP_GET
-CFLAG:552 = -1
-
-LV = CFLAG:9
-
-DRAWLINE
-IF ARGS == ""
-	PRINTFORML 給%SAVESTR:TARGET%刻下了封印所有力量的烙印。
-	PRINTW 繼續處刑
-ENDIF
-X = NO:TARGET + 199
-FLAG:X = 1
-
-;前回の助手・調教対象だった場合はフラグを空に
-SIF FLAG:1 == TARGET
-	FLAG:1 = -1
-SIF FLAG:2 == TARGET
-	FLAG:2 = -1
-
-;前回の助手・調教対象より前だった場合はフラグを減算
-SIF FLAG:1 > TARGET
-	FLAG:1 -= 1
-SIF FLAG:2 > TARGET
-	FLAG:2 -= 1
-
-;TARGET = FLAG:1
-;ASSI = FLAG:2
-
-CALL PARTY_CHAR_DEL, TARGET
-
-DELCHARA TARGET
-;IF ARGS == ""
-;	IF TALENT:A:220 != 1 && EX_TALENT:A:1 != 1 
-;		EX_FLAG:99 += 2
-;		PRINTFORML 威望值增加
-;	ELSE
-;		EX_FLAG:99 -= 10
-;		PRINTFORML 威望值減少
-;	ENDIF
-;ENDIF
-
-;DELCHARA A
-	
-FLAG:80 += 1
-
-LV += 1
-LV *= 50
-
-EXP:0:80 += LV
-PRINTL  
-PRINTL 得到了用勇者力量形成的勳章
-PRINTL 勳章經驗+1
-EXP:0:81 += 1
-PRINTFORMW 《封印把勇者的力量吸收了，你獲得了{LV}的經驗值！》
-
-DRAWLINE
-
 RETURN 0
