@@ -159,7 +159,7 @@ RETURN 1
 ;裝飾的戒指を呪われたアイテムにする
 ;対象のアイテムはW:0 ITEM:300
 ;最大10個まで
-SIF GETBIT(FLAG:700,0)
+SIF ITEM:300 > 0 && GETBIT(FLAG:700,0)
 	PRINTFORML 《自動補充戒指啟動中》
 
 REPEAT 10
