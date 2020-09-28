@@ -455,15 +455,20 @@ $LINE2
 IF ARGS == "名前"
 	IF QUEST_LINE == 0
 	SIF GETBIT(CFLAG:ARG:536, 0)
-		PRINTL *それはボスとの戦闘を強いられる
+		;PRINTL *それはボスとの戦闘を強いられる
+		PRINTL *有BOSS戰
 	SIF GETBIT(CFLAG:ARG:536, 1)
-		PRINTL *それは罠が仕掛けてある
+		;PRINTL *それは罠が仕掛けてある
+		PRINTL *有陷阱
 	SIF GETBIT(CFLAG:ARG:536, 2)
-		PRINTL *それは時間制限がある
+		;PRINTL *それは時間制限がある
+		PRINTL *有時限限制
 	SIF GETBIT(CFLAG:ARG:536, 3)
-		PRINTL *それは敵の數が異様に多い
+		;PRINTL *それは敵の數が異様に多い
+		PRINTL *有大量怪物
 	SIF GETBIT(CFLAG:ARG:536, 4)
-		PRINTL *それは性奉仕を要求される
+		;PRINTL *それは性奉仕を要求される
+		PRINTL *需要性服務
 	ELSE
 	SIF CFLAG:ARG:536
 		PRINT *將有
@@ -505,9 +510,9 @@ IF ARGS == "名前"
 	SIF MON_ID == 0
 		GOTO LINEEND
 	IF QUEST_LINE == 0
-		PRINTFORML *討伐対像是%ITEMNAME:MON_ID%
+		PRINTFORML *討伐對象是%ITEMNAME:MON_ID%
 	ELSE
-		PRINTFORM *討伐対像是%ITEMNAME:MON_ID%
+		PRINTFORM *討伐對象是%ITEMNAME:MON_ID%
 	ENDIF
 	SIF QUEST_LINE == 0
 		WAIT

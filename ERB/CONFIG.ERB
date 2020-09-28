@@ -153,7 +153,7 @@ CALL CONFIG_VIRGIN_CONCEDED_STATUS
 PRINTFORML [22] 男冒險者許可 　　　　　　現在：\@ GETBIT(FLAG:8,0) ? 許可 # 禁止 \@
 PRINTFORML [23] 勇者出現時的素質表示　　 現在：\@ GETBIT(FLAG:8,1) ? ON # OFF \@
 PRINTFORML [24] 勇者的戀愛發展　　　　　 現在：\@ GETBIT(FLAG:8,2) ? 許可 # 禁止 \@
-PRINTFORML [25] 勇者的任務揭示板  　　　 現在：\@ GETBIT(FLAG:8,3) ? 許可 # 禁止 \@
+PRINTFORML [25] 勇者的任務揭示板  　　　 現在：\@ GETBIT(FLAG:8,3) ? 禁止 # 許可 \@
 [IF_DEBUG]
 ;	 PRINT [25] 地下城顯示方式　　　　　 現在：
 ;	 CALL CONFIG_LABO_MAP_STATUS
