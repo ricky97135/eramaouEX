@@ -821,7 +821,8 @@ ENDIF
 DEF = CFLAG:(ARG:0):11 / E:(C + 3)
 ;仕様変更にて、防禦修正はステータス計算の方へ
 ;X += CFLAG:0:9
-DEF = CFLAG:(ARG:0):11 / X
+SIF CFLAG:(ARG:0):11 != 0
+	DEF = CFLAG:(ARG:0):11 / X
 B = E:C
 ;死亡怪物計算
 	FLAG:63 += DEF

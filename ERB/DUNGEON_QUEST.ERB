@@ -153,7 +153,7 @@ FOR LCOUNT, 0 ,3
 		CONTINUE
 	
 	
-	PRINTW *クエスト結果*
+	PRINTW *任務結果*
 	
 	IF GETBIT(CFLAG:(PM:LCOUNT):536, 5)
 		PRINTW 看來是接了個假任務……
@@ -563,7 +563,7 @@ FOR LCOUNT, 0 ,3
 	SIF LOCAL == 0
 		CONTINUE
 	
-	PRINTW *任務戦闘発生*
+	PRINTW *發生任務戰鬥*
 	QUEST_ON = 2
 	
 	IF GETBIT(CFLAG:(PM:LCOUNT):536, 0)
