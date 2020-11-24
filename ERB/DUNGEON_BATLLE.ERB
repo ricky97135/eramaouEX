@@ -596,8 +596,13 @@ B = C + 3
 DEF = E:B
 ;ボスチェック
 LOCAL:0 = E:(C + 8)
-SIF LOCAL:0 == 1
-	DEF = RAND:(DEF * 30) 
+IF LOCAL:0 == 1
+	IF DEF > 0
+		DEF = RAND:(DEF * 30) 
+	ELSE
+		DEF = 0
+	ENDIF
+ENDIF
 
 ;仕様変更にてオミット
 ;DEF += CFLAG:0:9
