@@ -2,8 +2,8 @@
 ;秘密ラボ
 ;=================================================
 @SECRET_LABO
-P = 0
-
+$RESET_PAGE
+P = 1
 
 $DRAW_PAGE
 LOCAL = LINECOUNT
@@ -23,17 +23,10 @@ ENDIF
 
 PRINTFORML 所持金：{MONEY}點
 DRAWLINE
-IF P == 0
-	CALL LABO_PAGE1
-ELSEIF P == 1
-	CALL LABO_PAGE2
-ELSEIF P == 2
-	CALL LABO_PAGE3
-ELSEIF P == 3
-	CALL LABO_PAGE4
-ELSE
-	CALL LABO_PAGE5
-ENDIF
+RESULT = 0
+TRYCALLFORM LABO_PAGE{P}
+SIF RESULT != 1
+	GOTO RESET_PAGE
 
 REPEAT LOCAL + 22 - LINECOUNT
 	PRINTL
@@ -194,11 +187,9 @@ ELSEIF RESULT == 78
 ELSEIF RESULT == 999
 	RETURN 0
 ELSEIF RESULT == 997
-	P += 4
-	P %= 5
+	P--
 ELSEIF RESULT == 998
-	P += 1
-	P %= 5
+	P++
 ELSE
 	CLEARLINE 1
 	GOTO INPUT_LOOP
@@ -224,6 +215,7 @@ PRINTL  [ 8] - 記憶消去               （100000點）
 PRINTL  [ 9] - 陰部永久脫毛           （5000點）
 PRINTL  [10] - 消去母乳體質           （10000點）
 PRINTL  [11] - 消除漏尿癖             （10000點）
+RETURN 1
 
 ;----------------------------------------------------
 @LABO_PAGE2
@@ -243,6 +235,7 @@ PRINTL  [20] - 消除異常妊娠體質       （35000點）
 PRINTL  [21] - 變性                   （200000點）
 ;PRINTL  [22] - 自由區域性調教設定       （20000點）
 ;PRINTL  [23] - 淫亂愛慕互換           （500000點）
+RETURN 1
 
 
 ;----------------------------------------------------
@@ -257,6 +250,7 @@ PRINTL  [26] - 接受誘惑           	（8000000點）
 PRINTL  [28] - 陷入愛慕           （15000000點）
 PRINTL  [29] - 陷入淫亂           （30000000點）
 PRINTL
+RETURN 1
 
 
 ;----------------------------------------------------
@@ -282,7 +276,7 @@ PRINTL  [65] - 魂縛的詛咒             （10000點）
 PRINTL  [66] - 魂縛的解咒             （50000點）
 PRINTL  [67] - 狂王俘虜的消去         （50000點）
 ;PRINTL  [68] - 生命搖籃　             （起價500000點，按素質加價，上百萬是正常的）
-
+RETURN 1
 
 ;----------------------------------------------------
 @LABO_PAGE5
@@ -302,6 +296,8 @@ PRINTL  [75] -【無視污垢】            （5000點）
 PRINTL  [76] -【早泄】                （8000點）
 PRINTL  [77] -【幼稚】                （10000點）
 PRINTL  [78] -【抖Ｓ】                （10000點）
+RETURN 1
+
 ;
 ;-------------------------------------------------
 ;巨乳化

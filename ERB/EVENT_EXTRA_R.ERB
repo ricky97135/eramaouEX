@@ -4,7 +4,13 @@
 ;=================================================
 @EVENT_EXTRA_R1
 
+$RESET_PAGE
+P=0
+
 $DRAW_PAGE
+PRINTFORML
+PRINTFORML
+PRINTFORML
 LOCAL = LINECOUNT
 REDRAW 0
 CLEARLINE LINECOUNT - LOCAL
@@ -23,17 +29,14 @@ PRINTFORML 所持金：{MONEY}點
 DRAWLINE
 
 $INPUT_LOOP_EXTRA_R1
-PRINTFORML [0]  - 魔王等級簡易升級         現在：\@ GETBIT(FLAG:700,1) ? ON # OFF \@
-PRINTFORML [1]  - 魔王的每日津貼           現在：{FLAG:701}
-PRINTFORML [2]  - 勇者頻繁進攻             現在：\@ GETBIT(FLAG:700,3) ? ON # OFF \@
-PRINTFORML [3]  - 改造敏感身體
-PRINTFORML [4]  - 反抗刻印削弱
-PRINTFORML [5]  - 接受洗腦
-PRINTFORML [6]  - 臣服侍奉
-PRINTFORML [7]  - 接受誘惑
-PRINTFORML [8]  - 陷入愛慕
-PRINTFORML [9]  - 陷入淫亂
-PRINTFORML [10] - 生命搖籃
+RESULT = 0
+TRYCALLFORM EVENT_EXTRA_P_{P}
+SIF RESULT != 1
+	GOTO RESET_PAGE
+
+REPEAT LOCAL + 22 - LINECOUNT
+	PRINTL
+REND
 
 DRAWLINE
 ;PRINTLC  [997] - 前一頁
@@ -45,11 +48,42 @@ INPUT
 
 SIF RESULT == 999
 	RETURN 0
+SIF RESULT == 998
+	P++
+SIF RESULT == 997
+	P--
 
 TRYCALLFORM EVENT_EXTRA_R_{RESULT}
 
 SIF RESULT != 1
-	GOTO INPUT_LOOP_EXTRA_R1
+	GOTO DRAW_PAGE
+
+;
+;-------------------------------------------------
+;PAGE - 0
+;-------------------------------------------------
+@EVENT_EXTRA_P_0
+PRINTFORML [0]  - 魔王等級簡易升級         現在：\@ GETBIT(FLAG:700,1) ? ON # OFF \@
+PRINTFORML [1]  - 魔王的每日津貼           現在：{FLAG:701}
+PRINTFORML [2]  - 勇者頻繁進攻             現在：\@ GETBIT(FLAG:700,3) ? ON # OFF \@
+PRINTFORML [3]  - 改造敏感身體
+PRINTFORML [4]  - 反抗刻印削弱
+PRINTFORML [5]  - 接受洗腦
+PRINTFORML [6]  - 臣服侍奉
+PRINTFORML [7]  - 接受誘惑
+PRINTFORML [8]  - 陷入愛慕
+PRINTFORML [9]  - 陷入淫亂
+PRINTFORML [10] - 生命搖籃
+PRINTFORML [11] - 莉莉出現時間             現在：{FLAG:702}
+PRINTFORML [12] - 狂王分身出現時間         現在：{FLAG:703}
+RETURN 1
+
+;
+;-------------------------------------------------
+;PAGE - 1
+;-------------------------------------------------
+@EVENT_EXTRA_P_1
+RETURN 1
 
 ;
 ;-------------------------------------------------
@@ -667,3 +701,29 @@ ELSEIF CHARANUM >= MAX_CHARANUM
 ELSE
 	CALL CHAR_CREATE(0)	
 ENDIF
+
+;
+;-------------------------------------------------
+;莉莉出現日
+;-------------------------------------------------
+@EVENT_EXTRA_R_11
+DRAWLINE
+PRINTFORML 想更改莉莉在哪天之後出現 ?
+PRINTFORML [100] - [150] - [200] - [250] - [365]
+INPUT
+
+FLAG:702 = RESULT
+PRINTFORMW 莉莉出現日已更新為: {FLAG:702}
+
+;
+;-------------------------------------------------
+;狂王分身出現日
+;-------------------------------------------------
+@EVENT_EXTRA_R_12
+DRAWLINE
+PRINTFORML 想更改狂王分身在哪天之後出現 ?
+PRINTFORML [350] - [400] - [500] - [700] - [1000] - [2000] - [3000]
+INPUT
+
+FLAG:703 = RESULT
+PRINTFORMW 狂王分身出現日已更新為: {FLAG:703}
