@@ -569,21 +569,4 @@ RETURN 0
 ;-------------------------------------------------------------------------------
 ;===============================================================================
 @DRAW_DUNGEON_DAILY
-IF EX_FLAG:99 >= 100
-	EX_FLAG:99 = 100
-ENDIF
-PRINT 　 
-PRINTFORM 威望值：{EX_FLAG:99} 
-IF EX_FLAG:99 <= 20 && EX_FLAG:99 >= 0
-PRINT 【岌岌可危】
-ELSEIF EX_FLAG:99 <= 40 && EX_FLAG:99 > 20
-PRINT 【動盪不安】
-ELSEIF EX_FLAG:99 <= 60 && EX_FLAG:99 > 40
-PRINT 【略受質疑】
-ELSEIF EX_FLAG:99 <= 80 && EX_FLAG:99 > 60
-PRINT 【相安無事】
-ELSEIF EX_FLAG:99 <= 100 && EX_FLAG:99 > 80
-PRINT 【廣受愛戴】
-ENDIF
-PRINTL
 CALL DISPLAY_DUNGEON_DAILY
