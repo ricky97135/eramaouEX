@@ -76,7 +76,8 @@ PRINTFORML [9]  - 陷入淫亂
 PRINTFORML [10] - 生命搖籃
 PRINTFORML [11] - 莉莉出現時間             現在：{FLAG:702}
 PRINTFORML [12] - 狂王分身出現時間         現在：{FLAG:703}
-PRINTFORML [13] - 未熟調教開關             現在：\@ GETBIT(FLAG:700,4) ? ON # OFF \@
+PRINTFORML [13] - 未熟調教開關             現在：\@ GETBIT(FLAG:700,4) ? 可調教 # 不可調教 \@
+PRINTFORML [14] - 死鬥場消耗開關           現在：\@ GETBIT(FLAG:700,5) ? 會消耗 # 不會消耗 \@
 RETURN 1
 
 ;
@@ -735,3 +736,10 @@ PRINTFORMW 狂王分身出現日已更新為: {FLAG:703}
 ;-------------------------------------------------
 @EVENT_EXTRA_R_13
 INVERTBIT FLAG:700,4
+
+;
+;-------------------------------------------------
+;死鬥場消耗開關
+;-------------------------------------------------
+@EVENT_EXTRA_R_14
+INVERTBIT FLAG:700,5

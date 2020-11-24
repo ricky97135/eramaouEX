@@ -4,8 +4,10 @@
 ;死鬥場収入
 
 ;観戦したまま終わった場合チケットを減らす
-;SIF TEQUIP:55
-;	ITEM:35 -= 1
+IF GETBIT(FLAG:700,5)
+SIF TEQUIP:55
+	ITEM:35 -= 1
+ENDIF
 
 IF TFLAG:402 > 0
 	IF TFLAG:402 > 12000
