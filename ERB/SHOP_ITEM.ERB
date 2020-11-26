@@ -86,7 +86,7 @@ PRINTL
 ;購入確認
 ;複數持てるアイテム
 
-IF BOUGHT == 24 || BOUGHT == 25 || BOUGHT == 26 || BOUGHT == 27 || BOUGHT == 28 || BOUGHT == 34 || BOUGHT == 35 || BOUGHT == 53 || BOUGHT == 55 || BOUGHT >= 60 && BOUGHT != 90
+IF BOUGHT == 24 || BOUGHT == 25 || BOUGHT == 26 || BOUGHT == 27 || BOUGHT == 28 || BOUGHT == 34 || BOUGHT == 35 || BOUGHT == 53 || BOUGHT == 55 || BOUGHT >= 60 && BOUGHT != 90 && BOUGHT != 99
 	CALL BUY_PLURAL
 	RETURN 1
 ;その場で使うアイテム
@@ -240,6 +240,15 @@ IF BOUGHT == 56
 	ITEM:BOUGHT = 0
 	ITEMSALES:56 = 0
 	PRINTL * 一些陷阱被強化了 *
+ENDIF
+
+;陷阱裝置優化 命中100%
+IF BOUGHT == 99
+	EX_FLAG:4444 -= 10000
+	TALENT:MASTER:500 = 1
+	ITEM:BOUGHT = 0
+	ITEMSALES:99 = 0
+	PRINTL * 陷阱裝置命中率100% *
 ENDIF
 
 
